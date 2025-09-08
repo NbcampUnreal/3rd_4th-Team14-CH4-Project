@@ -1,5 +1,8 @@
 #pragma once
 
+#include "ActiveGameplayEffectHandle.h"
+#include "GameplayAbilitySpecHandle.h"
+#include "AttributeSet.h"
 #include "Engine/DataAsset.h"
 #include "GameplayTagContainer.h"
 #include "ITAbilitySet.generated.h"
@@ -7,7 +10,7 @@
 class UGameplayAbility;
 class UGameplayEffect;
 class UAttributeSet;
-class UObject;
+class UITAbilitySystemComponent;
 
 
 // Input Tag와 Ability를 Mapping하는 구조체
@@ -17,7 +20,6 @@ struct FITAbilitySet_GameplayAbility
 	GENERATED_BODY()
 
 public:
-
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UGameplayAbility> Ability = nullptr;
 
@@ -36,7 +38,6 @@ struct FITAbilitySet_GameplayEffect
 	GENERATED_BODY()
 
 public:
-
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UGameplayEffect> GameplayEffect = nullptr;
 
@@ -52,9 +53,36 @@ struct FITAbilitySet_AttributeSet
 	GENERATED_BODY()
 
 public:
-
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UAttributeSet> AttributeSet;
+};
+
+
+/**
+ * Pawn 또는 Character에게 부여한(grant) Ability, Effects, Attributes를 관리하기 위한 구조체
+ * FLyraAbilitySet_GrantedHandles
+ */
+USTRUCT(BlueprintType)
+struct FITAbilitySet_GrantedHandles
+{
+	GENERATED_BODY()
+
+public:
+	void AddAbilitySpecHandle(const FGameplayAbilitySpecHandle& Handle);
+	void AddGameplayEffectHandle(const FActiveGameplayEffectHandle& Handle);
+	void AddAttributeSet(UAttributeSet* Set);
+
+	void TakeFromAbilitySystem(UITAbilitySystemComponent* ITASC);
+
+protected:
+	UPROPERTY()
+	TArray<FGameplayAbilitySpecHandle> AbilitySpecHandles;
+
+	UPROPERTY()
+	TArray<FActiveGameplayEffectHandle> GameplayEffectHandles;
+
+	UPROPERTY()
+	TArray<TObjectPtr<UAttributeSet>> GrantedAttributeSets;
 };
 
 
@@ -68,10 +96,9 @@ class IMITATIONTRIGGER_API UITAbilitySet : public UDataAsset
 	GENERATED_BODY()
 
 public:
-
+	UITAbilitySet(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 protected:
-
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Abilities", meta = (TitleProperty = Ability))
 	TArray<FITAbilitySet_GameplayAbility> GrantedGameplayAbilities;
 

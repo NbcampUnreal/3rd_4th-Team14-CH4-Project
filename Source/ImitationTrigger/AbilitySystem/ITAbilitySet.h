@@ -63,7 +63,7 @@ public:
  * FLyraAbilitySet_GrantedHandles
  */
 USTRUCT(BlueprintType)
-struct FITAbilitySet_GrantedHandles
+struct IMITATIONTRIGGER_API FITAbilitySet_GrantedHandles
 {
 	GENERATED_BODY()
 

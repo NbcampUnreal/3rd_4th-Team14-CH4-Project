@@ -109,7 +109,7 @@ void UITAbilitySet::GrantAttributeSets(UITAbilitySystemComponent* ITASC, FITAbil
 
 void UITAbilitySet::GrantAbilities(UITAbilitySystemComponent* ITASC, FITAbilitySet_GrantedHandles* OutGrantedHandles, UObject* SourceObject) const
 {
-	for (int32 AbilityIndex = 0; AbilityIndex < GrantedGameplayEffects.Num(); AbilityIndex++)
+	for (int32 AbilityIndex = 0; AbilityIndex < GrantedGameplayAbilities.Num(); AbilityIndex++)
 	{
 		const FITAbilitySet_GameplayAbility& AbilityToGrant = GrantedGameplayAbilities[AbilityIndex];
 

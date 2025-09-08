@@ -17,10 +17,11 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+protected:
+	UPROPERTY(EditDefaultsOnly, ReplicatedUsing = OnRep_PawnData, Category = "PawnData")
+	TObjectPtr<const UITPawnData> PawnData;
+
 private:
 	UFUNCTION()
 	void OnRep_PawnData();
-
-	UPROPERTY(EditDefaultsOnly, ReplicatedUsing = OnRep_PawnData, Category = "PawnData")
-	TObjectPtr<const UITPawnData> PawnData;
 };

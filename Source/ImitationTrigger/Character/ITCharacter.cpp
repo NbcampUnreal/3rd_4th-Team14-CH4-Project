@@ -1,4 +1,5 @@
 #include "Character/ITCharacter.h"
+#include "Net/UnrealNetwork.h"
 
 AITCharacter::AITCharacter()
 {
@@ -18,4 +19,15 @@ void AITCharacter::Tick(float DeltaTime)
 void AITCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+}
+
+void AITCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ThisClass, PawnData);
+}
+
+void AITCharacter::OnRep_PawnData()
+{
 }

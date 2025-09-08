@@ -3,6 +3,8 @@
 #include "GameFramework/Character.h"
 #include "ITCharacter.generated.h"
 
+class UITPawnData;
+
 UCLASS()
 class IMITATIONTRIGGER_API AITCharacter : public ACharacter
 {
@@ -13,5 +15,12 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+private:
+	UFUNCTION()
+	void OnRep_PawnData();
+
+	UPROPERTY(EditDefaultsOnly, ReplicatedUsing = OnRep_PawnData, Category = "PawnData")
+	TObjectPtr<const UITPawnData> PawnData;
 };

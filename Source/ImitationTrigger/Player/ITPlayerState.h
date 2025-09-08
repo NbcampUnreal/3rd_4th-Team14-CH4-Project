@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AbilitySystemInterface.h"
+#include "AbilitySystem/ITAbilitySet.h"
 #include "GameFramework/PlayerState.h"
 #include "ITPlayerState.generated.h"
 
@@ -23,7 +24,7 @@ public:
 	AITCharacter* GetITCharacter() const;
 
 	UFUNCTION(BlueprintCallable, Category = "ITPlayerState")
-	UITAbilitySystemComponent* GetLyraAbilitySystemComponent() const { return AbilitySystemComponent; }
+	UITAbilitySystemComponent* GetITAbilitySystemComponent() const { return AbilitySystemComponent; }
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
@@ -31,4 +32,9 @@ public:
 private:
 	UPROPERTY(VisibleAnywhere, Category = "ITPlayerState|AbilitySystemComponent")
 	TObjectPtr<UITAbilitySystemComponent> AbilitySystemComponent;
+
+	UFUNCTION()
+	void OnReadyPawnData(APlayerState* Player, APawn* NewPawn, APawn* OldPawn);
+
+	FITAbilitySet_GrantedHandles GrantedHandles;
 };

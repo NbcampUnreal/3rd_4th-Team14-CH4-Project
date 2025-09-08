@@ -11,7 +11,7 @@ public class ITTest : ModuleRules
 		PublicIncludePaths.AddRange(
 			new string[] {
 				// ... add public include paths required here ...
-			}
+            }
 			);
 				
 		
@@ -27,7 +27,8 @@ public class ITTest : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
-			}
+				"ImitationTrigger",
+            }
 			);
 			
 		

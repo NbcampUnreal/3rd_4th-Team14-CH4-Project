@@ -1,0 +1,2 @@
+#include "PawnDataTest/ITTestPawnDataCharacter.h"
+

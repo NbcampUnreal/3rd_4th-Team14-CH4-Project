@@ -98,6 +98,9 @@ class IMITATIONTRIGGER_API UITAbilitySet : public UDataAsset
 public:
 	UITAbilitySet(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+	// DataAsset에 설정해놓은 Ability, Effect, Attribute를 ASC에 적용한다.
+	void GiveToAbilitySystem(UITAbilitySystemComponent* ITASC, FITAbilitySet_GrantedHandles* OutGrantedHandles, UObject* SourceObject = nullptr) const;
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Abilities", meta = (TitleProperty = Ability))
 	TArray<FITAbilitySet_GameplayAbility> GrantedGameplayAbilities;
@@ -107,4 +110,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Attribute Set", meta = (TitleProperty = AttributeSet))
 	TArray<FITAbilitySet_AttributeSet> GrantedAttributes;
+
+private:
+	void GrantAttributeSets(UITAbilitySystemComponent* ITASC, FITAbilitySet_GrantedHandles* OutGrantedHandles) const;
+	void GrantAbilities(UITAbilitySystemComponent* ITASC, FITAbilitySet_GrantedHandles* OutGrantedHandles, UObject* SourceObject = nullptr) const;
+	void GrantGameplayEffects(UITAbilitySystemComponent* ITASC, FITAbilitySet_GrantedHandles* OutGrantedHandles) const;
 };

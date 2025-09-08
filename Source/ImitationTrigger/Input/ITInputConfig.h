@@ -5,6 +5,21 @@
 #include "ITInputConfig.generated.h"
 
 class UInputAction;
+class UInputMappingContext;
+
+USTRUCT(BlueprintType)
+struct FInputMappingContextAndPriority
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputMappingContext> InputMapping;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	int32 Priority = 0;
+};
+
 
 // Pair of (Gameplay Tag, Input Action)
 USTRUCT(BlueprintType)
@@ -41,4 +56,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (TitleProperty = "InputAction"))
 	TArray<FITInputAction> AbilityInputActions;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TArray<FInputMappingContextAndPriority> DefaultMappings;
 };

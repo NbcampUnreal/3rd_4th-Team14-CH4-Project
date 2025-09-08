@@ -14,9 +14,12 @@ public class ImitationTrigger : ModuleRules
 
 		PublicDependencyModuleNames.AddRange(new string[] {
 			// Base
-			"Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput"
+			"Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput",
 
-			// ...
+			// Gameplay
+			"GameplayTags",
+			"GameplayTasks",
+			"GameplayAbilities",
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });

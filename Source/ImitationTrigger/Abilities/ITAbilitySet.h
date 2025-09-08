@@ -72,7 +72,7 @@ public:
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Abilities", meta = (TitleProperty = GameplayAbility))
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Abilities", meta = (TitleProperty = Ability))
 	TArray<FITAbilitySet_GameplayAbility> GrantedGameplayAbilities;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effect", meta = (TitleProperty = GameplayEffect))

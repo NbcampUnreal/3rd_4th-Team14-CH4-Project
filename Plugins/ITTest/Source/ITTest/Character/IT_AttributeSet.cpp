@@ -13,6 +13,19 @@ UIT_AttributeSet::UIT_AttributeSet()
 void UIT_AttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
 	Super::PreAttributeChange(Attribute, NewValue);
+
+	if (Attribute == GetHealthAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue, 0.0f, GetMaxHealth());
+	}
+	if (Attribute == GetShieldAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue, 0.0f, GetMaxShield());
+	}
+	if (Attribute == GetStaminaAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue, 0.0f, GetMaxStamina());
+	}
 }
 
 void UIT_AttributeSet::PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const
@@ -34,11 +47,20 @@ void UIT_AttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, 
 			}
 		}
 	}
-	// TODO: 다른 이동 관련 속성도 추가
+	if (Attribute == GetJumpSpeedAttribute())
+	{
+		if (ACharacter* Target = Cast<ACharacter>(GetOwningActor()))
+		{
+			if (UCharacterMovementComponent* MovementComponent = Target->GetCharacterMovement())
+			{
+				MovementComponent->JumpZVelocity = NewValue;
+			}
+		}
+	}
 }
 
-void UIT_AttributeSet::PostAttributeBaseChange(const FGameplayAttribute& Attribute, float OldValue,
-	float NewValue) const
+void UIT_AttributeSet::PostAttributeBaseChange(
+	const FGameplayAttribute& Attribute, float OldValue, float NewValue) const
 {
 	Super::PostAttributeBaseChange(Attribute, OldValue, NewValue);
 }

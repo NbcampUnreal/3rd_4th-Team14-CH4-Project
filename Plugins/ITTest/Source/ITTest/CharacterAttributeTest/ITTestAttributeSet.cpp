@@ -1,16 +1,16 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ITAttributeSet.h"
+#include "ITTestAttributeSet.h"
 
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
-UITAttributeSet::UITAttributeSet()
+UITTestAttributeSet::UITTestAttributeSet()
 {
 }
 
-void UITAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
+void UITTestAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
 	Super::PreAttributeChange(Attribute, NewValue);
 
@@ -28,12 +28,12 @@ void UITAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, fl
 	}
 }
 
-void UITAttributeSet::PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const
+void UITTestAttributeSet::PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const
 {
 	Super::PreAttributeBaseChange(Attribute, NewValue);
 }
 
-void UITAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
+void UITTestAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
 {
 	Super::PostAttributeChange(Attribute, OldValue, NewValue);
 
@@ -59,13 +59,13 @@ void UITAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, f
 	}
 }
 
-void UITAttributeSet::PostAttributeBaseChange(
+void UITTestAttributeSet::PostAttributeBaseChange(
 	const FGameplayAttribute& Attribute, float OldValue, float NewValue) const
 {
 	Super::PostAttributeBaseChange(Attribute, OldValue, NewValue);
 }
 
-void UITAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)
+void UITTestAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
 }

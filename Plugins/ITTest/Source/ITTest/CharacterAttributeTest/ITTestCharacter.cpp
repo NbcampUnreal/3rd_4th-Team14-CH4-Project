@@ -6,7 +6,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameplayEffect.h"
-#include "ITAttributeSet.h"
+#include "ITTestAttributeSet.h"
 #include "ITCharacterAttributeData.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -21,7 +21,7 @@ AITTestCharacter::AITTestCharacter()
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>("Camera");
 	CameraComponent->SetupAttachment(SpringArmComponent);
 	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>("AbilitySystemComponent");
-	AttributeSet = CreateDefaultSubobject<UITAttributeSet>("AttributeSet");
+	AttributeSet = CreateDefaultSubobject<UITTestAttributeSet>("AttributeSet");
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	SpringArmComponent->bUsePawnControlRotation = true;

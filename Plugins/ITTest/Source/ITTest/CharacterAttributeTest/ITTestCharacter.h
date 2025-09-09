@@ -14,7 +14,7 @@ class UInputAction;
 class UInputMappingContext;
 class UCameraComponent;
 class USpringArmComponent;
-class UITAttributeSet;
+class UITTestAttributeSet;
 
 UCLASS()
 class ITTEST_API AITTestCharacter : public ACharacter, public IAbilitySystemInterface
@@ -24,7 +24,6 @@ class ITTEST_API AITTestCharacter : public ACharacter, public IAbilitySystemInte
 public:
 	AITTestCharacter();
 
-	// ASC를 사용하기 위해 필수적으로 구현해야하는 함수
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 protected:
@@ -35,30 +34,37 @@ protected:
 	// Component
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "IT|Component")
 	TObjectPtr<USpringArmComponent> SpringArmComponent;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "IT|Component")
 	TObjectPtr<UCameraComponent> CameraComponent;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "IT|Component")
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "IT|Component")
-	TObjectPtr<UITAttributeSet> AttributeSet;
+	TObjectPtr<UITTestAttributeSet> AttributeSet;
 
 	// Attribute
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "IT|Attribute")
 	TObjectPtr<UITCharacterAttributeData> InitAttributesData;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "IT|Attribute")
 	TSubclassOf<UGameplayEffect> InitAttributesEffect;
 
 	// Input
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "IT|Input")
 	TObjectPtr<UInputMappingContext> InputMappingContext;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "IT|Input")
 	TObjectPtr<UInputAction> MoveAction;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "IT|Input")
 	TObjectPtr<UInputAction> LookAction;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "IT|Input")
 	TObjectPtr<UInputAction> JumpAction;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "IT|Ability")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "IT|Input|Ability")
 	TSubclassOf<UGameplayAbility> JumpAbility;
 
 private:

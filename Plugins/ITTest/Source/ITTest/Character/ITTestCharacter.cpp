@@ -24,6 +24,7 @@ AITTestCharacter::AITTestCharacter()
 	AttributeSet = CreateDefaultSubobject<UITAttributeSet>("AttributeSet");
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
+	SpringArmComponent->bUsePawnControlRotation = true;
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;

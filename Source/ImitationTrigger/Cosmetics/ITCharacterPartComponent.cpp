@@ -15,6 +15,14 @@ void UITCharacterPartComponent::GetLifetimeReplicatedProps(TArray<FLifetimePrope
 	DOREPLIFETIME(ThisClass, AppliedCharacterPartList);
 }
 
+void UITCharacterPartComponent::AddAllCharacterPart(TArray<FITCharacterPartHandle>& OutHandles)
+{
+	for (FITCharacterPart& NewPart : CharacterParts)
+	{
+		OutHandles.Add(AddCharacterPart(NewPart));
+	}
+}
+
 FITCharacterPartHandle UITCharacterPartComponent::AddCharacterPart(const FITCharacterPart& NewPart)
 {
 	return AppliedCharacterPartList.AddEntry(NewPart);

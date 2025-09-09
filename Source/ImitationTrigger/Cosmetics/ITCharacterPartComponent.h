@@ -17,6 +17,7 @@ public:
 	UITCharacterPartComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	void AddAllCharacterPart(TArray<FITCharacterPartHandle>& OutHandles);
 	FITCharacterPartHandle AddCharacterPart(const FITCharacterPart& NewPart);
 	void RemoveCharacterPart(FITCharacterPartHandle Handle);
 

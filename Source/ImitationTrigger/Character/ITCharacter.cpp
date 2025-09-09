@@ -3,6 +3,7 @@
 #include "Character/ITPawnData.h"
 #include "Player/ITPlayerState.h"
 #include "Player/ITPlayerController.h"
+#include "Cosmetics/ITCharacterPartComponent.h"
 #include "AbilitySystem/ITAbilitySystemComponent.h"
 #include "Net/UnrealNetwork.h"
 
@@ -60,6 +61,16 @@ void AITCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ThisClass, PawnData);
+}
+
+void AITCharacter::PossessedBy(AController* NewController)
+{
+	UActorComponent* FindComponent = GetComponentByClass(UITCharacterPartComponent::StaticClass());
+	UITCharacterPartComponent* PartComponent = Cast<UITCharacterPartComponent>(FindComponent);
+	if (IsValid(FindComponent))
+	{
+		PartComponent->AddAllCharacterPart(CharacterPartHandles);
+	}
 }
 
 void AITCharacter::OnRep_PawnData()

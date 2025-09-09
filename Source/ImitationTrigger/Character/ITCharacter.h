@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AbilitySystemInterface.h"
+#include "Cosmetics/ITCharacterPartType.h"
 #include "GameFramework/Character.h"
 #include "ITCharacter.generated.h"
 
@@ -32,6 +33,8 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	virtual void PossessedBy(AController* NewController) override;
+
 	const UITPawnData* GetPawnData() const { return PawnData; }
 
 protected:
@@ -44,4 +47,7 @@ protected:
 private:
 	UFUNCTION()
 	void OnRep_PawnData();
+
+
+	TArray<FITCharacterPartHandle> CharacterPartHandles;
 };

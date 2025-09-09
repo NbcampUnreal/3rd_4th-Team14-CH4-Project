@@ -1,18 +1,18 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "IT_BaseCharacter.h"
+#include "ITTestCharacter.h"
 #include "AbilitySystemComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameplayEffect.h"
-#include "IT_AttributeSet.h"
-#include "IT_CharacterAttributeData.h"
+#include "ITAttributeSet.h"
+#include "ITCharacterAttributeData.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
-AIT_BaseCharacter::AIT_BaseCharacter()
+AITTestCharacter::AITTestCharacter()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
@@ -21,7 +21,7 @@ AIT_BaseCharacter::AIT_BaseCharacter()
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>("Camera");
 	CameraComponent->SetupAttachment(SpringArmComponent);
 	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>("AbilitySystemComponent");
-	AttributeSet = CreateDefaultSubobject<UIT_AttributeSet>("AttributeSet");
+	AttributeSet = CreateDefaultSubobject<UITAttributeSet>("AttributeSet");
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	bUseControllerRotationRoll = false;
@@ -29,12 +29,12 @@ AIT_BaseCharacter::AIT_BaseCharacter()
 	bUseControllerRotationYaw = false;
 }
 
-UAbilitySystemComponent* AIT_BaseCharacter::GetAbilitySystemComponent() const
+UAbilitySystemComponent* AITTestCharacter::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
 }
 
-void AIT_BaseCharacter::BeginPlay()
+void AITTestCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -48,7 +48,7 @@ void AIT_BaseCharacter::BeginPlay()
 	}
 }
 
-void AIT_BaseCharacter::PossessedBy(AController* NewController)
+void AITTestCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
@@ -68,22 +68,22 @@ void AIT_BaseCharacter::PossessedBy(AController* NewController)
 	InitAttributes();
 }
 
-void AIT_BaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void AITTestCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		EnhancedInputComponent->BindAction(
-			MoveAction, ETriggerEvent::Triggered, this, &AIT_BaseCharacter::ITMove);
+			MoveAction, ETriggerEvent::Triggered, this, &AITTestCharacter::ITMove);
 		EnhancedInputComponent->BindAction(
-			LookAction, ETriggerEvent::Triggered, this, &AIT_BaseCharacter::ITLook);
+			LookAction, ETriggerEvent::Triggered, this, &AITTestCharacter::ITLook);
 		EnhancedInputComponent->BindAction(
-			JumpAction, ETriggerEvent::Started, this, &AIT_BaseCharacter::ITJump);
+			JumpAction, ETriggerEvent::Started, this, &AITTestCharacter::ITJump);
 	}
 }
 
-void AIT_BaseCharacter::ITMove(const FInputActionValue& InputActionValue)
+void AITTestCharacter::ITMove(const FInputActionValue& InputActionValue)
 {
 	const FVector2D MovementVector = InputActionValue.Get<FVector2D>();
 
@@ -100,7 +100,7 @@ void AIT_BaseCharacter::ITMove(const FInputActionValue& InputActionValue)
 	}
 }
 
-void AIT_BaseCharacter::ITLook(const FInputActionValue& InputActionValue)
+void AITTestCharacter::ITLook(const FInputActionValue& InputActionValue)
 {
 	const FVector2D LookAxisVector = InputActionValue.Get<FVector2D>();
 
@@ -111,7 +111,7 @@ void AIT_BaseCharacter::ITLook(const FInputActionValue& InputActionValue)
 	}
 }
 
-void AIT_BaseCharacter::ITJump(const FInputActionValue& InputActionValue)
+void AITTestCharacter::ITJump(const FInputActionValue& InputActionValue)
 {
 	if (AbilitySystemComponent)
 	{
@@ -120,7 +120,7 @@ void AIT_BaseCharacter::ITJump(const FInputActionValue& InputActionValue)
 	}
 }
 
-void AIT_BaseCharacter::InitAttributes()
+void AITTestCharacter::InitAttributes()
 {
 	if (!AbilitySystemComponent || !InitAttributesData || !InitAttributesEffect)
 	{

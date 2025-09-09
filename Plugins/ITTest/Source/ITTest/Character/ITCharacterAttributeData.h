@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
 #include "AttributeSet.h"
-#include "IT_CharacterAttributeData.generated.h"
+#include "ITCharacterAttributeData.generated.h"
 
 USTRUCT(BlueprintType)
 struct FAttributeInitData
@@ -20,7 +20,7 @@ struct FAttributeInitData
 };
 
 UCLASS(Blueprintable)
-class ITTEST_API UIT_CharacterAttributeData : public UDataAsset
+class ITTEST_API UITCharacterAttributeData : public UDataAsset
 {
 	GENERATED_BODY()
 

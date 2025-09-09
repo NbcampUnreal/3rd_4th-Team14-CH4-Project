@@ -6,23 +6,23 @@
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
 #include "Abilities/GameplayAbility.h"
-#include "IT_BaseCharacter.generated.h"
+#include "ITTestCharacter.generated.h"
 
-class UIT_CharacterAttributeData;
+class UITCharacterAttributeData;
 struct FInputActionValue;
 class UInputAction;
 class UInputMappingContext;
 class UCameraComponent;
 class USpringArmComponent;
-class UIT_AttributeSet;
+class UITAttributeSet;
 
 UCLASS()
-class ITTEST_API AIT_BaseCharacter : public ACharacter, public IAbilitySystemInterface
+class ITTEST_API AITTestCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
 public:
-	AIT_BaseCharacter();
+	AITTestCharacter();
 
 	// ASC를 사용하기 위해 필수적으로 구현해야하는 함수
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
@@ -40,11 +40,11 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "IT|Component")
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "IT|Component")
-	TObjectPtr<UIT_AttributeSet> AttributeSet;
+	TObjectPtr<UITAttributeSet> AttributeSet;
 
 	// Attribute
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "IT|Attribute")
-	TObjectPtr<UIT_CharacterAttributeData> InitAttributesData;
+	TObjectPtr<UITCharacterAttributeData> InitAttributesData;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "IT|Attribute")
 	TSubclassOf<UGameplayEffect> InitAttributesEffect;
 

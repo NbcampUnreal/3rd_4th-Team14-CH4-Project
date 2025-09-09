@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "AttributeSet.h"
 #include "AbilitySystemComponent.h"
-#include "IT_AttributeSet.generated.h"
+#include "ITAttributeSet.generated.h"
 
 // public Getter, Setter 자동 생성 매크로
 #define ATTRIBUTE_ACCESSORS(ClassName, PropertyName) \
@@ -15,12 +15,12 @@
 	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
 UCLASS()
-class ITTEST_API UIT_AttributeSet : public UAttributeSet
+class ITTEST_API UITAttributeSet : public UAttributeSet
 {
 	GENERATED_BODY()
 
 public:
-	UIT_AttributeSet();
+	UITAttributeSet();
 
 	/**
 	* @brief Attribute의 CurrentValue가 변경되기 전 호출되는 함수 
@@ -54,49 +54,49 @@ public:
 	// Attribute 속성 구현
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
 	FGameplayAttributeData Health;
-	ATTRIBUTE_ACCESSORS(UIT_AttributeSet, Health);
+	ATTRIBUTE_ACCESSORS(UITAttributeSet, Health);
 
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
 	FGameplayAttributeData MaxHealth;
-	ATTRIBUTE_ACCESSORS(UIT_AttributeSet, MaxHealth);
+	ATTRIBUTE_ACCESSORS(UITAttributeSet, MaxHealth);
 
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
 	FGameplayAttributeData Shield;
-	ATTRIBUTE_ACCESSORS(UIT_AttributeSet, Shield);
+	ATTRIBUTE_ACCESSORS(UITAttributeSet, Shield);
 
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
 	FGameplayAttributeData MaxShield;
-	ATTRIBUTE_ACCESSORS(UIT_AttributeSet, MaxShield);
+	ATTRIBUTE_ACCESSORS(UITAttributeSet, MaxShield);
 
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
 	FGameplayAttributeData Stamina;
-	ATTRIBUTE_ACCESSORS(UIT_AttributeSet, Stamina);
+	ATTRIBUTE_ACCESSORS(UITAttributeSet, Stamina);
 
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
 	FGameplayAttributeData MaxStamina;
-	ATTRIBUTE_ACCESSORS(UIT_AttributeSet, MaxStamina);
+	ATTRIBUTE_ACCESSORS(UITAttributeSet, MaxStamina);
 
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
 	FGameplayAttributeData MeleeDamage;
-	ATTRIBUTE_ACCESSORS(UIT_AttributeSet, MeleeDamage);
+	ATTRIBUTE_ACCESSORS(UITAttributeSet, MeleeDamage);
 
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
 	FGameplayAttributeData WeaponDamage;
-	ATTRIBUTE_ACCESSORS(UIT_AttributeSet, WeaponDamage);
+	ATTRIBUTE_ACCESSORS(UITAttributeSet, WeaponDamage);
 
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
 	FGameplayAttributeData Defense;
-	ATTRIBUTE_ACCESSORS(UIT_AttributeSet, Defense);
+	ATTRIBUTE_ACCESSORS(UITAttributeSet, Defense);
 
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
 	FGameplayAttributeData WalkSpeed;
-	ATTRIBUTE_ACCESSORS(UIT_AttributeSet, WalkSpeed);
+	ATTRIBUTE_ACCESSORS(UITAttributeSet, WalkSpeed);
 
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
 	FGameplayAttributeData SprintSpeed;
-	ATTRIBUTE_ACCESSORS(UIT_AttributeSet, SprintSpeed);
+	ATTRIBUTE_ACCESSORS(UITAttributeSet, SprintSpeed);
 
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
 	FGameplayAttributeData JumpSpeed;
-	ATTRIBUTE_ACCESSORS(UIT_AttributeSet, JumpSpeed);
+	ATTRIBUTE_ACCESSORS(UITAttributeSet, JumpSpeed);
 };

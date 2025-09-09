@@ -4,6 +4,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Input/ITInputComponent.h"
 #include "Input/ITInputConfig.h"
+#include "AbilitySystem/ITAbilitySystemComponent.h"
 #include "System/ITGameplayTags.h"
 
 
@@ -80,10 +81,28 @@ void UITHeroComponent::InitializePlayerInput(UInputComponent* PlayerInputCompone
 
 void UITHeroComponent::Input_AbilityInputTagPressed(FGameplayTag InputTag)
 {
+	AITCharacter* Character = GetOwnerCharacter();
+	if (IsValid(Character))
+	{
+		UITAbilitySystemComponent* ITASC = Character->GetITAbilitySystemComponent();
+		if (IsValid(ITASC))
+		{
+			ITASC->AbilityInputTagPressed(InputTag);
+		}
+	}
 }
 
 void UITHeroComponent::Input_AbilityInputTagReleased(FGameplayTag InputTag)
 {
+	AITCharacter* Character = GetOwnerCharacter();
+	if (IsValid(Character))
+	{
+		UITAbilitySystemComponent* ITASC = Character->GetITAbilitySystemComponent();
+		if (IsValid(ITASC))
+		{
+			ITASC->AbilityInputTagReleased(InputTag);
+		}
+	}
 }
 
 void UITHeroComponent::Input_Move(const FInputActionValue& InputActionValue)

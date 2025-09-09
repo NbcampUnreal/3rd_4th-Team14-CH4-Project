@@ -19,6 +19,9 @@ struct FITGameplayTags
 	FGameplayTag InputTag_Look_Mouse;
 	FGameplayTag InputTag_Crouch;
 
+	/* Ability еб╠в */
+	FGameplayTag Ability_InputBlocked;
+
 private:
 	static FITGameplayTags GameplayTags;
 };

@@ -8,7 +8,7 @@
 class USkeletalMeshComponent;
 class USceneComponent;
 
-UCLASS()
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent), Blueprintable, BlueprintType)
 class UITCharacterPartComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -29,8 +29,11 @@ public:
 	FGameplayTagContainer GetCombinedTags(FGameplayTag RequiredPrefix) const;
 
 	UPROPERTY(Replicated, Transient)
-	FITCharacterPartList CharacterPartList;
+	FITCharacterPartList AppliedCharacterPartList;
 
 	UPROPERTY(EditAnywhere, Category = Cosmetics)
 	FITAnimBodyStyleSelectionSet BodyMeshes;
+
+	UPROPERTY(EditAnywhere, Category = Cosmetics)
+	TArray<FITCharacterPart> CharacterParts;
 };

@@ -3,7 +3,7 @@
 #include "Net/UnrealNetwork.h"
 
 UITCharacterPartComponent::UITCharacterPartComponent(const FObjectInitializer& ObjectInitialize)
-	: Super(ObjectInitialize), CharacterPartList(this)
+	: Super(ObjectInitialize), AppliedCharacterPartList(this)
 {
 	SetIsReplicatedByDefault(true);
 }
@@ -12,17 +12,17 @@ void UITCharacterPartComponent::GetLifetimeReplicatedProps(TArray<FLifetimePrope
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(ThisClass, CharacterPartList);
+	DOREPLIFETIME(ThisClass, AppliedCharacterPartList);
 }
 
 FITCharacterPartHandle UITCharacterPartComponent::AddCharacterPart(const FITCharacterPart& NewPart)
 {
-	return CharacterPartList.AddEntry(NewPart);
+	return AppliedCharacterPartList.AddEntry(NewPart);
 }
 
 void UITCharacterPartComponent::RemoveCharacterPart(FITCharacterPartHandle Handle)
 {
-	CharacterPartList.RemoveEntry(Handle);
+	AppliedCharacterPartList.RemoveEntry(Handle);
 }
 
 USkeletalMeshComponent* UITCharacterPartComponent::GetParentMeshComponent() const

@@ -8,6 +8,7 @@
 #include "Abilities/GameplayAbility.h"
 #include "IT_BaseCharacter.generated.h"
 
+class UIT_CharacterAttributeData;
 struct FInputActionValue;
 class UInputAction;
 class UInputMappingContext;
@@ -32,30 +33,38 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	// Component
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "IT")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "IT|Component")
 	TObjectPtr<USpringArmComponent> SpringArmComponent;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "IT")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "IT|Component")
 	TObjectPtr<UCameraComponent> CameraComponent;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "IT")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "IT|Component")
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "IT")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "IT|Component")
 	TObjectPtr<UIT_AttributeSet> AttributeSet;
 
+	// Attribute
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "IT|Attribute")
+	TObjectPtr<UIT_CharacterAttributeData> InitAttributesData;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "IT|Attribute")
+	TSubclassOf<UGameplayEffect> InitAttributesEffect;
+
 	// Input
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "IT|Input")
 	TObjectPtr<UInputMappingContext> InputMappingContext;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "IT|Input")
 	TObjectPtr<UInputAction> MoveAction;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "IT|Input")
 	TObjectPtr<UInputAction> LookAction;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "IT|Input")
 	TObjectPtr<UInputAction> JumpAction;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ability")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "IT|Ability")
 	TSubclassOf<UGameplayAbility> JumpAbility;
 
 private:
 	void ITMove(const FInputActionValue& InputActionValue);
 	void ITLook(const FInputActionValue& InputActionValue);
 	void ITJump(const FInputActionValue& InputActionValue);
+
+	void InitAttributes();
 };

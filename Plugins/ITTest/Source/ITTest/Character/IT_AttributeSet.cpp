@@ -3,13 +3,44 @@
 
 #include "IT_AttributeSet.h"
 
+#include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
+
 UIT_AttributeSet::UIT_AttributeSet()
 {
+}
+
+void UIT_AttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
+{
+	Super::PreAttributeChange(Attribute, NewValue);
 }
 
 void UIT_AttributeSet::PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const
 {
 	Super::PreAttributeBaseChange(Attribute, NewValue);
+}
+
+void UIT_AttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
+{
+	Super::PostAttributeChange(Attribute, OldValue, NewValue);
+
+	if (Attribute == GetWalkSpeedAttribute())
+	{
+		if (ACharacter* Target = Cast<ACharacter>(GetOwningActor()))
+		{
+			if (UCharacterMovementComponent* MovementComponent = Target->GetCharacterMovement())
+			{
+				MovementComponent->MaxWalkSpeed = NewValue;
+			}
+		}
+	}
+	// TODO: 다른 이동 관련 속성도 추가
+}
+
+void UIT_AttributeSet::PostAttributeBaseChange(const FGameplayAttribute& Attribute, float OldValue,
+	float NewValue) const
+{
+	Super::PostAttributeBaseChange(Attribute, OldValue, NewValue);
 }
 
 void UIT_AttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)

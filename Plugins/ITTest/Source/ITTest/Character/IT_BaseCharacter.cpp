@@ -5,7 +5,9 @@
 #include "AbilitySystemComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "GameplayEffect.h"
 #include "IT_AttributeSet.h"
+#include "IT_CharacterAttributeData.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -52,6 +54,8 @@ void AIT_BaseCharacter::PossessedBy(AController* NewController)
 
 	if (AbilitySystemComponent)
 	{
+		// PlayerState 추가 후 변경
+		// AbilitySystemComponent->InitAbilityActorInfo(GetPlayerState(), this);
 		AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	}
 
@@ -60,6 +64,8 @@ void AIT_BaseCharacter::PossessedBy(AController* NewController)
 		FGameplayAbilitySpec JumpAbilitySpec(JumpAbility, 1, 0);
 		AbilitySystemComponent->GiveAbility(JumpAbilitySpec);
 	}
+
+	InitAttributes();
 }
 
 void AIT_BaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -111,5 +117,31 @@ void AIT_BaseCharacter::ITJump(const FInputActionValue& InputActionValue)
 	{
 		FGameplayTag JumpTag = FGameplayTag::RequestGameplayTag(FName("Player.Action.Jump"));
 		AbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer(JumpTag));
+	}
+}
+
+void AIT_BaseCharacter::InitAttributes()
+{
+	if (!AbilitySystemComponent || !InitAttributesData || !InitAttributesEffect)
+	{
+		UE_LOG(LogTemp, Error, TEXT("IT_BaseCharacter의 ASC, DA, GE가 제대로 할당되지 않았습니다."));
+		return;
+	}
+
+	FGameplayEffectContextHandle EffectContextHandle = AbilitySystemComponent->MakeEffectContext();
+	EffectContextHandle.AddSourceObject(this);
+	FGameplayEffectSpecHandle EffectSpecHandle
+		= AbilitySystemComponent->MakeOutgoingSpec(InitAttributesEffect, 1, EffectContextHandle);
+
+	if (EffectSpecHandle.IsValid())
+	{
+		for (const FAttributeInitData& InitData : InitAttributesData->InitAttributes)
+		{
+			FString TagString = FString::Printf(TEXT("Attribute.%s"), *InitData.Attribute.GetName());
+			EffectSpecHandle.Data->SetSetByCallerMagnitude(
+				FGameplayTag::RequestGameplayTag(FName(*TagString)), InitData.BaseValue);
+		}
+
+		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
 	}
 }

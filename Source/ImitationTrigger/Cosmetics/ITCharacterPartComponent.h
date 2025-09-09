@@ -22,6 +22,7 @@ public:
 
 	USkeletalMeshComponent* GetParentMeshComponent() const;
 	USceneComponent* GetSceneComponentToAttachTo() const;
+
 	void BroadcastChanged();
 
 	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = Costmetic)

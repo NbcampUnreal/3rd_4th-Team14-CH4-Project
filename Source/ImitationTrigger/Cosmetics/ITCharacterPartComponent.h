@@ -7,6 +7,7 @@
 
 class USkeletalMeshComponent;
 class USceneComponent;
+class UITPawnData;
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent), Blueprintable, BlueprintType)
 class UITCharacterPartComponent : public UActorComponent
@@ -17,7 +18,8 @@ public:
 	UITCharacterPartComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	void AddAllCharacterPart(TArray<FITCharacterPartHandle>& OutHandles);
+	void InitCharacterPart(const UITPawnData* PawnData, TArray<FITCharacterPartHandle>& OutHandles);
+
 	FITCharacterPartHandle AddCharacterPart(const FITCharacterPart& NewPart);
 	void RemoveCharacterPart(FITCharacterPartHandle Handle);
 
@@ -34,7 +36,4 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = Cosmetics)
 	FITAnimBodyStyleSelectionSet BodyMeshes;
-
-	UPROPERTY(EditAnywhere, Category = Cosmetics)
-	TArray<FITCharacterPart> CharacterParts;
 };

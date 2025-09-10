@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine/DataAsset.h"
+#include "Cosmetics/ITCharacterPartType.h"
 #include "ITPawnData.generated.h"
 
 class UITAbilitySet;
@@ -26,6 +27,13 @@ public:
 	// Pawn 또는 Character의 입력 설정
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "PawnData|Input")
 	TObjectPtr<UITInputConfig> InputConfig;
+
+	// Pawn 또는 Character에 적용할 Cosmetic(외형) 정보
+	UPROPERTY(EditAnywhere, Category = "PawnData|Cosmetics")
+	TArray<FITCharacterPart> InitCharacterParts;
+
+	UPROPERTY(EditAnywhere, Category = "PawnData|Cosmetics")
+	FITAnimBodyStyleSelectionSet InitBodyMeshes;
 
 	// Pawn 또는 Character에 적용할 기본 카메라 모드
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "PawnData|Camera")

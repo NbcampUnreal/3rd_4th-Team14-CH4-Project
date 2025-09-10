@@ -5,6 +5,14 @@
 
 class UITCharacterPartComponent;
 
+UENUM()
+enum class ECharacterCustomizationCollisionMode : uint8
+{
+	NoCollision,
+	UseCollisionFromCharacterPart
+};
+
+
 USTRUCT(BlueprintType)
 struct FITCharacterPart
 {

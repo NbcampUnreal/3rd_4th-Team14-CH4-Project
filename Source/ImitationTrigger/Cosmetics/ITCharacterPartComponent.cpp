@@ -1,5 +1,6 @@
 #include "Cosmetics/ITCharacterPartComponent.h"
 #include "GameFramework/Character.h"
+#include "Character/ITPawnData.h"
 #include "Net/UnrealNetwork.h"
 
 UITCharacterPartComponent::UITCharacterPartComponent(const FObjectInitializer& ObjectInitialize)
@@ -15,11 +16,17 @@ void UITCharacterPartComponent::GetLifetimeReplicatedProps(TArray<FLifetimePrope
 	DOREPLIFETIME(ThisClass, AppliedCharacterPartList);
 }
 
-void UITCharacterPartComponent::AddAllCharacterPart(TArray<FITCharacterPartHandle>& OutHandles)
+void UITCharacterPartComponent::InitCharacterPart(const UITPawnData* PawnData, TArray<FITCharacterPartHandle>& OutHandles)
 {
-	for (FITCharacterPart& NewPart : CharacterParts)
+	if (IsValid(PawnData))
 	{
-		OutHandles.Add(AddCharacterPart(NewPart));
+		TArray<FITCharacterPart> InCharacterParts = PawnData->InitCharacterParts;
+		for (FITCharacterPart& NewPart : InCharacterParts)
+		{
+			OutHandles.Add(AddCharacterPart(NewPart));
+		}
+
+		BodyMeshes = PawnData->InitBodyMeshes;
 	}
 }
 

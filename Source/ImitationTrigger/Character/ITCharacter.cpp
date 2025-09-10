@@ -65,11 +65,16 @@ void AITCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 
 void AITCharacter::PossessedBy(AController* NewController)
 {
+	Super::PossessedBy(NewController);
+
 	UActorComponent* FindComponent = GetComponentByClass(UITCharacterPartComponent::StaticClass());
 	UITCharacterPartComponent* PartComponent = Cast<UITCharacterPartComponent>(FindComponent);
 	if (IsValid(FindComponent))
 	{
-		PartComponent->AddAllCharacterPart(CharacterPartHandles);
+		if (IsValid(PawnData))
+		{
+			PartComponent->InitCharacterPart(PawnData, CharacterPartHandles);
+		}
 	}
 }
 

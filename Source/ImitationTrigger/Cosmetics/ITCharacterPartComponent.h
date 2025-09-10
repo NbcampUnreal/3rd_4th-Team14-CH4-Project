@@ -9,8 +9,8 @@ class USkeletalMeshComponent;
 class USceneComponent;
 class UITPawnData;
 
-UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent), Blueprintable, BlueprintType)
-class UITCharacterPartComponent : public UActorComponent
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
+class IMITATIONTRIGGER_API UITCharacterPartComponent : public UActorComponent
 {
 	GENERATED_BODY()
 

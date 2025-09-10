@@ -8,8 +8,8 @@ class AITCharacter;
 struct FInputActionValue;
 
 /**
- * Pawn ¶Ç´Â CharacterÀÇ ÀÔ·Â°ú Ä«¸Ş¶ó °ü·Ã ±â´ÉÀ» ´ã´çÇÏ´Â Component
- * ULyraHeroComponentÀ» Âü°íÇÏ¿© ±¸ÇöÇÔ.
+ * Pawn ë˜ëŠ” Characterì˜ ì…ë ¥ê³¼ ì¹´ë©”ë¼ ê´€ë ¨ ê¸°ëŠ¥ì„ ë‹´ë‹¹í•˜ëŠ” Component
+ * ULyraHeroComponentì„ ì°¸ê³ í•˜ì—¬ êµ¬í˜„í•¨.
  */
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class IMITATIONTRIGGER_API UITHeroComponent : public UActorComponent

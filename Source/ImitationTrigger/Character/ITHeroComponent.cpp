@@ -53,7 +53,7 @@ void UITHeroComponent::InitializePlayerInput(UInputComponent* PlayerInputCompone
 	{
 		if (const UITInputConfig* InputConfig = PawnData->InputConfig)
 		{
-			// Input Mapping Context 贸府
+			// Input Mapping Context 觳橂Μ
 			for (const FInputMappingContextAndPriority Mapping : InputConfig->DefaultMappings)
 			{
 				if (UInputMappingContext* IMC = Mapping.InputMapping)
@@ -64,7 +64,7 @@ void UITHeroComponent::InitializePlayerInput(UInputComponent* PlayerInputCompone
 				}
 			}
 
-			// Bind Input Action 贸府
+			// Bind Input Action 觳橂Μ
 			UITInputComponent* InputComponent = Cast<UITInputComponent>(PlayerInputComponent);
 			check(InputComponent);
 			

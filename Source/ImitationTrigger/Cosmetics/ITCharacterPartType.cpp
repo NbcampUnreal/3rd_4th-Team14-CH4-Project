@@ -116,7 +116,7 @@ bool FITCharacterPartList::SpawnActorForEntry(FITAppliedCharacterPartEntry& Entr
 					{
 						if (USceneComponent* SpawnedRootComponent = SpawnedActor->GetRootComponent())
 						{
-							// ½ºÆùµÈ Actor°¡ parentº¸´Ù ¸ÕÀú Tick()ÇÏÁö ¾Êµµ·Ï, ¼±Çà Á¶°ÇÀ» ºÙÀÎ´Ù.
+							// ìŠ¤í°ëœ Actorê°€ parentë³´ë‹¤ ë¨¼ì € Tick()í•˜ì§€ ì•Šë„ë¡, ì„ í–‰ ì¡°ê±´ì„ ë¶™ì¸ë‹¤.
 							SpawnedRootComponent->AddTickPrerequisiteComponent(ComponentToAttachTo);
 						}
 					}
@@ -150,8 +150,8 @@ FGameplayTagContainer FITCharacterPartList::CollectCombinedTags() const
 	{
 		if (Entry.SpawnedComponent)
 		{
-			// TaggedActor°¡ IGameplayTagAssetInterface¸¦ »ó¼Ó ¹ÞÀ¸¸é, Tag °ü·Ã ±â´ÉÀ» Á¦°øÇÒ ¼ö ÀÖ´Ù.
-			// GetOwnedGameplayTags() ÇÔ¼ö´Â Á÷Á¢ ¿À¹ö¶óÀÌµù ÇØ¾ß ÇÑ´Ù.
+			// TaggedActorê°€ IGameplayTagAssetInterfaceë¥¼ ìƒì† ë°›ìœ¼ë©´, Tag ê´€ë ¨ ê¸°ëŠ¥ì„ ì œê³µí•  ìˆ˜ ìžˆë‹¤.
+			// GetOwnedGameplayTags() í•¨ìˆ˜ëŠ” ì§ì ‘ ì˜¤ë²„ë¼ì´ë”© í•´ì•¼ í•œë‹¤.
 			AActor* ChildActor = Entry.SpawnedComponent->GetChildActor();
 			if (IGameplayTagAssetInterface* TagInterface = Cast<IGameplayTagAssetInterface>(ChildActor))
 			{

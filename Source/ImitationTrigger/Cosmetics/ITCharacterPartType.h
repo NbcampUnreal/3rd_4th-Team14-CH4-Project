@@ -65,7 +65,7 @@ struct FITCharacterPartList : public FFastArraySerializer
 {
 	GENERATED_BODY()
 
-	// FFastArraySerializer °ü·Ã ÇÔ¼ö
+	// FFastArraySerializer ê´€ë ¨ í•¨ìˆ˜
 	void PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize);
 	void PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize);
 	void PostReplicatedChange(const TArrayView<int32> ChangedIndices, int32 FinalSize);

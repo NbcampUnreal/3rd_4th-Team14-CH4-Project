@@ -89,7 +89,7 @@ USceneComponent* UITCharacterPartComponent::GetSceneComponentToAttachTo() const
 	}
 }
 
-// CharacterPart°¡ º¯ÇßÀ» ¶§, ±× CharacterPart¿¡ ¸Â´Â SkeletonÀ» Ã£¾Æ Àû¿ëÇÑ´Ù.
+// CharacterPartê°€ ë³€í–ˆì„ ë•Œ, ê·¸ CharacterPartì— ë§ëŠ” Skeletonì„ ì°¾ì•„ ì ìš©í•œë‹¤.
 void UITCharacterPartComponent::BroadcastChanged()
 {
 	const bool bReinitPose = false;

@@ -58,14 +58,14 @@ void UITAbilitySystemComponent::ProcessAbilityInput(float DeltaTime, bool bGameP
 	AbilitiesToActivate.Reset();
 
 
-	// Å°¸¦ ´©¸£°í ÀÖÀ» ¶§ ¹ßµ¿ÇÏ´Â Ability Ã³¸®
-	// TODO: ¾ÆÁ÷ ±¸ÇöÇÏÁö ¾ÊÀ½. ÀÌ ±â´ÉÀÌ ÇÊ¿äÇÒ ¶§ ±¸ÇöÇÒ ¿¹Á¤ÀÔ´Ï´Ù.
+	// í‚¤ë¥¼ ëˆ„ë¥´ê³  ìˆì„ ë•Œ ë°œë™í•˜ëŠ” Ability ì²˜ë¦¬
+	// TODO: ì•„ì§ êµ¬í˜„í•˜ì§€ ì•ŠìŒ. ì´ ê¸°ëŠ¥ì´ í•„ìš”í•  ë•Œ êµ¬í˜„í•  ì˜ˆì •ì…ë‹ˆë‹¤.
 	for (const FGameplayAbilitySpecHandle& SpecHandle : InputHeldSpecHandles)
 	{
 
 	}
 
-	// Å°¸¦ ´­·¶À» ¶§ ¹ßµ¿ÇÏ´Â Ability Ã³¸®
+	// í‚¤ë¥¼ ëˆŒë €ì„ ë•Œ ë°œë™í•˜ëŠ” Ability ì²˜ë¦¬
 	for (const FGameplayAbilitySpecHandle& SpecHandle : InputPressedSpecHandles)
 	{
 		if (FGameplayAbilitySpec* AbilitySpec = FindAbilitySpecFromHandle(SpecHandle))
@@ -90,7 +90,7 @@ void UITAbilitySystemComponent::ProcessAbilityInput(float DeltaTime, bool bGameP
 		TryActivateAbility(AbilitySpecToActivate);
 	}
 
-	// Å°¸¦ ¶¼¾úÀ» ¶§ Ability Ã³¸®
+	// í‚¤ë¥¼ ë–¼ì—ˆì„ ë•Œ Ability ì²˜ë¦¬
 	for (const FGameplayAbilitySpecHandle& SpecHandle : InputReleasedSpecHandles)
 	{
 		if (FGameplayAbilitySpec* AbilitySpec = FindAbilitySpecFromHandle(SpecHandle))

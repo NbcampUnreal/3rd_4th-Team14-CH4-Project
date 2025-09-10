@@ -20,13 +20,13 @@ void UITCharacterPartComponent::InitCharacterPart(const UITPawnData* PawnData, T
 {
 	if (IsValid(PawnData))
 	{
+		BodyMeshes = PawnData->InitBodyMeshes;
+
 		TArray<FITCharacterPart> InCharacterParts = PawnData->InitCharacterParts;
 		for (FITCharacterPart& NewPart : InCharacterParts)
 		{
 			OutHandles.Add(AddCharacterPart(NewPart));
 		}
-
-		BodyMeshes = PawnData->InitBodyMeshes;
 	}
 }
 

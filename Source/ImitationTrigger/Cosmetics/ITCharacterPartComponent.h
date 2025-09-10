@@ -36,6 +36,9 @@ public:
 	UPROPERTY(Replicated, Transient)
 	FITCharacterPartList AppliedCharacterPartList;
 
-	UPROPERTY(EditAnywhere, Category = Cosmetics)
+	UPROPERTY(ReplicatedUsing = OnRep_BodyMeshes, Transient)
 	FITAnimBodyStyleSelectionSet BodyMeshes;
+
+	UFUNCTION()
+	void OnRep_BodyMeshes();
 };

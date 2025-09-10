@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GameplayTagContainer.h"
+#include "Net/Serialization/FastArraySerializer.h"
 #include "ITCharacterPartType.generated.h"
 
 class UITCharacterPartComponent;
@@ -45,24 +46,33 @@ struct FITCharacterPartHandle
 };
 
 USTRUCT()
-struct FITAppliedCharacterPartEntry
+struct FITAppliedCharacterPartEntry : public FFastArraySerializerItem
 {
 	GENERATED_BODY()
 
 	UPROPERTY()
 	FITCharacterPart Part;
 
-	UPROPERTY()
+	UPROPERTY(NotReplicated)
 	int32 PartHandle = INDEX_NONE;
 
-	UPROPERTY()
+	UPROPERTY(NotReplicated)
 	TObjectPtr<UChildActorComponent> SpawnedComponent = nullptr;
 };
 
 USTRUCT(BlueprintType)
-struct FITCharacterPartList
+struct FITCharacterPartList : public FFastArraySerializer
 {
 	GENERATED_BODY()
+
+	// FFastArraySerializer 관련 함수
+	void PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize);
+	void PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize);
+	void PostReplicatedChange(const TArrayView<int32> ChangedIndices, int32 FinalSize);
+	bool NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParms)
+	{
+		return FFastArraySerializer::FastArrayDeltaSerialize<FITAppliedCharacterPartEntry, FITCharacterPartList>(Entries, DeltaParms, *this);
+	}
 
 	FITCharacterPartList()
 	{
@@ -85,7 +95,7 @@ struct FITCharacterPartList
 	UPROPERTY()
 	TArray<FITAppliedCharacterPartEntry> Entries;
 
-	UPROPERTY()
+	UPROPERTY(NotReplicated)
 	TObjectPtr<UITCharacterPartComponent> OwnerComponent;
 
 	int32 PartHandleCounter = 0;
@@ -118,4 +128,10 @@ struct FITAnimBodyStyleSelectionSet
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UPhysicsAsset> ForcedPhysicsAsset = nullptr;
+};
+
+template<>
+struct TStructOpsTypeTraits<FITCharacterPartList> : public TStructOpsTypeTraitsBase2<FITCharacterPartList>
+{
+	enum { WithNetDeltaSerializer = true };
 };

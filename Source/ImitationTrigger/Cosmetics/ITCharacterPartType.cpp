@@ -2,6 +2,49 @@
 #include "Cosmetics/ITCharacterPartComponent.h"
 #include "GameplayTagAssetInterface.h"
 
+void FITCharacterPartList::PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize)
+{
+	bool bIsChanged = false;
+	for (int32 Index : RemovedIndices)
+	{
+		FITAppliedCharacterPartEntry& PartEntry = Entries[Index];
+		bIsChanged |= DestroyActorForEntry(PartEntry);
+	}
+	if (bIsChanged && IsValid(OwnerComponent))
+	{
+		OwnerComponent->BroadcastChanged();
+	}
+}
+
+void FITCharacterPartList::PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize)
+{
+	bool bIsChanged = false;
+	for (int32 Index : AddedIndices)
+	{
+		FITAppliedCharacterPartEntry& PartEntry = Entries[Index];
+		bIsChanged |= SpawnActorForEntry(PartEntry);
+	}
+	if (bIsChanged && IsValid(OwnerComponent))
+	{
+		OwnerComponent->BroadcastChanged();
+	}
+}
+
+void FITCharacterPartList::PostReplicatedChange(const TArrayView<int32> ChangedIndices, int32 FinalSize)
+{
+	bool bIsChanged = false;
+	for (int32 Index : ChangedIndices)
+	{
+		FITAppliedCharacterPartEntry& PartEntry = Entries[Index];
+		bIsChanged |= DestroyActorForEntry(PartEntry);
+		bIsChanged |= SpawnActorForEntry(PartEntry);
+	}
+	if (bIsChanged && IsValid(OwnerComponent))
+	{
+		OwnerComponent->BroadcastChanged();
+	}
+}
+
 FITCharacterPartHandle FITCharacterPartList::AddEntry(FITCharacterPart NewPart)
 {
 	FITCharacterPartHandle Result;
@@ -21,6 +64,7 @@ FITCharacterPartHandle FITCharacterPartList::AddEntry(FITCharacterPart NewPart)
 			{
 				OwnerComponent->BroadcastChanged();
 			}
+			MarkItemDirty(NewEntry);
 		}
 	}
 	return Result;
@@ -35,6 +79,7 @@ void FITCharacterPartList::RemoveEntry(FITCharacterPartHandle Handle)
 		{
 			bool DestroyResult = DestroyActorForEntry(Entry);
 			EntryIterator.RemoveCurrent();
+			MarkArrayDirty();
 
 			if (IsValid(OwnerComponent) && DestroyResult)
 			{
@@ -52,7 +97,8 @@ bool FITCharacterPartList::SpawnActorForEntry(FITAppliedCharacterPartEntry& Entr
 	if (IsValid(OwnerComponent))
 	{
 		AActor* OwnerActor = OwnerComponent->GetOwner();
-		if (IsValid(OwnerActor) && OwnerActor->HasAuthority())
+		bool bIsNotDedicatedServer = !OwnerComponent->IsNetMode(NM_DedicatedServer);
+		if (IsValid(OwnerActor) && bIsNotDedicatedServer)
 		{
 			if (Entry.Part.PartClass != nullptr)
 			{

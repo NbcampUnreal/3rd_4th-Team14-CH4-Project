@@ -15,6 +15,7 @@ void UITCharacterPartComponent::GetLifetimeReplicatedProps(TArray<FLifetimePrope
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ThisClass, AppliedCharacterPartList);
+	DOREPLIFETIME(ThisClass, BodyMeshes);
 }
 
 void UITCharacterPartComponent::InitCharacterPart(const UITPawnData* PawnData)
@@ -107,4 +108,9 @@ void UITCharacterPartComponent::BroadcastChanged()
 FGameplayTagContainer UITCharacterPartComponent::GetCombinedTags(FGameplayTag RequiredPrefix) const
 {
 	return FGameplayTagContainer();
+}
+
+void UITCharacterPartComponent::OnRep_BodyMeshes()
+{
+	BroadcastChanged();
 }

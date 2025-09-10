@@ -2,6 +2,7 @@
 
 
 #include "ITTestInventoryComponent.h"
+#include "ITTestItemActor.h"
 #include "ITTestItemData.h"
 #include "ITTestItemInstance.h"
 #include "Engine/ActorChannel.h"
@@ -111,11 +112,40 @@ void UITTestInventoryComponent::Server_AddItem_Implementation(UITTestItemData* I
 
 void UITTestInventoryComponent::Server_RemoveItem_Implementation(int32 SlotIndex)
 {
-	if (!InventoryItems.IsValidIndex(SlotIndex))
+	if (!InventoryItems.IsValidIndex(SlotIndex) || InventoryItems[SlotIndex] == nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("RemoveItem() return"));
 		return;
 	}
 
 	InventoryItems[SlotIndex] = nullptr;
+}
+
+void UITTestInventoryComponent::Server_DropItem_Implementation(int32 SlotIndex)
+{
+	if (!InventoryItems.IsValidIndex(SlotIndex) || InventoryItems[SlotIndex] == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("DropItem() return"));
+		return;
+	}
+
+	UITTestItemInstance* ItemToDrop = InventoryItems[SlotIndex];
+
+	if (GetOwner() && GetWorld())
+	{
+		FVector DropLocation = GetOwner()->GetActorLocation() + GetOwner()->GetActorUpVector() * 2000.0f;
+		FRotator DropRotation = FRotator::ZeroRotator;
+		FActorSpawnParameters SpawnParameters;
+		SpawnParameters.Owner = GetOwner();
+		SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+		AITTestItemActor* DroppedItemActor = GetWorld()->SpawnActor<AITTestItemActor>(
+			AITTestItemActor::StaticClass(), DropLocation, DropRotation, SpawnParameters);
+
+		if (DroppedItemActor)
+		{
+			DroppedItemActor->InitializeItem(ItemToDrop);
+			Server_RemoveItem(SlotIndex);
+		}
+	}
 }

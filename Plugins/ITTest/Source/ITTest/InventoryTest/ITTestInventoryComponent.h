@@ -28,6 +28,9 @@ public:
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Inventory")
 	void Server_RemoveItem(int32 SlotIndex);
 
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Inventory")
+	void Server_DropItem(int32 SlotIndex);
+
 	UPROPERTY(BlueprintAssignable, Category = "Inventory|Events")
 	FOnInventoryUpdated OnInventoryUpdated;
 

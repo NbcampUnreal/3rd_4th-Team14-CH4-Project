@@ -24,6 +24,11 @@ void UITTestItemInstance::InitItemInstance(UITTestItemData* InitItemData, int32 
 	Quantity = InitQuantity;
 }
 
+void UITTestItemInstance::OnRep_ItemData()
+{
+	OnItemInstanceUpdated.Broadcast();
+}
+
 void UITTestItemInstance::OnRep_Quantity()
 {
 	OnItemInstanceUpdated.Broadcast();

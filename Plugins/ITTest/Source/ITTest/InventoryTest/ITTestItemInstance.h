@@ -24,13 +24,16 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Item|Events")
 	FOnItemInstanceUpdated OnItemInstanceUpdated;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "Item")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, ReplicatedUsing = OnRep_ItemData, Category = "Item")
 	TObjectPtr<UITTestItemData> ItemData;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, ReplicatedUsing = OnRep_Quantity, Category = "Item")
 	int32 Quantity;
 
 protected:
+	UFUNCTION()
+	void OnRep_ItemData();
+
 	UFUNCTION()
 	void OnRep_Quantity();
 };

@@ -1,6 +1,5 @@
 #include "Cosmetics/ITCharacterPartComponent.h"
 #include "GameFramework/Character.h"
-#include "Character/ITPawnData.h"
 #include "Character/ITCharacter.h"
 #include "Net/UnrealNetwork.h"
 
@@ -15,24 +14,27 @@ void UITCharacterPartComponent::GetLifetimeReplicatedProps(TArray<FLifetimePrope
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ThisClass, AppliedCharacterPartList);
-	DOREPLIFETIME(ThisClass, BodyMeshes);
 }
 
-void UITCharacterPartComponent::InitCharacterPart(const UITPawnData* PawnData)
+void UITCharacterPartComponent::SetBodyMeshes(const FITAnimBodyStyleSelectionSet InBodyMeshes)
 {
 	AITCharacter* ITCharacter = GetOwner<AITCharacter>();
 	if (IsValid(ITCharacter))
 	{
-		if (IsValid(PawnData))
-		{
-			TArray<FITCharacterPartHandle>& OutHandles = ITCharacter->GetCharacterPartHandles();
-			BodyMeshes = PawnData->InitBodyMeshes;
+		BodyMeshes = InBodyMeshes;
+		BroadcastChanged();
+	}
+}
 
-			TArray<FITCharacterPart> InCharacterParts = PawnData->InitCharacterParts;
-			for (FITCharacterPart& NewPart : InCharacterParts)
-			{
-				OutHandles.Add(AddCharacterPart(NewPart));
-			}
+void UITCharacterPartComponent::AddInitCharacterParts(const TArray<FITCharacterPart>& InitCharacterParts)
+{
+	AITCharacter* ITCharacter = GetOwner<AITCharacter>();
+	if (IsValid(ITCharacter))
+	{
+		TArray<FITCharacterPartHandle>& OutHandles = ITCharacter->GetCharacterPartHandles();
+		for (const FITCharacterPart& NewPart : InitCharacterParts)
+		{
+			OutHandles.Add(AddCharacterPart(NewPart));
 		}
 	}
 }
@@ -110,7 +112,3 @@ FGameplayTagContainer UITCharacterPartComponent::GetCombinedTags(FGameplayTag Re
 	return FGameplayTagContainer();
 }
 
-void UITCharacterPartComponent::OnRep_BodyMeshes()
-{
-	BroadcastChanged();
-}

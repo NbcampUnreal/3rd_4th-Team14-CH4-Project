@@ -9,6 +9,7 @@ class AITPlayerController;
 class AITPlayerState;
 class UITPawnData;
 class UITHeroComponent;
+class UITCharacterPartComponent;
 
 UCLASS()
 class IMITATIONTRIGGER_API AITCharacter : public ACharacter, public IAbilitySystemInterface
@@ -32,23 +33,25 @@ public:
 	virtual void BeginPlay() override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
 	virtual void PossessedBy(AController* NewController) override;
 
 	const UITPawnData* GetPawnData() const { return PawnData; }
 	TArray<FITCharacterPartHandle>& GetCharacterPartHandles() { return CharacterPartHandles; }
 
 protected:
-	UPROPERTY(EditDefaultsOnly, ReplicatedUsing = OnRep_PawnData, Category = "PawnData")
+	UPROPERTY(EditDefaultsOnly, Replicated, Category = "PawnData")
 	TObjectPtr<const UITPawnData> PawnData;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Lyra|Character")
 	TObjectPtr<UITHeroComponent> HeroComponent;
 
+	UITCharacterPartComponent* GetITCharacterPartComponent();
+
+	virtual void OnRep_Owner() override;
+
 private:
-	UFUNCTION()
-	void OnRep_PawnData();
-
-
 	TArray<FITCharacterPartHandle> CharacterPartHandles;
+
+	void AddInitCharacterPartsAtServer();
+	void SetBodyMeshes();
 };

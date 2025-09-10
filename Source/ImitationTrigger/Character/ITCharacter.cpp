@@ -60,24 +60,50 @@ void AITCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(ThisClass, PawnData);
+	DOREPLIFETIME_CONDITION(ThisClass, PawnData, COND_InitialOnly);
 }
 
 void AITCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
+	SetBodyMeshes();
+	AddInitCharacterPartsAtServer();
+}
+
+UITCharacterPartComponent* AITCharacter::GetITCharacterPartComponent()
+{
 	UActorComponent* FindComponent = GetComponentByClass(UITCharacterPartComponent::StaticClass());
 	UITCharacterPartComponent* PartComponent = Cast<UITCharacterPartComponent>(FindComponent);
-	if (IsValid(FindComponent))
+	return PartComponent;
+}
+
+void AITCharacter::OnRep_Owner()
+{
+	Super::OnRep_Owner();
+	SetBodyMeshes();
+}
+
+void AITCharacter::AddInitCharacterPartsAtServer()
+{
+	UITCharacterPartComponent* PartComponent = GetITCharacterPartComponent();
+	if (IsValid(PartComponent))
 	{
 		if (IsValid(PawnData))
 		{
-			PartComponent->InitCharacterPart(PawnData);
+			PartComponent->AddInitCharacterParts(PawnData->InitCharacterParts);
 		}
 	}
 }
 
-void AITCharacter::OnRep_PawnData()
+void AITCharacter::SetBodyMeshes()
 {
+	UITCharacterPartComponent* PartComponent = GetITCharacterPartComponent();
+	if (IsValid(PartComponent))
+	{
+		if (IsValid(PawnData))
+		{
+			PartComponent->SetBodyMeshes(PawnData->InitBodyMeshes);
+		}
+	}
 }

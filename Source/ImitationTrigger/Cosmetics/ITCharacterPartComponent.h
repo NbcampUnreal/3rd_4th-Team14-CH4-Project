@@ -18,7 +18,9 @@ public:
 	UITCharacterPartComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	void InitCharacterPart(const UITPawnData* PawnData);
+	void SetBodyMeshes(const FITAnimBodyStyleSelectionSet InBodyMeshes);
+
+	void AddInitCharacterParts(const TArray<FITCharacterPart>& InitCharacterParts);
 	void ClearCharacterParts();
 
 	FITCharacterPartHandle AddCharacterPart(const FITCharacterPart& NewPart);
@@ -36,9 +38,5 @@ public:
 	UPROPERTY(Replicated, Transient)
 	FITCharacterPartList AppliedCharacterPartList;
 
-	UPROPERTY(ReplicatedUsing = OnRep_BodyMeshes, Transient)
 	FITAnimBodyStyleSelectionSet BodyMeshes;
-
-	UFUNCTION()
-	void OnRep_BodyMeshes();
 };

@@ -10,4 +10,18 @@ UCLASS()
 class ITTEST_API UITTestItemData : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item")
+	FText ItemName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item")
+	TSoftObjectPtr<UTexture2D> ItemIcon;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item")
+	bool bIsStackable = false;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item",
+		meta = (EditCondition = bIsStackable), meta = (ClampMin = 1))
+	int32 MaxStackSize = 1;
 };

@@ -36,6 +36,7 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 
 	const UITPawnData* GetPawnData() const { return PawnData; }
+	TArray<FITCharacterPartHandle>& GetCharacterPartHandles() { return CharacterPartHandles; }
 
 protected:
 	UPROPERTY(EditDefaultsOnly, ReplicatedUsing = OnRep_PawnData, Category = "PawnData")

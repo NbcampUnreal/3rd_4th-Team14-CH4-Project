@@ -1,6 +1,7 @@
 #include "Cosmetics/ITCharacterPartComponent.h"
 #include "GameFramework/Character.h"
 #include "Character/ITPawnData.h"
+#include "Character/ITCharacter.h"
 #include "Net/UnrealNetwork.h"
 
 UITCharacterPartComponent::UITCharacterPartComponent(const FObjectInitializer& ObjectInitialize)
@@ -16,17 +17,36 @@ void UITCharacterPartComponent::GetLifetimeReplicatedProps(TArray<FLifetimePrope
 	DOREPLIFETIME(ThisClass, AppliedCharacterPartList);
 }
 
-void UITCharacterPartComponent::InitCharacterPart(const UITPawnData* PawnData, TArray<FITCharacterPartHandle>& OutHandles)
+void UITCharacterPartComponent::InitCharacterPart(const UITPawnData* PawnData)
 {
-	if (IsValid(PawnData))
+	AITCharacter* ITCharacter = GetOwner<AITCharacter>();
+	if (IsValid(ITCharacter))
 	{
-		BodyMeshes = PawnData->InitBodyMeshes;
-
-		TArray<FITCharacterPart> InCharacterParts = PawnData->InitCharacterParts;
-		for (FITCharacterPart& NewPart : InCharacterParts)
+		if (IsValid(PawnData))
 		{
-			OutHandles.Add(AddCharacterPart(NewPart));
+			TArray<FITCharacterPartHandle>& OutHandles = ITCharacter->GetCharacterPartHandles();
+			BodyMeshes = PawnData->InitBodyMeshes;
+
+			TArray<FITCharacterPart> InCharacterParts = PawnData->InitCharacterParts;
+			for (FITCharacterPart& NewPart : InCharacterParts)
+			{
+				OutHandles.Add(AddCharacterPart(NewPart));
+			}
 		}
+	}
+}
+
+void UITCharacterPartComponent::ClearCharacterParts()
+{
+	AITCharacter* ITCharacter = GetOwner<AITCharacter>();
+	if (IsValid(ITCharacter))
+	{
+		TArray<FITCharacterPartHandle>& OutHandles = ITCharacter->GetCharacterPartHandles();
+		for (const FITCharacterPartHandle& PartHandle : OutHandles)
+		{
+			RemoveCharacterPart(PartHandle);
+		}
+		OutHandles.Reset();
 	}
 }
 

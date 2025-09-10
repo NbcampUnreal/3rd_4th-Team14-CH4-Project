@@ -73,7 +73,7 @@ void AITCharacter::PossessedBy(AController* NewController)
 	{
 		if (IsValid(PawnData))
 		{
-			PartComponent->InitCharacterPart(PawnData, CharacterPartHandles);
+			PartComponent->InitCharacterPart(PawnData);
 		}
 	}
 }

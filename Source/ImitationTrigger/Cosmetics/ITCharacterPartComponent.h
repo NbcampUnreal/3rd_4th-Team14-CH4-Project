@@ -18,10 +18,12 @@ public:
 	UITCharacterPartComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	void InitCharacterPart(const UITPawnData* PawnData, TArray<FITCharacterPartHandle>& OutHandles);
+	void InitCharacterPart(const UITPawnData* PawnData);
+	void ClearCharacterParts();
 
 	FITCharacterPartHandle AddCharacterPart(const FITCharacterPart& NewPart);
 	void RemoveCharacterPart(FITCharacterPartHandle Handle);
+	
 
 	USkeletalMeshComponent* GetParentMeshComponent() const;
 	USceneComponent* GetSceneComponentToAttachTo() const;

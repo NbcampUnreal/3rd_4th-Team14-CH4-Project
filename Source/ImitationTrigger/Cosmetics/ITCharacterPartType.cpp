@@ -62,7 +62,7 @@ bool FITCharacterPartList::SpawnActorForEntry(FITAppliedCharacterPartEntry& Entr
 
 					AActor* PartOuter = OwnerComponent->GetOwner();
 					UChildActorComponent* PartComponent = NewObject<UChildActorComponent>(PartOuter);
-					PartComponent->SetupAttachment(ComponentToAttachTo);
+					PartComponent->SetupAttachment(ComponentToAttachTo, Entry.Part.SocketName);
 					PartComponent->SetChildActorClass(Entry.Part.PartClass);
 					PartComponent->RegisterComponent();
 

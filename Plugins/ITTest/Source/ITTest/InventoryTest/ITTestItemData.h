@@ -24,4 +24,14 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item",
 		meta = (EditCondition = bIsStackable), meta = (ClampMin = 1))
 	int32 MaxStackSize = 1;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item")
+	TSoftObjectPtr<UStaticMesh> ItemMesh;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item")
+	TArray<TSoftObjectPtr<UMaterialInterface>> ItemMaterial;
+
+#if WITH_EDITOR
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
 };

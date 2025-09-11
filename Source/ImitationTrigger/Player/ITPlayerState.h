@@ -29,6 +29,11 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 
+protected:
+	//UPROPERTY()
+	//TObjectPtr<>
+
+
 private:
 	UPROPERTY(VisibleAnywhere, Category = "ITPlayerState|AbilitySystemComponent")
 	TObjectPtr<UITAbilitySystemComponent> AbilitySystemComponent;

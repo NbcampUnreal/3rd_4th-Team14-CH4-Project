@@ -75,7 +75,7 @@ private:
 	FGameplayAttributeData MaxShield;
 
 	// 헤드샷 피해량 저항. 이 값은 헬멧에 의해 바뀔 수 있다.
-	UPROPERTY(BlueprintReadOnly, Category = "Attributes|Health", Meta = (AllowPrivateAccess = true))
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = "Attributes|Health", Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData HeadshotResistances;
 
 	// Meta Attribute, 받은 체력 회복량

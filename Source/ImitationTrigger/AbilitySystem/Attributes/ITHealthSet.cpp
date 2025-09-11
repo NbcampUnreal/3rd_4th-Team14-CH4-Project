@@ -4,6 +4,15 @@
 
 UITHealthSet::UITHealthSet()
 {
+	InitHealth(0.0f);
+	InitMaxHealth(0.0f);
+	InitShield(0.0f);
+	InitMaxShield(0.0f);
+	InitHeadshotResistances(0.0f);
+	InitGainHealth(0.0f);
+	InitGainShield(0.0f);
+	InitGainDamage(0.0f);
+	InitGainHeadshotDamage(0.0f);
 }
 
 void UITHealthSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

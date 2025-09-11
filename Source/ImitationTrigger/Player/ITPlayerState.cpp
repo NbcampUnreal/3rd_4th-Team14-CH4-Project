@@ -3,7 +3,9 @@
 #include "Character/ITCharacter.h"
 #include "Character/ITPawnData.h"
 #include "AbilitySystem/Attributes/ITHealthSet.h"
+#include "AbilitySystem/Attributes/ITAttributeTableRow.h"
 #include "AbilitySystem/ITAbilitySystemComponent.h"
+
 
 AITPlayerState::AITPlayerState(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -51,6 +53,18 @@ void AITPlayerState::OnReadyPawnData(APlayerState* Player, APawn* NewPawn, APawn
 			for (const UITAbilitySet* AbilitySet : PawnData->AbilitySets)
 			{
 				AbilitySet->GiveToAbilitySystem(AbilitySystemComponent, &GrantedHandles);
+			}
+
+			FString ContextString(TEXT("OnReadyPawnDataContext"));
+			TArray<FITAttributeTableRow*> InitRows;
+			PawnData->InitDataTable->GetAllRows(ContextString, InitRows);
+
+			for (const FITAttributeTableRow* Row : InitRows)
+			{
+				if (Row)
+				{
+					AbilitySystemComponent->SetNumericAttributeBase(Row->Attribute, Row->InitValue);
+				}
 			}
 		}
 	}

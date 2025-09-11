@@ -8,6 +8,7 @@
 class AITPlayerController;
 class AITCharacter;
 class UITAbilitySystemComponent;
+class UITHealthSet;
 
 UCLASS()
 class IMITATIONTRIGGER_API AITPlayerState : public APlayerState, public IAbilitySystemInterface
@@ -30,9 +31,8 @@ public:
 
 
 protected:
-	//UPROPERTY()
-	//TObjectPtr<>
-
+	UPROPERTY()
+	TObjectPtr<const UITHealthSet> HealthSet;
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "ITPlayerState|AbilitySystemComponent")

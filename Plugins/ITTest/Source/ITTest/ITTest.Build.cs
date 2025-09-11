@@ -39,7 +39,8 @@ public class ITTest : ModuleRules
 				"CoreUObject",
 				"Engine",
 				"Slate",
-				"SlateCore",
+				"SlateCore", 
+				"EnhancedInput",
 				// ... add private dependencies that you statically link with here ...	
 				
 				// Gameplay

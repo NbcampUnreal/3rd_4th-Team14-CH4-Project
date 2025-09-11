@@ -36,6 +36,6 @@ public:
 	FITAnimBodyStyleSelectionSet InitBodyMeshes;
 
 	// Pawn 또는 Character에 적용할 기본 카메라 모드
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "PawnData|Camera")
-	TSubclassOf<UITCameraMode> DefaultCameraMode;
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "PawnData|Camera")
+	//TSubclassOf<UITCameraMode> DefaultCameraMode;
 };

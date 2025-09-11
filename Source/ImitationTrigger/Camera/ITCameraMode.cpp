@@ -1,2 +1,0 @@
-#include "Camera/ITCameraMode.h"
-

@@ -47,8 +47,6 @@ protected:
 
 	UITCharacterPartComponent* GetITCharacterPartComponent();
 
-	virtual void OnRep_Owner() override;
-
 private:
 	TArray<FITCharacterPartHandle> CharacterPartHandles;
 

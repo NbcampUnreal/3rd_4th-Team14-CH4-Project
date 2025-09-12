@@ -4,38 +4,16 @@
 
 AITTestPawnDataCharacter::AITTestPawnDataCharacter()
 {
-	ASC = CreateDefaultSubobject<UITAbilitySystemComponent>("ASC");
 }
 
 void AITTestPawnDataCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	AActor* ComponentOwner = this;
-	AActor* Avatar = this;
-	ASC->InitAbilityActorInfo(ComponentOwner, Avatar);
-
-	if (IsValid(PawnData))
-	{
-		for (const UITAbilitySet* AbilitySet : PawnData->AbilitySets)
-		{
-			AbilitySet->GiveToAbilitySystem(ASC, &GrantedHandles);
-		}
-	}
-}
-
-UAbilitySystemComponent* AITTestPawnDataCharacter::GetAbilitySystemComponent() const
-{
-	return ASC;
-}
-
-UITAbilitySystemComponent* AITTestPawnDataCharacter::GetITAbilitySystemComponent() const
-{
-	return Cast<UITAbilitySystemComponent>(ASC);
 }
 
 void AITTestPawnDataCharacter::OnDebugKeySkill(TSubclassOf<UGameplayAbility> AbilityClass)
 {
+	UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
 	check(ASC);
 
 	FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromClass(AbilityClass);
@@ -47,5 +25,5 @@ void AITTestPawnDataCharacter::OnDebugKeySkill(TSubclassOf<UGameplayAbility> Abi
 
 void AITTestPawnDataCharacter::OnDebugKeyX()
 {
-	GrantedHandles.TakeFromAbilitySystem(ASC);
+	// Ability의 제거는 PlayerState에서 처리해야 함
 }

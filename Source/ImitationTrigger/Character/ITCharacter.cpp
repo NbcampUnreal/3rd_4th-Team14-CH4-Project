@@ -1,6 +1,9 @@
 #include "Character/ITCharacter.h"
 #include "Character/ITHeroComponent.h"
 #include "Character/ITPawnData.h"
+#include "Player/ITPlayerState.h"
+#include "Player/ITPlayerController.h"
+#include "AbilitySystem/ITAbilitySystemComponent.h"
 #include "Net/UnrealNetwork.h"
 
 AITCharacter::AITCharacter()
@@ -8,6 +11,33 @@ AITCharacter::AITCharacter()
 	PrimaryActorTick.bCanEverTick = false;
 
 	HeroComponent = CreateDefaultSubobject<UITHeroComponent>(TEXT("HeroComponent"));
+}
+
+
+AITPlayerController* AITCharacter::GetITPlayerController() const
+{
+	return GetController<AITPlayerController>();
+}
+
+
+AITPlayerState* AITCharacter::GetITPlayerState() const
+{
+	return GetPlayerState<AITPlayerState>();
+}
+
+UITAbilitySystemComponent* AITCharacter::GetITAbilitySystemComponent() const
+{
+	return Cast<UITAbilitySystemComponent>(GetAbilitySystemComponent());
+}
+
+UAbilitySystemComponent* AITCharacter::GetAbilitySystemComponent() const
+{
+	AITPlayerState* ITPlayerState = GetITPlayerState();
+	if (IsValid(ITPlayerState))
+	{
+		return ITPlayerState->GetAbilitySystemComponent();
+	}
+	return nullptr;
 }
 
 void AITCharacter::BeginPlay()

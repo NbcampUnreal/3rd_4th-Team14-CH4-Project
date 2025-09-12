@@ -27,6 +27,7 @@ public class ITTest : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
+				"ImitationTrigger",
 			}
 			);
 			
@@ -39,10 +40,12 @@ public class ITTest : ModuleRules
 				"Slate",
 				"SlateCore", 
 				"EnhancedInput",
-				"GameplayAbilities",
-				"GameplayTasks",
-				"GameplayTags"
 				// ... add private dependencies that you statically link with here ...	
+				
+				// Gameplay
+				"GameplayTags",
+				"GameplayTasks",
+				"GameplayAbilities",
 			}
 			);
 		

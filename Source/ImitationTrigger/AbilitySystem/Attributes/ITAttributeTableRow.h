@@ -12,5 +12,8 @@ struct FITAttributeTableRow : public FTableRowBase
 	FGameplayAttribute Attribute;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttribute CurrentAttribute;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attribute")
 	float InitValue = 0.0f;
 };

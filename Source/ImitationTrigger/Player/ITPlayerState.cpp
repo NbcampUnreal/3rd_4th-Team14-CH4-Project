@@ -61,9 +61,14 @@ void AITPlayerState::OnReadyPawnData(APlayerState* Player, APawn* NewPawn, APawn
 
 			for (const FITAttributeTableRow* Row : InitRows)
 			{
-				if (Row)
+				if (Row && Row->Attribute.IsValid())
 				{
 					AbilitySystemComponent->SetNumericAttributeBase(Row->Attribute, Row->InitValue);
+
+					if (Row->CurrentAttribute.IsValid())
+					{
+						AbilitySystemComponent->SetNumericAttributeBase(Row->CurrentAttribute, Row->InitValue);
+					}
 				}
 			}
 		}

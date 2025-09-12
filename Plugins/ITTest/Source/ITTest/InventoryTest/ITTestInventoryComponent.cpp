@@ -2,9 +2,13 @@
 
 
 #include "ITTestInventoryComponent.h"
+
+#include "AbilitySystemComponent.h"
 #include "ITTestItemActor.h"
 #include "ITTestItemData.h"
+#include "ITTestItemData_Usable.h"
 #include "ITTestItemInstance.h"
+#include "Abilities/GameplayAbility.h"
 #include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
 
@@ -148,4 +152,71 @@ void UITTestInventoryComponent::Server_DropItem_Implementation(int32 SlotIndex)
 			Server_RemoveItem(SlotIndex);
 		}
 	}
+}
+
+void UITTestInventoryComponent::Server_UseItem_Implementation(UITTestItemInstance* ItemInstance)
+{
+	if (!ItemInstance || !ItemInstance->ItemData || !InventoryItems.Contains(ItemInstance))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UseItem() return1"));
+		return;
+	}
+
+	const UITTestItemData_Usable* UsableItemData = Cast<UITTestItemData_Usable>(ItemInstance->ItemData);
+	if (!UsableItemData || !UsableItemData->ItemAbility)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UseItem() return2"));
+		return;
+	}
+
+	UAbilitySystemComponent* ASC = GetOwner()->FindComponentByClass<UAbilitySystemComponent>();
+	if (!ASC)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UseItem() return3"));
+		return;
+	}
+
+	FGameplayAbilitySpec Spec(UsableItemData->ItemAbility);
+	Spec.SourceObject = ItemInstance;
+
+	ASC->GiveAbilityAndActivateOnce(Spec);
+}
+
+void UITTestInventoryComponent::Server_ConsumeItem_Implementation(UITTestItemInstance* ItemInstance, int Quantity)
+{
+	if (!ItemInstance || !InventoryItems.Contains(ItemInstance))
+	{
+		return;
+	}
+
+	int32 ItemIndex;
+	InventoryItems.Find(ItemInstance, ItemIndex);
+	
+	if (ItemInstance->ItemData->bIsStackable)
+	{
+		ItemInstance->Quantity -= Quantity;
+		if (ItemInstance->Quantity <= 0)
+		{
+			InventoryItems[ItemIndex] = nullptr;
+		}
+	}
+	else
+	{
+		InventoryItems[ItemIndex] = nullptr;
+	}
+
+	OnRep_InventoryItems();
+}
+
+void UITTestInventoryComponent::Server_TestUseItem_Implementation(int32 SlotIndex)
+{
+	if (!InventoryItems.IsValidIndex(SlotIndex) && InventoryItems[SlotIndex] != nullptr)
+	{
+		return;
+	}
+	UE_LOG(LogTemp, Warning, TEXT("TestItem1"));
+	
+	UITTestItemInstance* ItemToUse = InventoryItems[SlotIndex];
+
+	Server_UseItem(ItemToUse);
 }

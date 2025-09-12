@@ -31,6 +31,16 @@ public:
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Inventory")
 	void Server_DropItem(int32 SlotIndex);
 
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Inventory")
+	void Server_UseItem(UITTestItemInstance* ItemInstance);
+	
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Inventory")
+	void Server_ConsumeItem(UITTestItemInstance* ItemInstance, int Quantity = 1);
+
+	// TODO: Prototyping 함수, 퀵 슬롯 제작 후 이전
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Inventory")
+	void Server_TestUseItem(int32 SlotIndex);
+
 	UPROPERTY(BlueprintAssignable, Category = "Inventory|Events")
 	FOnInventoryUpdated OnInventoryUpdated;
 

@@ -25,7 +25,7 @@
     },
     {
       "Name": "VisualStudioTools",
-      "Enabled": false,
+      "Enabled": true,
       "SupportedTargetPlatforms": [
         "Win64"
       ]

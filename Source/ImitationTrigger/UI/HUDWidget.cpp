@@ -3,6 +3,7 @@
 
 #include "UI/HUDWidget.h"
 
+#include "PlayerBar/PlayerBarWidget.h"
 #include "UltimateGauge/UltimateGaugeWidget.h"
 
 void UHUDWidget::NativeConstruct()
@@ -27,4 +28,14 @@ void UHUDWidget::UpdateUltimateGauge(float UltimateGauge)
 void UHUDWidget::UseUltimateGauge()
 {
 	UltimateGaugeWidget->UseUltimate();
+}
+
+void UHUDWidget::UpdateHealth(float CurrentHealth, float MaxHealth)
+{
+	LocalPlayerBar->UpdateHealthBar(CurrentHealth,MaxHealth);
+}
+
+void UHUDWidget::UpdateShield(float CurrentShield, float MaxShield)
+{
+	LocalPlayerBar->UpdateShieldBar(CurrentShield,MaxShield);
 }

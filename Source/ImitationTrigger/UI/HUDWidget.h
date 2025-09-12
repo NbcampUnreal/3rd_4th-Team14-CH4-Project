@@ -27,6 +27,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void UseUltimateGauge();
+
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void UpdateHealth(float CurrentHealth, float MaxHealth);
+
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void UpdateShield(float CurrentShield, float MaxShield);
 	
 protected:
 	
@@ -35,9 +41,9 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	UUltimateGaugeWidget* UltimateGaugeWidget;
 
-	// UPROPERTY(meta = (BindWidget))
-	// UPlayerBarWidget* LocalPlayerBar;
-	//
+	 UPROPERTY(meta = (BindWidget))
+	 UPlayerBarWidget* LocalPlayerBar;
+	
 	// UPROPERTY(meta = (BindWidget))
 	// UPlayerBarWidget* TeamPlayer1Bar;
 	//

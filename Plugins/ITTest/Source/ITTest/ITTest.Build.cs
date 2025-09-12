@@ -10,14 +10,14 @@ public class ITTest : ModuleRules
 		
 		PublicIncludePaths.AddRange(
 			new string[] {
-				// ... add public include paths required here ...
+				
 			}
 			);
 				
 		
 		PrivateIncludePaths.AddRange(
 			new string[] {
-				// ... add other private include paths required here ...
+				
 			}
 			);
 			
@@ -25,9 +25,14 @@ public class ITTest : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core",
-				// ... add other public dependencies that you statically link with here ...
-			}
+                "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput",
+				"UMG",
+				"Slate",
+				"SlateCore",
+				"OnlineSubsystem",
+				"Networking",
+				"Sockets"
+            }
 			);
 			
 		
@@ -38,6 +43,9 @@ public class ITTest : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
+                "InputCore",
+				"ApplicationCore",
+                "OnlineSubsystemSteam"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

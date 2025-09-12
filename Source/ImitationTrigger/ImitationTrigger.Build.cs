@@ -14,19 +14,19 @@ public class ImitationTrigger : ModuleRules
 
 		PublicDependencyModuleNames.AddRange(new string[] {
 			// Base
-			"Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput"
-
+			"Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput",
+            "UMG",           
+			"Slate",         
+			"SlateCore",     
+			"OnlineSubsystem",
+            "Networking",
+            "Sockets"
 			// ...
 		});
 
-		PrivateDependencyModuleNames.AddRange(new string[] {  });
+		PrivateDependencyModuleNames.AddRange(new string[] { 
+			"InputCore",
+            "ApplicationCore" });
 
-		// Uncomment if you are using Slate UI
-		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
-		
-		// Uncomment if you are using online features
-		// PrivateDependencyModuleNames.Add("OnlineSubsystem");
-
-		// To include OnlineSubsystemSteam, add it to the plugins section in your uproject file with the Enabled attribute set to true
 	}
 }

@@ -25,5 +25,5 @@ void AITTestPawnDataCharacter::OnDebugKeySkill(TSubclassOf<UGameplayAbility> Abi
 
 void AITTestPawnDataCharacter::OnDebugKeyX()
 {
-	// AbilityÀÇ Á¦°Å´Â PlayerState¿¡¼­ Ã³¸®ÇØ¾ß ÇÔ
+	// Abilityì˜ ì œê±°ëŠ” PlayerStateì—ì„œ ì²˜ë¦¬í•´ì•¼ í•¨
 }

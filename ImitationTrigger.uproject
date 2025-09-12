@@ -10,8 +10,7 @@
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
 				"Engine",
-				"EnhancedInput",
-				"CoreUObject"
+				"EnhancedInput"
 			]
 		}
 	],

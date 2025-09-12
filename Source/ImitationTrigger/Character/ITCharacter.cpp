@@ -44,7 +44,6 @@ UAbilitySystemComponent* AITCharacter::GetAbilitySystemComponent() const
 void AITCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
 	SetBodyMeshes();
 }
 

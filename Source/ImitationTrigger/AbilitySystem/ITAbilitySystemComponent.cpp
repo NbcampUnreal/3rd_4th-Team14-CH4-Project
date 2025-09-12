@@ -57,7 +57,6 @@ void UITAbilitySystemComponent::ProcessAbilityInput(float DeltaTime, bool bGameP
 
 	AbilitiesToActivate.Reset();
 
-
 	// 키를 누르고 있을 때 발동하는 Ability 처리
 	// TODO: 아직 구현하지 않음. 이 기능이 필요할 때 구현할 예정입니다.
 	for (const FGameplayAbilitySpecHandle& SpecHandle : InputHeldSpecHandles)

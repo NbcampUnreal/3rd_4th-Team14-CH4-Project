@@ -11,7 +11,7 @@ struct FInputActionValue;
  * Pawn 또는 Character의 입력과 카메라 관련 기능을 담당하는 Component
  * ULyraHeroComponent을 참고하여 구현함.
  */
-UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
+UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class IMITATIONTRIGGER_API UITHeroComponent : public UActorComponent
 {
 	GENERATED_BODY()

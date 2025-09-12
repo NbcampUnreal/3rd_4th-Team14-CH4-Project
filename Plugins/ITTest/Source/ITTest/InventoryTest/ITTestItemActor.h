@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "ITTestItemActor.generated.h"
 
+class UITTestItemData;
 class UITTestItemInstance;
 class USphereComponent;
 
@@ -42,4 +43,10 @@ protected:
 
 	UPROPERTY(ReplicatedUsing = OnRep_ItemInstance)
 	TObjectPtr<UITTestItemInstance> ItemInstance;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "IT|Placed")
+	TObjectPtr<UITTestItemData> PlacedItemData;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "IT|Placed")
+	int32 PlacedItemQuantity = 1;
 };

@@ -41,6 +41,14 @@ void AITTestItemActor::BeginPlay()
 
 	if (HasAuthority())
 	{
+		if (ItemInstance == nullptr && PlacedItemData != nullptr)
+		{
+			UITTestItemInstance* NewItemInstance = NewObject<UITTestItemInstance>(this);
+			NewItemInstance->InitItemInstance(PlacedItemData, PlacedItemQuantity);
+
+			InitializeItem(NewItemInstance);
+		}
+
 		SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &AITTestItemActor::OnSphereOverlap);
 	}
 }
@@ -91,8 +99,6 @@ void AITTestItemActor::UpdateAppearance()
 {
 	if (ItemInstance && ItemInstance->ItemData)
 	{
-		FString MeshPath = ItemInstance->ItemData->ItemMesh.ToString();
-
 		if (ItemInstance->ItemData->ItemMesh.IsNull())
 		{
 			return;

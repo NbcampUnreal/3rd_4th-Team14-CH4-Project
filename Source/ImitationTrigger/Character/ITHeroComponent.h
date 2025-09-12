@@ -6,6 +6,7 @@
 
 class AITCharacter;
 struct FInputActionValue;
+class UITCameraMode;
 
 /**
  * Pawn 또는 Character의 입력과 카메라 관련 기능을 담당하는 Component
@@ -19,6 +20,14 @@ class IMITATIONTRIGGER_API UITHeroComponent : public UActorComponent
 public:
 	UITHeroComponent(const FObjectInitializer& ObjectInitializer);
 	void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent);
+
+	// UITCameraMode를 결정해주는 함수.
+	TSubclassOf<UITCameraMode> DetermineCameraMode() const;
+	// Camera에서 필요한 DetermineCameraMode해당 함수를 실행하기 만든 Get함수.
+	/*AITCharacter* GetOwnerCharacter();*/ // 아래 존재
+	const AITCharacter* GetOwnerCharacter() const;
+	void TryBindCameraMode();
+
 
 protected:
 	virtual void BeginPlay() override;
@@ -35,4 +44,6 @@ protected:
 
 private:
 	FORCEINLINE AITCharacter* GetOwnerCharacter();
+
+
 };

@@ -7,6 +7,7 @@
 class AITPlayerController;
 class AITPlayerState;
 class UITPawnData;
+class UITCameraComponent;
 class UITHeroComponent;
 
 UCLASS()
@@ -37,6 +38,9 @@ public:
 protected:
 	UPROPERTY(EditDefaultsOnly, ReplicatedUsing = OnRep_PawnData, Category = "PawnData")
 	TObjectPtr<const UITPawnData> PawnData;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "IT|Character")
+	TObjectPtr<UITCameraComponent> CameraComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Lyra|Character")
 	TObjectPtr<UITHeroComponent> HeroComponent;

@@ -8,7 +8,7 @@
 
 class UCurveVector;
 
-UCLASS()
+UCLASS(Abstract, Blueprintable)
 class IMITATIONTRIGGER_API UITCameraMode_ThirdPerson : public UITCameraMode
 {
 	GENERATED_BODY()

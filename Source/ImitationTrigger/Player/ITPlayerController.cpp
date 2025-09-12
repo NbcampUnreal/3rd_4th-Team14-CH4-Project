@@ -1,11 +1,13 @@
 #include "Player/ITPlayerController.h"
 #include "Player/ITPlayerState.h"
 #include "AbilitySystem/ITAbilitySystemComponent.h"
+#include "ImitationTrigger/Camera/ITPlayerCameraManager.h"
 
 
 AITPlayerController::AITPlayerController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
+	PlayerCameraManagerClass = AITPlayerCameraManager::StaticClass();
 }
 
 UITAbilitySystemComponent* AITPlayerController::GetITAbilitySystemComponent() const

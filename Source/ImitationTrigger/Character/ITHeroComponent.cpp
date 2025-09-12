@@ -4,6 +4,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Input/ITInputComponent.h"
 #include "Input/ITInputConfig.h"
+#include "ImitationTrigger/Camera/ITCameraComponent.h"
 #include "AbilitySystem/ITAbilitySystemComponent.h"
 #include "System/ITGameplayTags.h"
 
@@ -26,9 +27,63 @@ void UITHeroComponent::SetupPlayerInputComponent(class UInputComponent* PlayerIn
 	}
 }
 
+
+AITCharacter* UITHeroComponent::GetOwnerCharacter()
+{
+	if (AActor* Owner = GetOwner())
+	{
+		return Cast<AITCharacter>(Owner);
+	}
+	return nullptr;
+}
+
+const AITCharacter* UITHeroComponent::GetOwnerCharacter() const
+{
+	if (const AActor* Owner = GetOwner())
+	{
+		return Cast<AITCharacter>(Owner);
+	}
+	return nullptr;
+}
+
+TSubclassOf<UITCameraMode> UITHeroComponent::DetermineCameraMode() const
+{
+	const AITCharacter* ITChar = GetOwnerCharacter();
+	if (!ITChar) return nullptr;
+
+	if (const UITPawnData* PawnData = ITChar->GetPawnData())
+	{
+		return PawnData->DefaultCameraMode;
+	}
+	return nullptr;
+}
+
+void UITHeroComponent::TryBindCameraMode()
+{
+	APawn* Pawn = GetOwner<APawn>();
+	if (!Pawn) return;
+
+	if (!Pawn->IsLocallyControlled()) return; // 로컬만 카메라 제어
+
+	// PawnData가 아직 복제 전이면 여기서 실패할 수 있음
+	const AITCharacter* ITChar = GetOwnerCharacter();
+	if (!ITChar || !ITChar->GetPawnData()) return;
+
+	if (UITCameraComponent* Camera = UITCameraComponent::FindCameraComponent(Pawn))
+	{
+		if (!Camera->DetermineCameraModeDelegate.IsBound())
+		{
+			Camera->DetermineCameraModeDelegate.BindUObject(this, &ThisClass::DetermineCameraMode);
+		}
+	}
+}
+
 void UITHeroComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// 1차로 Bind하기 : BeginPlay 시점에 이미 Possess, PawnData가 있을 수도 있음..
+	TryBindCameraMode();
 }
 
 void UITHeroComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -164,12 +219,4 @@ void UITHeroComponent::Input_Crouch(const FInputActionValue& InputActionValue)
 	}
 }
 
-AITCharacter* UITHeroComponent::GetOwnerCharacter()
-{
-	AActor* ComponentOwner = GetOwner();
-	if (ComponentOwner)
-	{
-		return Cast<AITCharacter>(ComponentOwner);
-	}
-	return nullptr;
-}
+

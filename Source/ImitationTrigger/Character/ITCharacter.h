@@ -4,6 +4,7 @@
 #include "ITCharacter.generated.h"
 
 class UITPawnData;
+class UITHeroComponent;
 
 UCLASS()
 class IMITATIONTRIGGER_API AITCharacter : public ACharacter
@@ -13,13 +14,17 @@ class IMITATIONTRIGGER_API AITCharacter : public ACharacter
 public:
 	AITCharacter();
 	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	const UITPawnData* GetPawnData() const { return PawnData; }
 
 protected:
 	UPROPERTY(EditDefaultsOnly, ReplicatedUsing = OnRep_PawnData, Category = "PawnData")
 	TObjectPtr<const UITPawnData> PawnData;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Lyra|Character")
+	TObjectPtr<UITHeroComponent> HeroComponent;
 
 private:
 	UFUNCTION()

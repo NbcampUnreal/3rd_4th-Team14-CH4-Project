@@ -6,9 +6,14 @@
 #include "Blueprint/UserWidget.h"
 #include "HUDWidget.generated.h"
 
+class UWeaponSlotNumberWidget;
+class UWeaponSlotWidget;
+class UPlayerBarWidget;
+class UUltimateGaugeWidget;
 class UTextBlock;
 class UImage;
 class UMaterialInstanceDynamic;
+
 
 UCLASS()
 class IMITATIONTRIGGER_API UHUDWidget : public UUserWidget
@@ -20,18 +25,35 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void UpdateUltimateGauge(float UltimateGauge);
 
-
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void UseUltimateGauge();
 	
 protected:
 	
 	virtual void NativeConstruct() override;
 
-private:
+	UPROPERTY(meta = (BindWidget))
+	UUltimateGaugeWidget* UltimateGaugeWidget;
 
-	UPROPERTY()
-	UMaterialInstanceDynamic* DynamicMaterial;
-
-	
-
+	// UPROPERTY(meta = (BindWidget))
+	// UPlayerBarWidget* LocalPlayerBar;
+	//
+	// UPROPERTY(meta = (BindWidget))
+	// UPlayerBarWidget* TeamPlayer1Bar;
+	//
+	// UPROPERTY(meta = (BindWidget))
+	// UPlayerBarWidget* TeamPlayer2Bar;
+	//
+	// UPROPERTY(meta = (BindWidget))
+	// UPlayerBarWidget* TeamPlayer3Bar;
+	//
+	// UPROPERTY(meta = (BindWidget))
+	// UWeaponSlotWidget* WeaponSlot;
+	//
+	// UPROPERTY(meta = (BindWidget))
+	// UWeaponSlotNumberWidget* WeaponSlotNumber1;
+	//
+	// UPROPERTY(meta = (BindWidget))
+	// UWeaponSlotNumberWidget* WeaponSlotNumber2;
 	
 };

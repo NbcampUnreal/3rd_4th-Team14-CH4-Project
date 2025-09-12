@@ -10,14 +10,21 @@
 void UUltimateGaugeWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-	UpdateUltimateGauge(0);
-	if (UltimateImage)
-	{
-		UltimateDynamicMaterial = UltimateImage->GetDynamicMaterial();
-	}
+	
+	UltimateDynamicMaterial = GetImageDynamicMaterial(UltimateImage);
+	UltimateEffectDynamicMaterial = GetImageDynamicMaterial(UltimateEffect);
 }
 
-void UUltimateGaugeWidget::UpdateUltimateGauge(float UltimateGauge)
+UMaterialInstanceDynamic* UUltimateGaugeWidget::GetImageDynamicMaterial(UImage* Image)
+{
+	if (Image)
+	{
+		return Image->GetDynamicMaterial();
+	}
+	return nullptr;
+}
+
+void UUltimateGaugeWidget::UltimateGauge(float UltimateGauge)
 {
 	float UltimateValue = FMath::Clamp(UltimateGauge, 0.0f, 100.0f);
 
@@ -35,9 +42,48 @@ void UUltimateGaugeWidget::UpdateUltimateGauge(float UltimateGauge)
 		float ParamValue = UltimateValue * 0.01f;
 		UltimateDynamicMaterial->SetScalarParameterValue(FName(TEXT("Radial_Wipe")),ParamValue);
 	}
+}
 
-	
-	
+void UUltimateGaugeWidget::ChargedUltimateGauge()
+{
+	if (UltimateText)
+	{
+		UltimateText->SetVisibility(ESlateVisibility::Collapsed);
+	}
+
+	if (UltimateImage)
+	{
+		if (UltimateDynamicMaterial)
+		{
+			UltimateDynamicMaterial->SetScalarParameterValue(FName(TEXT("Block_Ring")),1);
+		}
+	}
+
+	if (UltimateEffect)
+	{
+		UltimateEffect->SetVisibility(ESlateVisibility::Visible);
+	}
+}
+
+void UUltimateGaugeWidget::UseUltimate()
+{
+	if (UltimateText)
+	{
+		UltimateText->SetVisibility(ESlateVisibility::Visible);
+	}
+
+	if (UltimateImage)
+	{
+		if (UltimateDynamicMaterial)
+		{
+			UltimateDynamicMaterial->SetScalarParameterValue(FName(TEXT("Block_Ring")),0.85);
+		}
+	}
+
+	if (UltimateEffect)
+	{
+		UltimateEffect->SetVisibility(ESlateVisibility::Collapsed);
+	}
 }
 
 

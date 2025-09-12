@@ -17,8 +17,16 @@ class IMITATIONTRIGGER_API UUltimateGaugeWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	void UpdateUltimateGauge(float UltimateGauge);
 
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void UltimateGauge(float UltimateGauge);
+
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void ChargedUltimateGauge();
+
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void UseUltimate();
+	
 protected:
 	virtual void NativeConstruct() override;
 
@@ -28,9 +36,16 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	UImage* UltimateImage;
 
+	UPROPERTY(meta = (BindWidget))
+	UImage* UltimateEffect;
+
+	UMaterialInstanceDynamic* GetImageDynamicMaterial(UImage* Image);
+
 private:
 	UPROPERTY()
 	UMaterialInstanceDynamic* UltimateDynamicMaterial;
+	UPROPERTY()
+	UMaterialInstanceDynamic* UltimateEffectDynamicMaterial;
 
 	
 };

@@ -26,7 +26,7 @@ public class ITTest : ModuleRules
 			new string[]
 			{
 				"Core",
-				"UMG"
+				"UMG",
 				// ... add other public dependencies that you statically link with here ...
 				"ImitationTrigger",
 			}

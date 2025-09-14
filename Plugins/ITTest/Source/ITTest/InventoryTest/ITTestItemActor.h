@@ -25,15 +25,15 @@ protected:
 	virtual void BeginPlay() override;
 
 	UFUNCTION()
-	void OnRep_ItemInstance();
+	void OnRep_ItemInstance(UITTestItemInstance* OldItemInstance);
+
+	UFUNCTION()
+	void OnItemInstanceReady();
 
 	UFUNCTION()
 	void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	                     UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
 	                     const FHitResult& SweepResult);
-
-	UFUNCTION()
-	void UpdateAppearance();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "IT|Component")
 	TObjectPtr<USphereComponent> SphereComponent;
@@ -49,4 +49,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "IT|Placed")
 	int32 PlacedItemQuantity = 1;
+
+private:
+	void UpdateAppearance();
+	void AsyncApplyMesh();
+	void AsyncApplyMaterials();
 };

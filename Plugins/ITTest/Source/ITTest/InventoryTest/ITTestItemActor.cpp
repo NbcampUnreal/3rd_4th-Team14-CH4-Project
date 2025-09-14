@@ -43,10 +43,21 @@ void AITTestItemActor::BeginPlay()
 	{
 		if (ItemInstance == nullptr && PlacedItemData != nullptr)
 		{
-			UITTestItemInstance* NewItemInstance = NewObject<UITTestItemInstance>(this);
-			NewItemInstance->InitItemInstance(PlacedItemData, PlacedItemQuantity);
-
-			InitializeItem(NewItemInstance);
+			FTimerHandle InitTimerHandle;
+			GetWorld()->GetTimerManager().SetTimer(
+				InitTimerHandle,
+				[this]()
+				{
+					if (ItemInstance == nullptr && PlacedItemData != nullptr)
+					{
+						UITTestItemInstance* NewItemInstance = NewObject<UITTestItemInstance>(this);
+						NewItemInstance->InitItemInstance(PlacedItemData, PlacedItemQuantity);
+						InitializeItem(NewItemInstance);
+					}
+				},
+				0.5f,
+				false
+			);
 		}
 
 		SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &AITTestItemActor::OnSphereOverlap);
@@ -58,7 +69,7 @@ void AITTestItemActor::InitializeItem(UITTestItemInstance* InitItemInstance)
 	if (HasAuthority())
 	{
 		ItemInstance = InitItemInstance;
-		OnRep_ItemInstance();
+		UpdateAppearance();
 
 		if (StaticMeshComponent)
 		{
@@ -67,13 +78,28 @@ void AITTestItemActor::InitializeItem(UITTestItemInstance* InitItemInstance)
 	}
 }
 
-void AITTestItemActor::OnRep_ItemInstance()
+void AITTestItemActor::OnRep_ItemInstance(UITTestItemInstance* OldItemInstance)
 {
-	if (ItemInstance)
+	if (IsValid(OldItemInstance))
 	{
-		ItemInstance->OnItemInstanceUpdated.AddUniqueDynamic(this, &AITTestItemActor::UpdateAppearance);
+		OldItemInstance->OnItemInstanceUpdated.RemoveDynamic(this, &AITTestItemActor::OnItemInstanceReady);
 	}
 
+	if (IsValid(ItemInstance))
+	{
+		if (IsValid(ItemInstance->ItemData))
+		{
+			UpdateAppearance();
+		}
+		else
+		{
+			ItemInstance->OnItemInstanceUpdated.AddUniqueDynamic(this, &AITTestItemActor::OnItemInstanceReady);
+		}
+	}
+}
+
+void AITTestItemActor::OnItemInstanceReady()
+{
 	UpdateAppearance();
 }
 
@@ -97,43 +123,74 @@ void AITTestItemActor::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent,
 
 void AITTestItemActor::UpdateAppearance()
 {
-	if (ItemInstance && ItemInstance->ItemData)
+	if (!ItemInstance && !ItemInstance->ItemData)
 	{
-		if (ItemInstance->ItemData->ItemMesh.IsNull())
+		return;
+	}
+
+	AsyncApplyMesh();
+}
+
+void AITTestItemActor::AsyncApplyMesh()
+{
+	if (ItemInstance->ItemData->ItemMesh.IsNull())
+	{
+		return;
+	}
+
+	FStreamableManager& Streamable = UAssetManager::Get().GetStreamableManager();
+	Streamable.RequestAsyncLoad(ItemInstance->ItemData->ItemMesh.ToSoftObjectPath(), [this]()
+	{
+		if (IsValid(this) && ItemInstance && ItemInstance->ItemData && StaticMeshComponent)
 		{
-			return;
+			if (UStaticMesh* LoadedMesh = ItemInstance->ItemData->ItemMesh.Get())
+			{
+				StaticMeshComponent->SetStaticMesh(LoadedMesh);
+				AsyncApplyMaterials();
+			}
 		}
+	});
+}
 
-		FStreamableManager& Streamable = UAssetManager::GetStreamableManager();
-		Streamable.RequestAsyncLoad(ItemInstance->ItemData->ItemMesh.ToSoftObjectPath(), [this]()
-		{
-			if (ItemInstance && ItemInstance->ItemData && StaticMeshComponent)
-			{
-				if (UStaticMesh* LoadedMesh = ItemInstance->ItemData->ItemMesh.Get())
-				{
-					StaticMeshComponent->SetStaticMesh(LoadedMesh);
-				}
-			}
-		});
+void AITTestItemActor::AsyncApplyMaterials()
+{
+	if (ItemInstance->ItemData->ItemMaterial.Num() == 0)
+	{
+		return;
+	}
 
-		if (ItemInstance->ItemData->ItemMaterial.Num() > 0)
+	TArray<FSoftObjectPath> MaterialsToLoad;
+	for (const auto& MaterialPtr : ItemInstance->ItemData->ItemMaterial)
+	{
+		if (!MaterialPtr.IsNull())
 		{
-			for (int32 i = 0; i < ItemInstance->ItemData->ItemMaterial.Num(); ++i)
-			{
-				if (!ItemInstance->ItemData->ItemMaterial[i].IsNull())
-				{
-					Streamable.RequestAsyncLoad(ItemInstance->ItemData->ItemMaterial[i].ToSoftObjectPath(), [this, i]()
-					{
-						if (ItemInstance && ItemInstance->ItemData && StaticMeshComponent)
-						{
-							if (UMaterialInterface* LoadedMaterial = ItemInstance->ItemData->ItemMaterial[i].Get())
-							{
-								StaticMeshComponent->SetMaterial(i, LoadedMaterial);
-							}
-						}
-					});
-				}
-			}
+			MaterialsToLoad.Add(MaterialPtr.ToSoftObjectPath());
 		}
 	}
+
+	if (MaterialsToLoad.IsEmpty())
+	{
+		return;
+	}
+
+	FStreamableManager& Streamable = UAssetManager::Get().GetStreamableManager();
+	Streamable.RequestAsyncLoad(MaterialsToLoad, [this]()
+	{
+		if (IsValid(this) && ItemInstance && ItemInstance->ItemData && StaticMeshComponent)
+		{
+			TWeakObjectPtr<AITTestItemActor> WeakThis(this);
+			GetWorld()->GetTimerManager().SetTimerForNextTick([WeakThis]()
+			{
+				if (!WeakThis.IsValid() || !WeakThis->ItemInstance || !WeakThis->ItemInstance->ItemData) return;
+
+				for (int32 i = 0; i < WeakThis->ItemInstance->ItemData->ItemMaterial.Num(); i++)
+				{
+					if (UMaterialInterface* LoadedMaterial = WeakThis->ItemInstance->ItemData->ItemMaterial[i].Get())
+					{
+						WeakThis->StaticMeshComponent->SetMaterial(i, LoadedMaterial);
+					}
+				}
+			});
+		}
+	});
 }

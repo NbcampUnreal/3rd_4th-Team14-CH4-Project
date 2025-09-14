@@ -33,6 +33,19 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void UpdateShield(float CurrentShield, float MaxShield);
+
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void WeaponSlotOne(UTexture2D* WeaponImage);
+
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void WeaponSlotTwo(UTexture2D* WeaponImage);
+
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void SetWeaponOneInfo(FText WeaponName);
+
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void SetWeaponTwoInfo(FText WeaponName);
+	
 	
 protected:
 	
@@ -53,13 +66,13 @@ protected:
 	// UPROPERTY(meta = (BindWidget))
 	// UPlayerBarWidget* TeamPlayer3Bar;
 	//
-	// UPROPERTY(meta = (BindWidget))
-	// UWeaponSlotWidget* WeaponSlot;
-	//
-	// UPROPERTY(meta = (BindWidget))
-	// UWeaponSlotNumberWidget* WeaponSlotNumber1;
-	//
-	// UPROPERTY(meta = (BindWidget))
-	// UWeaponSlotNumberWidget* WeaponSlotNumber2;
+	 UPROPERTY(meta = (BindWidget))
+	 UWeaponSlotWidget* WeaponSlot;
+	
+	 UPROPERTY(meta = (BindWidget))
+	 UWeaponSlotNumberWidget* WeaponSlotNumber1;
+	
+	 UPROPERTY(meta = (BindWidget))
+	 UWeaponSlotNumberWidget* WeaponSlotNumber2;
 	
 };

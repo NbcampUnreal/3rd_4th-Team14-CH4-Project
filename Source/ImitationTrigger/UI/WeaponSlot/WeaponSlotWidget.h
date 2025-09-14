@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "WeaponSlotWidget.generated.h"
 
+class UImage;
 /**
  * 
  */
@@ -13,5 +14,13 @@ UCLASS()
 class IMITATIONTRIGGER_API UWeaponSlotWidget : public UUserWidget
 {
 	GENERATED_BODY()
+
+public:
+	UFUNCTION(BlueprintCallable,Category = "UI")
+	void SetWeaponImage(UTexture2D* NewImage);
+
+protected:
+	UPROPERTY(meta = (BindWidget))
+	UImage* WeaponImage;
 	
 };

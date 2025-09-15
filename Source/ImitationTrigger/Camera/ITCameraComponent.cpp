@@ -13,7 +13,7 @@ void UITCameraComponent::OnRegister()
 
 	if (!CameraModeStack)
 	{
-		// ÃÊ±âÈ­ (BeginPlay¿Í °°Àº)°¡ µüÈ÷ ÇÊ¿ä¾ø´Â °´Ã¼·Î NewObject·Î ÇÒ´ç
+		// ì´ˆê¸°í™” (BeginPlayì™€ ê°™ì€)ê°€ ë”±íˆ í•„ìš”ì—†ëŠ” ê°ì²´ë¡œ NewObjectë¡œ í• ë‹¹
 		CameraModeStack = NewObject<UITCameraModeStack>(this);
 	}
 }

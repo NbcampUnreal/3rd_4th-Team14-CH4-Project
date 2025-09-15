@@ -8,6 +8,7 @@
 class AITPlayerController;
 class AITCharacter;
 class UITAbilitySystemComponent;
+class UITHealthSet;
 
 UCLASS()
 class IMITATIONTRIGGER_API AITPlayerState : public APlayerState, public IAbilitySystemInterface
@@ -28,6 +29,9 @@ public:
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
+protected:
+	UPROPERTY()
+	TObjectPtr<const UITHealthSet> HealthSet;
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "ITPlayerState|AbilitySystemComponent")
@@ -35,6 +39,8 @@ private:
 
 	UFUNCTION()
 	void OnReadyPawnData(APlayerState* Player, APawn* NewPawn, APawn* OldPawn);
+
+	void InitAttributeSet(UDataTable* InitDataTable);
 
 	FITAbilitySet_GrantedHandles GrantedHandles;
 };

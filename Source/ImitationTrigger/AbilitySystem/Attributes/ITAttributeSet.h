@@ -11,8 +11,8 @@
 	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
 DECLARE_MULTICAST_DELEGATE_SixParams(FITAttributeEvent,
-	AActor*, // EffectInstigator, Effect¸¦ ÀÏÀ¸Å² ÁÖÃ¼. Ä³¸¯ÅÍ ¶Ç´Â Æù
-	AActor*, // EffectCauser, Effect¸¦ ÀÏÀ¸Å² ¿øÀÎ. ÃÑ¾Ë(Åõ»çÃ¼) ¶Ç´Â ¹«±â
+	AActor*, // EffectInstigator, Effectë¥¼ ì¼ìœ¼í‚¨ ì£¼ì²´. ìºë¦­í„° ë˜ëŠ” í°
+	AActor*, // EffectCauser, Effectë¥¼ ì¼ìœ¼í‚¨ ì›ì¸. ì´ì•Œ(íˆ¬ì‚¬ì²´) ë˜ëŠ” ë¬´ê¸°
 	const FGameplayEffectSpec*, // EffectSpec
 	float, // EffectMagnitude
 	float, // OldValue

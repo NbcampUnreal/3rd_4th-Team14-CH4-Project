@@ -114,8 +114,7 @@ void AITTestItemActor::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent,
 		{
 			if (ItemInstance)
 			{
-				InventoryComponent->Server_AddItem(ItemInstance->ItemData, ItemInstance->Quantity);
-				Destroy();
+				InventoryComponent->Server_AddPickupItem(this);
 			}
 		}
 	}

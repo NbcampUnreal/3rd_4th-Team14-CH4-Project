@@ -61,14 +61,14 @@ const TArray<UITTestItemInstance*>& UITTestInventoryComponent::GetItems() const
 	return InventoryItems;
 }
 
-void UITTestInventoryComponent::Server_AddItem_Implementation(UITTestItemData* ItemData, int32 AddQuantity)
+int32 UITTestInventoryComponent::TryAddItem(UITTestItemData* ItemData, int32 AddQuantity)
 {
 	if (ItemData == nullptr || AddQuantity <= 0)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("AddItem() return1"));
-		return;
+		return 0;
 	}
 
+	int32 InitialQuantity = AddQuantity;
 	int32 RemainingQuantity = AddQuantity;
 
 	if (ItemData->bIsStackable)
@@ -85,7 +85,7 @@ void UITTestInventoryComponent::Server_AddItem_Implementation(UITTestItemData* I
 
 				if (RemainingQuantity <= 0)
 				{
-					return;
+					break;
 				}
 			}
 		}
@@ -107,10 +107,42 @@ void UITTestInventoryComponent::Server_AddItem_Implementation(UITTestItemData* I
 
 				if (RemainingQuantity <= 0)
 				{
-					return;
+					break;
 				}
 			}
 		}
+	}
+
+	int32 ActuallyAddedQuantity = InitialQuantity - RemainingQuantity;
+
+	if (ActuallyAddedQuantity > 0)
+	{
+		OnRep_InventoryItems();
+	}
+
+	return ActuallyAddedQuantity;
+}
+
+void UITTestInventoryComponent::Server_AddPickupItem_Implementation(AITTestItemActor* ItemActorToPickup)
+{
+	if (!IsValid(ItemActorToPickup) || !IsValid(ItemActorToPickup->GetItemInstance()))
+	{
+		return;
+	}
+
+	UITTestItemInstance* InstanceOnGround = ItemActorToPickup->GetItemInstance();
+	UITTestItemData* DataToPickup = InstanceOnGround->ItemData;
+	const int32 QuantityToPickup = InstanceOnGround->Quantity;
+
+	const int32 AddedQuantity = TryAddItem(DataToPickup, QuantityToPickup);
+
+	if (AddedQuantity >= QuantityToPickup)
+	{
+		ItemActorToPickup->Destroy();
+	}
+	else if (AddedQuantity > 0)
+	{
+		InstanceOnGround->Quantity -= AddedQuantity;
 	}
 }
 
@@ -118,7 +150,6 @@ void UITTestInventoryComponent::Server_RemoveItem_Implementation(int32 SlotIndex
 {
 	if (!InventoryItems.IsValidIndex(SlotIndex) || InventoryItems[SlotIndex] == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("RemoveItem() return"));
 		return;
 	}
 
@@ -129,7 +160,6 @@ void UITTestInventoryComponent::Server_DropItem_Implementation(int32 SlotIndex)
 {
 	if (!InventoryItems.IsValidIndex(SlotIndex) || InventoryItems[SlotIndex] == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("DropItem() return"));
 		return;
 	}
 
@@ -158,21 +188,18 @@ void UITTestInventoryComponent::Server_UseItem_Implementation(UITTestItemInstanc
 {
 	if (!ItemInstance || !ItemInstance->ItemData || !InventoryItems.Contains(ItemInstance))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UseItem() return1"));
 		return;
 	}
 
 	const UITTestItemData_Usable* UsableItemData = Cast<UITTestItemData_Usable>(ItemInstance->ItemData);
 	if (!UsableItemData || !UsableItemData->ItemAbility)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UseItem() return2"));
 		return;
 	}
 
 	UAbilitySystemComponent* ASC = GetOwner()->FindComponentByClass<UAbilitySystemComponent>();
 	if (!ASC)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UseItem() return3"));
 		return;
 	}
 
@@ -191,7 +218,7 @@ void UITTestInventoryComponent::Server_ConsumeItem_Implementation(UITTestItemIns
 
 	int32 ItemIndex;
 	InventoryItems.Find(ItemInstance, ItemIndex);
-	
+
 	if (ItemInstance->ItemData->bIsStackable)
 	{
 		ItemInstance->Quantity -= Quantity;
@@ -208,14 +235,18 @@ void UITTestInventoryComponent::Server_ConsumeItem_Implementation(UITTestItemIns
 	OnRep_InventoryItems();
 }
 
+void UITTestInventoryComponent::Server_TestAddItem_Implementation(UITTestItemData* ItemData, int32 AddQuantity)
+{
+	TryAddItem(ItemData, AddQuantity);
+}
+
 void UITTestInventoryComponent::Server_TestUseItem_Implementation(int32 SlotIndex)
 {
 	if (!InventoryItems.IsValidIndex(SlotIndex) && InventoryItems[SlotIndex] != nullptr)
 	{
 		return;
 	}
-	UE_LOG(LogTemp, Warning, TEXT("TestItem1"));
-	
+
 	UITTestItemInstance* ItemToUse = InventoryItems[SlotIndex];
 
 	Server_UseItem(ItemToUse);

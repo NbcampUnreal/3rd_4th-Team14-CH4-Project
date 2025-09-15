@@ -18,6 +18,9 @@ class ITTEST_API AITTestItemActor : public AActor
 public:
 	AITTestItemActor();
 
+	UFUNCTION()
+	UITTestItemInstance* GetItemInstance() const { return ItemInstance; }
+
 	void InitializeItem(UITTestItemInstance* InitItemInstance);
 
 protected:

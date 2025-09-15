@@ -4,5 +4,5 @@ UITPawnData::UITPawnData(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 	InputConfig = nullptr;
-	DefaultCameraMode = nullptr;
+	//DefaultCameraMode = nullptr;
 }

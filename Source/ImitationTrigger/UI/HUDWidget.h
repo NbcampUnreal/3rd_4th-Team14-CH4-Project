@@ -26,7 +26,10 @@ public:
 	void UpdateUltimateGauge(float UltimateGauge);
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
-	void UseUltimateGauge();
+	void ResetUltimateGauge();
+	
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void SetLocalPlayerBar(FText PlayerName, UTexture2D* PlayerIcon);
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void UpdateHealth(float CurrentHealth, float MaxHealth);
@@ -35,16 +38,17 @@ public:
 	void UpdateShield(float CurrentShield, float MaxShield);
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
-	void WeaponSlotOne(UTexture2D* WeaponImage);
+	void UpdateWeaponSlotOne(UTexture2D* WeaponImage);
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
-	void WeaponSlotTwo(UTexture2D* WeaponImage);
+	void UpdateWeaponSlotTwo(UTexture2D* WeaponImage);
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void SetWeaponOneInfo(FText WeaponName);
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void SetWeaponTwoInfo(FText WeaponName);
+
 	
 	
 protected:
@@ -54,8 +58,8 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	UUltimateGaugeWidget* UltimateGaugeWidget;
 
-	 UPROPERTY(meta = (BindWidget))
-	 UPlayerBarWidget* LocalPlayerBar;
+	UPROPERTY(meta = (BindWidget))
+	UPlayerBarWidget* LocalPlayerBar;
 	
 	// UPROPERTY(meta = (BindWidget))
 	// UPlayerBarWidget* TeamPlayer1Bar;

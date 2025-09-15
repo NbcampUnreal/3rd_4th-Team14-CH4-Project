@@ -6,7 +6,7 @@
 #include "Components/TextBlock.h"
 
 
-void UWeaponSlotNumberWidget::SetWeaponText(FText& WeaponText)
+void UWeaponSlotNumberWidget::SetWeaponText(FText WeaponText)
 {
 	if (WeaponName)
 	{

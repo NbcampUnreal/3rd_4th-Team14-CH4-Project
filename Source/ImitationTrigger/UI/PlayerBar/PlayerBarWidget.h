@@ -24,6 +24,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "PlayerBar")
 	void UpdateShieldBar(float CurrentShield, float MaxShield);
 
+	UFUNCTION(BlueprintCallable, Category = "PlayerBar")
+	void UpdateNameText(FText PlayerName);
+
+	UFUNCTION(BlueprintCallable, Category = "PlayerBar")
+	void UpdateCharacterImage(UTexture2D* NewImage);
 
 protected:
 

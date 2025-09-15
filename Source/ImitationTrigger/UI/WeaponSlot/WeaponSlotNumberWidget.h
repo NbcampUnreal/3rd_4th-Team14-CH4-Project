@@ -17,7 +17,7 @@ class IMITATIONTRIGGER_API UWeaponSlotNumberWidget : public UUserWidget
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "UI")
-	void SetWeaponText(FText& WeaponText);
+	void SetWeaponText(FText WeaponText);
 
 
 protected:

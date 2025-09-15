@@ -20,17 +20,23 @@ void UHUDWidget::UpdateUltimateGauge(float UltimateGauge)
 {
 	if (UltimateGauge >= 100)
 	{
-		UltimateGaugeWidget->ChargedUltimateGauge();
+		UltimateGaugeWidget->OnUltimateGaugeCharged();
 	}
 	else
 	{
-		UltimateGaugeWidget->UltimateGauge(UltimateGauge);
+		UltimateGaugeWidget->UpdateUltimateGauge(UltimateGauge);
 	}
 }
 
-void UHUDWidget::UseUltimateGauge()
+void UHUDWidget::ResetUltimateGauge()
 {
-	UltimateGaugeWidget->UseUltimate();
+	UltimateGaugeWidget->ResetUltimate();
+}
+
+void UHUDWidget::SetLocalPlayerBar(FText PlayerName, UTexture2D* PlayerIcon)
+{
+	LocalPlayerBar->UpdateCharacterImage(PlayerIcon);
+	LocalPlayerBar->UpdateNameText(PlayerName);
 }
 
 void UHUDWidget::UpdateHealth(float CurrentHealth, float MaxHealth)
@@ -43,7 +49,7 @@ void UHUDWidget::UpdateShield(float CurrentShield, float MaxShield)
 	LocalPlayerBar->UpdateShieldBar(CurrentShield,MaxShield);
 }
 
-void UHUDWidget::WeaponSlotOne(UTexture2D* WeaponImage)
+void UHUDWidget::UpdateWeaponSlotOne(UTexture2D* WeaponImage)
 {
 	WeaponSlot->SetWeaponImage(WeaponImage);
 	WeaponSlotNumber2->SetRenderOpacity(0.6f);
@@ -51,7 +57,7 @@ void UHUDWidget::WeaponSlotOne(UTexture2D* WeaponImage)
 	
 }
 
-void UHUDWidget::WeaponSlotTwo(UTexture2D* WeaponImage)
+void UHUDWidget::UpdateWeaponSlotTwo(UTexture2D* WeaponImage)
 {
 	WeaponSlot->SetWeaponImage(WeaponImage);
 	WeaponSlotNumber1->SetRenderOpacity(0.6f);

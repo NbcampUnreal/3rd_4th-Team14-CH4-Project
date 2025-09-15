@@ -19,13 +19,13 @@ class IMITATIONTRIGGER_API UUltimateGaugeWidget : public UUserWidget
 public:
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
-	void UltimateGauge(float UltimateGauge);
+	void UpdateUltimateGauge(float UltimateGauge);
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
-	void ChargedUltimateGauge();
+	void OnUltimateGaugeCharged();
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
-	void UseUltimate();
+	void ResetUltimate();
 	
 protected:
 	virtual void NativeConstruct() override;

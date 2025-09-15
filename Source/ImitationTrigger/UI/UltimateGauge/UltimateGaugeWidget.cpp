@@ -7,6 +7,7 @@
 #include "Components/TextBlock.h"
 
 
+
 void UUltimateGaugeWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -24,7 +25,7 @@ UMaterialInstanceDynamic* UUltimateGaugeWidget::GetImageDynamicMaterial(UImage* 
 	return nullptr;
 }
 
-void UUltimateGaugeWidget::UltimateGauge(float UltimateGauge)
+void UUltimateGaugeWidget::UpdateUltimateGauge(float UltimateGauge)
 {
 	float UltimateValue = FMath::Clamp(UltimateGauge, 0.0f, 100.0f);
 
@@ -44,7 +45,7 @@ void UUltimateGaugeWidget::UltimateGauge(float UltimateGauge)
 	}
 }
 
-void UUltimateGaugeWidget::ChargedUltimateGauge()
+void UUltimateGaugeWidget::OnUltimateGaugeCharged()
 {
 	if (UltimateText)
 	{
@@ -65,7 +66,7 @@ void UUltimateGaugeWidget::ChargedUltimateGauge()
 	}
 }
 
-void UUltimateGaugeWidget::UseUltimate()
+void UUltimateGaugeWidget::ResetUltimate()
 {
 	if (UltimateText)
 	{

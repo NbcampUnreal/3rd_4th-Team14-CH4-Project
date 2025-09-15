@@ -5,6 +5,9 @@
 
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
+#include "Components/Image.h"
+#include "Engine/Texture2D.h"
+#include "Styling/SlateBrush.h"
 
 
 void UPlayerBarWidget::NativePreConstruct()
@@ -61,6 +64,24 @@ void UPlayerBarWidget::UpdateShieldBar(float CurrentShield, float MaxShield)
 	if (ShieldBar)
 	{
 		ShieldBar->SetPercent(ShieldPercent);
+	}
+}
+
+void UPlayerBarWidget::UpdateNameText(FText PlayerName)
+{
+	if (PlayerNameText)
+	{
+		PlayerNameText->SetText(PlayerName);
+	}
+}
+
+void UPlayerBarWidget::UpdateCharacterImage(UTexture2D* NewImage)
+{
+	if (CharacterImage)
+	{
+		FSlateBrush Brush = CharacterImage->GetBrush();
+		Brush.SetResourceObject(NewImage);
+		CharacterImage->SetBrush(Brush);
 	}
 }
 

@@ -24,7 +24,7 @@ void UITCameraComponent::GetCameraView(float DeltaTime, FMinimalViewInfo& Desire
 
 	UpdateCameraModes();
 
-	FHakCameraModeView CameraModeView;
+	FITCameraModeView CameraModeView;
 	CameraModeStack->EvaluateStack(DeltaTime, CameraModeView);
 
 	if (APawn* TargetPawn = Cast<APawn>(GetTargetActor()))
@@ -56,7 +56,6 @@ void UITCameraComponent::GetCameraView(float DeltaTime, FMinimalViewInfo& Desire
 	}
 }
 
-PRAGMA_DISABLE_OPTIMIZATION
 void UITCameraComponent::UpdateCameraModes()
 {
 	check(CameraModeStack);
@@ -69,4 +68,3 @@ void UITCameraComponent::UpdateCameraModes()
 		}
 	}
 }
-PRAGMA_ENABLE_OPTIMIZATION

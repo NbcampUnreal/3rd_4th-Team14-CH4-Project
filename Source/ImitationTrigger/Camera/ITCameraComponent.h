@@ -59,7 +59,7 @@ public:
 //
 //	if (UITPawnExtensionComponent* PawnExtComp = UITPawnExtensionComponent::FindPawnExtensionComponent(Pawn))
 //	{
-//		if (const UHakPawnData* PawnData = PawnExtComp->GetPawnData<UITPawnData>())
+//		if (const UITPawnData* PawnData = PawnExtComp->GetPawnData<UITPawnData>())
 //		{
 //			return PawnData->DefaultCameraMode;
 //		}

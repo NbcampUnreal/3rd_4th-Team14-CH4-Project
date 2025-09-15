@@ -11,11 +11,10 @@ AITPlayerState::AITPlayerState(const FObjectInitializer& ObjectInitializer)
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 
-	// AbilitySystem ³×Æ®¿öÅ© °ü·Ã: needs to be updated at a high frequency.
+	// AbilitySystem ë„¤íŠ¸ì›Œí¬ ê´€ë ¨: needs to be updated at a high frequency.
 	SetNetUpdateFrequency(100.0f);
 
-
-	// PlayerState¿Í Pawn(Chracter)°¡ ¸ğµÎ ÁØºñµÇ¾úÀ» ¶§ È£ÃâµÇ´Â Delegate
+	// PlayerStateì™€ Pawn(Chracter)ê°€ ëª¨ë‘ ì¤€ë¹„ë˜ì—ˆì„ ë•Œ í˜¸ì¶œë˜ëŠ” Delegate
 	OnPawnSet.AddDynamic(this, &ThisClass::OnReadyPawnData);
 }
 

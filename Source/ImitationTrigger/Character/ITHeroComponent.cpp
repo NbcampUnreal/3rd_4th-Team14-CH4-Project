@@ -4,7 +4,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Input/ITInputComponent.h"
 #include "Input/ITInputConfig.h"
-#include "ImitationTrigger/Camera/ITCameraComponent.h"
+#include "Camera/ITCameraComponent.h"
 #include "AbilitySystem/ITAbilitySystemComponent.h"
 #include "System/ITGameplayTags.h"
 
@@ -27,25 +27,6 @@ void UITHeroComponent::SetupPlayerInputComponent(class UInputComponent* PlayerIn
 	}
 }
 
-
-AITCharacter* UITHeroComponent::GetOwnerCharacter()
-{
-	if (AActor* Owner = GetOwner())
-	{
-		return Cast<AITCharacter>(Owner);
-	}
-	return nullptr;
-}
-
-const AITCharacter* UITHeroComponent::GetOwnerCharacter() const
-{
-	if (const AActor* Owner = GetOwner())
-	{
-		return Cast<AITCharacter>(Owner);
-	}
-	return nullptr;
-}
-
 TSubclassOf<UITCameraMode> UITHeroComponent::DetermineCameraMode() const
 {
 	const AITCharacter* ITChar = GetOwnerCharacter();
@@ -61,13 +42,23 @@ TSubclassOf<UITCameraMode> UITHeroComponent::DetermineCameraMode() const
 void UITHeroComponent::TryBindCameraMode()
 {
 	APawn* Pawn = GetOwner<APawn>();
-	if (!Pawn) return;
+	if (!Pawn)
+	{
+		return;
+	}
 
-	if (!Pawn->IsLocallyControlled()) return; // ·ÎÄÃ¸¸ Ä«¸Þ¶ó Á¦¾î
+	if (!Pawn->IsLocallyControlled())
+	{
+		// ë¡œì»¬ë§Œ ì¹´ë©”ë¼ ì œì–´
+		return;
+	}
 
-	// PawnData°¡ ¾ÆÁ÷ º¹Á¦ ÀüÀÌ¸é ¿©±â¼­ ½ÇÆÐÇÒ ¼ö ÀÖÀ½
+	// PawnDataê°€ ì•„ì§ ë³µì œ ì „ì´ë©´ ì—¬ê¸°ì„œ ì‹¤íŒ¨í•  ìˆ˜ ìžˆìŒ
 	const AITCharacter* ITChar = GetOwnerCharacter();
-	if (!ITChar || !ITChar->GetPawnData()) return;
+	if (!ITChar || !ITChar->GetPawnData())
+	{
+		return;
+	}
 
 	if (UITCameraComponent* Camera = UITCameraComponent::FindCameraComponent(Pawn))
 	{
@@ -82,7 +73,6 @@ void UITHeroComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// 1Â÷·Î BindÇÏ±â : BeginPlay ½ÃÁ¡¿¡ ÀÌ¹Ì Possess, PawnData°¡ ÀÖÀ» ¼öµµ ÀÖÀ½..
 	TryBindCameraMode();
 }
 
@@ -108,7 +98,7 @@ void UITHeroComponent::InitializePlayerInput(UInputComponent* PlayerInputCompone
 	{
 		if (const UITInputConfig* InputConfig = PawnData->InputConfig)
 		{
-			// Input Mapping Context Ã³¸®
+			// Input Mapping Context ì²˜ë¦¬
 			for (const FInputMappingContextAndPriority Mapping : InputConfig->DefaultMappings)
 			{
 				if (UInputMappingContext* IMC = Mapping.InputMapping)
@@ -119,7 +109,7 @@ void UITHeroComponent::InitializePlayerInput(UInputComponent* PlayerInputCompone
 				}
 			}
 
-			// Bind Input Action Ã³¸®
+			// Bind Input Action ì²˜ë¦¬
 			UITInputComponent* InputComponent = Cast<UITInputComponent>(PlayerInputComponent);
 			check(InputComponent);
 			
@@ -219,4 +209,23 @@ void UITHeroComponent::Input_Crouch(const FInputActionValue& InputActionValue)
 	}
 }
 
+AITCharacter* UITHeroComponent::GetOwnerCharacter()
+{
+	AActor* ComponentOwner = GetOwner();
+	if (ComponentOwner)
+	{
+		return Cast<AITCharacter>(ComponentOwner);
+	}
+	return nullptr;
+}
+
+const AITCharacter* UITHeroComponent::GetOwnerCharacter() const
+{
+	AActor* ComponentOwner = GetOwner();
+	if (ComponentOwner)
+	{
+		return Cast<const AITCharacter>(ComponentOwner);
+	}
+	return nullptr;
+}
 

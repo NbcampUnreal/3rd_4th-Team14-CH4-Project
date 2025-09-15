@@ -1,18 +1,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
-
 #include "UObject/NoExportTypes.h"
 #include "ITCameraMode.generated.h"
 
 class UITCameraComponent;
 
-
-struct FHakCameraModeView
+struct FITCameraModeView
 {
-	FHakCameraModeView();
+	FITCameraModeView();
 
-	void Blend(const FHakCameraModeView& Other, float OtherWeight);
+	void Blend(const FITCameraModeView& Other, float OtherWeight);
 
 	FVector Location;
 	FRotator Rotation;
@@ -21,7 +19,7 @@ struct FHakCameraModeView
 };
 
 UENUM(BlueprintType)
-enum class EHakCameraModeBlendFunction : uint8
+enum class EITCameraModeBlendFunction : uint8
 {
 	Linear,
 	EaseIn,
@@ -48,9 +46,7 @@ public:
 	FVector GetPivotLocation() const;
 	FRotator GetPivotRotation() const;
 
-
-
-	FHakCameraModeView View;
+	FITCameraModeView View;
 
 	UPROPERTY(EditDefaultsOnly, Category = "View", Meta = (UIMin = "5.0", UIMax = "170", ClampMin = "5.0", Clampmax = "170.0"))
 	float FieldOfView;
@@ -68,12 +64,11 @@ public:
 
 	float BlendWeight;
 
-
 	UPROPERTY(EditDefaultsOnly, Category = "Blending")
 	float BlendExponent;
 
 
-	EHakCameraModeBlendFunction BlendFunction;
+	EITCameraModeBlendFunction BlendFunction;
 };
 
 
@@ -81,14 +76,15 @@ UCLASS()
 class UITCameraModeStack : public UObject
 {
 	GENERATED_BODY()
+
 public:
 	UITCameraModeStack(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	UITCameraMode* GetCameraModeInstance(TSubclassOf<UITCameraMode>& CameraModeClass);
 	void PushCameraMode(TSubclassOf<UITCameraMode>& CameraModeClass);
-	void EvaluateStack(float DeltaTime, FHakCameraModeView& OutCameraModeView);
+	void EvaluateStack(float DeltaTime, FITCameraModeView& OutCameraModeView);
 	void UpdateStack(float DeltaTime);
-	void BlendStack(FHakCameraModeView& OutCameraModeView) const;
+	void BlendStack(FITCameraModeView& OutCameraModeView) const;
 
 	UPROPERTY()
 	TArray<TObjectPtr<UITCameraMode>> CameraModeInstances;
@@ -97,8 +93,3 @@ public:
 	UPROPERTY()
 	TArray<TObjectPtr<UITCameraMode>> CameraModeStack;
 };
-
-
-
-
-

@@ -5,12 +5,12 @@
 #include "ITHeroComponent.generated.h"
 
 class AITCharacter;
-struct FInputActionValue;
 class UITCameraMode;
+struct FInputActionValue;
 
 /**
- * Pawn ¶Ç´Â CharacterÀÇ ÀÔ·Â°ú Ä«¸Ş¶ó °ü·Ã ±â´ÉÀ» ´ã´çÇÏ´Â Component
- * ULyraHeroComponentÀ» Âü°íÇÏ¿© ±¸ÇöÇÔ.
+ * Pawn ë˜ëŠ” Characterì˜ ì…ë ¥ê³¼ ì¹´ë©”ë¼ ê´€ë ¨ ê¸°ëŠ¥ì„ ë‹´ë‹¹í•˜ëŠ” Component
+ * ULyraHeroComponentì„ ì°¸ê³ í•˜ì—¬ êµ¬í˜„í•¨.
  */
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class IMITATIONTRIGGER_API UITHeroComponent : public UActorComponent
@@ -21,13 +21,8 @@ public:
 	UITHeroComponent(const FObjectInitializer& ObjectInitializer);
 	void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent);
 
-	// UITCameraMode¸¦ °áÁ¤ÇØÁÖ´Â ÇÔ¼ö.
 	TSubclassOf<UITCameraMode> DetermineCameraMode() const;
-	// Camera¿¡¼­ ÇÊ¿äÇÑ DetermineCameraModeÇØ´ç ÇÔ¼ö¸¦ ½ÇÇàÇÏ±â ¸¸µç GetÇÔ¼ö.
-	/*AITCharacter* GetOwnerCharacter();*/ // ¾Æ·¡ Á¸Àç
-	const AITCharacter* GetOwnerCharacter() const;
 	void TryBindCameraMode();
-
 
 protected:
 	virtual void BeginPlay() override;
@@ -44,6 +39,5 @@ protected:
 
 private:
 	FORCEINLINE AITCharacter* GetOwnerCharacter();
-
-
+	FORCEINLINE const AITCharacter* GetOwnerCharacter() const;
 };

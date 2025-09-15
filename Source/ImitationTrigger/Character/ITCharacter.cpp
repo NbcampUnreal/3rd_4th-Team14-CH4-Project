@@ -3,8 +3,9 @@
 #include "Character/ITPawnData.h"
 #include "Player/ITPlayerState.h"
 #include "Player/ITPlayerController.h"
+#include "Camera/ITCameraComponent.h"
+#include "Cosmetics/ITCharacterPartComponent.h"
 #include "AbilitySystem/ITAbilitySystemComponent.h"
-#include "ImitationTrigger/Camera/ITCameraComponent.h"
 #include "Net/UnrealNetwork.h"
 
 AITCharacter::AITCharacter()
@@ -13,11 +14,8 @@ AITCharacter::AITCharacter()
 
 	HeroComponent = CreateDefaultSubobject<UITHeroComponent>(TEXT("HeroComponent"));
 
-	// CameraComponent »ý¼º
-	{
-		CameraComponent = CreateDefaultSubobject<UITCameraComponent>(TEXT("CameraComponent"));
-		CameraComponent->SetRelativeLocation(FVector(-300.0f, 0.0f, 75.0f));
-	}
+	CameraComponent = CreateDefaultSubobject<UITCameraComponent>(TEXT("CameraComponent"));
+	CameraComponent->SetRelativeLocation(FVector(-300.0f, 0.0f, 75.0f));
 }
 
 
@@ -50,6 +48,7 @@ UAbilitySystemComponent* AITCharacter::GetAbilitySystemComponent() const
 void AITCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	SetBodyMeshes();
 }
 
 void AITCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -66,9 +65,44 @@ void AITCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(ThisClass, PawnData);
+	DOREPLIFETIME_CONDITION(ThisClass, PawnData, COND_InitialOnly);
 }
 
-void AITCharacter::OnRep_PawnData()
+void AITCharacter::PossessedBy(AController* NewController)
 {
+	Super::PossessedBy(NewController);
+
+	SetBodyMeshes();
+	AddInitCharacterPartsAtServer();
+}
+
+UITCharacterPartComponent* AITCharacter::GetITCharacterPartComponent()
+{
+	UActorComponent* FindComponent = GetComponentByClass(UITCharacterPartComponent::StaticClass());
+	UITCharacterPartComponent* PartComponent = Cast<UITCharacterPartComponent>(FindComponent);
+	return PartComponent;
+}
+
+void AITCharacter::AddInitCharacterPartsAtServer()
+{
+	UITCharacterPartComponent* PartComponent = GetITCharacterPartComponent();
+	if (IsValid(PartComponent))
+	{
+		if (IsValid(PawnData))
+		{
+			PartComponent->AddInitCharacterParts(PawnData->InitCharacterParts);
+		}
+	}
+}
+
+void AITCharacter::SetBodyMeshes()
+{
+	UITCharacterPartComponent* PartComponent = GetITCharacterPartComponent();
+	if (IsValid(PartComponent))
+	{
+		if (IsValid(PawnData))
+		{
+			PartComponent->SetBodyMeshes(PawnData->InitBodyMeshes);
+		}
+	}
 }

@@ -1,30 +1,41 @@
 #pragma once
+
 #include "Engine/DataAsset.h"
+#include "Cosmetics/ITCharacterPartType.h"
 #include "ITPawnData.generated.h"
+
 class UITAbilitySet;
 class UITInputConfig;
 class UITCameraMode;
+
 /**
- * PawnÀ» Á¤ÀÇÇÏ±â À§ÇÑ ¼Ó¼º(properties)¸¦ °¡Áö°í ÀÖ´Â Data Asset
- * ULyraPawnDataÀÇ ±¸¼ºÀ» Âü°íÇÔ
+ * Pawnì„ ì •ì˜í•˜ê¸° ìœ„í•œ ì†ì„±(properties)ë¥¼ ê°€ì§€ê³  ìˆëŠ” Data Asset
+ * ULyraPawnDataì˜ êµ¬ì„±ì„ ì°¸ê³ í•¨
  */
 UCLASS(BlueprintType, Const)
 class IMITATIONTRIGGER_API UITPawnData : public UDataAsset
 {
 	GENERATED_BODY()
+
 public:
 	UITPawnData(const FObjectInitializer& ObjectInitializer);
 
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Hak|Pawn")
-	TSubclassOf<APawn> PawnClass;
-	// Pawn ¶Ç´Â Character¿¡ ºÎ¿©ÇÒ(grand) Ability Á¤º¸
+	// Pawn ë˜ëŠ” Characterì— ë¶€ì—¬í• (grand) Ability ì •ë³´
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "PawnData|Abilities")
 	TArray<TObjectPtr<UITAbilitySet>> AbilitySets;
-	// Pawn ¶Ç´Â CharacterÀÇ ÀÔ·Â ¼³Á¤
+
+	// Pawn ë˜ëŠ” Characterì˜ ì…ë ¥ ì„¤ì •
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "PawnData|Input")
 	TObjectPtr<UITInputConfig> InputConfig;
-	// Pawn ¶Ç´Â Character¿¡ Àû¿ëÇÒ ±âº» Ä«¸Ş¶ó ¸ğµå
+
+	// Pawn ë˜ëŠ” Characterì— ì ìš©í•  Cosmetic(ì™¸í˜•) ì •ë³´
+	UPROPERTY(EditAnywhere, Category = "PawnData|Cosmetics")
+	TArray<FITCharacterPart> InitCharacterParts;
+
+	UPROPERTY(EditAnywhere, Category = "PawnData|Cosmetics")
+	FITAnimBodyStyleSelectionSet InitBodyMeshes;
+
+	// Pawn ë˜ëŠ” Characterì— ì ìš©í•  ê¸°ë³¸ ì¹´ë©”ë¼ ëª¨ë“œ
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "PawnData|Camera")
 	TSubclassOf<UITCameraMode> DefaultCameraMode;
 };

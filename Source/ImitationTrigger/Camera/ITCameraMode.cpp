@@ -1,13 +1,8 @@
 #include "Camera/ITCameraMode.h"
+#include "Camera/ITCameraComponent.h"
+#include "Camera/ITPlayerCameraManager.h"
 
-//#include "ITCameraMode.h"
-
-#include "ITCameraComponent.h"
-#include "ITPlayerCameraManager.h"
-
-#include UE_INLINE_GENERATED_CPP_BY_NAME(ITCameraMode)
-
-FHakCameraModeView::FHakCameraModeView()
+FITCameraModeView::FITCameraModeView()
 	: Location(ForceInit)
 	, Rotation(ForceInit)
 	, ControlRotation(ForceInit)
@@ -15,7 +10,7 @@ FHakCameraModeView::FHakCameraModeView()
 {
 }
 
-void FHakCameraModeView::Blend(const FHakCameraModeView& Other, float OtherWeight)
+void FITCameraModeView::Blend(const FITCameraModeView& Other, float OtherWeight)
 {
 	if (OtherWeight <= 0.0f)
 	{
@@ -48,7 +43,7 @@ UITCameraMode::UITCameraMode(const FObjectInitializer& ObjectInitializer) : Supe
 	BlendAlpha = 1.0f;
 	BlendWeight = 1.0f;
 
-	BlendFunction = EHakCameraModeBlendFunction::EaseOut;
+	BlendFunction = EITCameraModeBlendFunction::EaseOut;
 	BlendExponent = 4.0f;
 }
 
@@ -112,16 +107,16 @@ void UITCameraMode::UpdateBlending(float DeltaTime)
 	const float Exponent = (BlendExponent > 0.0f) ? BlendExponent : 1.0f;
 	switch (BlendFunction)
 	{
-	case EHakCameraModeBlendFunction::Linear:
+	case EITCameraModeBlendFunction::Linear:
 		BlendWeight = BlendAlpha;
 		break;
-	case EHakCameraModeBlendFunction::EaseIn:
+	case EITCameraModeBlendFunction::EaseIn:
 		BlendWeight = FMath::InterpEaseIn(0.0f, 1.0f, BlendAlpha, Exponent);
 		break;
-	case EHakCameraModeBlendFunction::EaseOut:
+	case EITCameraModeBlendFunction::EaseOut:
 		BlendWeight = FMath::InterpEaseOut(0.0f, 1.0f, BlendAlpha, Exponent);
 		break;
-	case EHakCameraModeBlendFunction::EaseInOut:
+	case EITCameraModeBlendFunction::EaseInOut:
 		BlendWeight = FMath::InterpEaseInOut(0.0f, 1.0f, BlendAlpha, Exponent);
 		break;
 	default:
@@ -218,7 +213,7 @@ void UITCameraModeStack::PushCameraMode(TSubclassOf<UITCameraMode>& CameraModeCl
 	CameraModeStack.Last()->BlendWeight = 1.0f;
 }
 
-void UITCameraModeStack::EvaluateStack(float DeltaTime, FHakCameraModeView& OutCameraModeView)
+void UITCameraModeStack::EvaluateStack(float DeltaTime, FITCameraModeView& OutCameraModeView)
 {
 	UpdateStack(DeltaTime);
 	BlendStack(OutCameraModeView);
@@ -255,7 +250,7 @@ void UITCameraModeStack::UpdateStack(float DeltaTime)
 	}
 }
 
-void UITCameraModeStack::BlendStack(FHakCameraModeView& OutCameraModeView) const
+void UITCameraModeStack::BlendStack(FITCameraModeView& OutCameraModeView) const
 {
 	const int32 StackSize = CameraModeStack.Num();
 	if (StackSize <= 0)

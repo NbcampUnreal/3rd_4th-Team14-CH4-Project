@@ -12,23 +12,23 @@ public:
 	UITAbilitySystemComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 	void ClearAbilityInput();
 
-	// Å°¸¦ ´©¸¦ ¶§ È£ÃâµÇ´Â ÇÔ¼ö
+	// í‚¤ë¥¼ ëˆ„ë¥¼ ë•Œ í˜¸ì¶œë˜ëŠ” í•¨ìˆ˜
 	void AbilityInputTagPressed(const FGameplayTag& InputTag);
 
-	// Å°¸¦ ¶¿ ¶§ È£ÃâµÇ´Â ÇÔ¼ö
+	// í‚¤ë¥¼ ë—„ ë•Œ í˜¸ì¶œë˜ëŠ” í•¨ìˆ˜
 	void AbilityInputTagReleased(const FGameplayTag& InputTag);
 
-	// ¸Å ÇÁ·¹ÀÓ(¸Å Æ½) È£ÃâµÇ´Â ÇÔ¼ö, PlayerController::PostProcessInput ¿¡¼­ È£ÃâÇÑ´Ù.
+	// ë§¤ í”„ë ˆì„(ë§¤ í‹±) í˜¸ì¶œë˜ëŠ” í•¨ìˆ˜, PlayerController::PostProcessInput ì—ì„œ í˜¸ì¶œí•œë‹¤.
 	void ProcessAbilityInput(float DeltaTime, bool bGamePaused);
 
 protected:
-	// ÀÌ¹ø Frame¿¡¼­, ´­·¶À» ¶§(pressed) Ã³¸®ÇÒ AbilityÀÇ Handle ¸ñ·Ï
+	// ì´ë²ˆ Frameì—ì„œ, ëˆŒë €ì„ ë•Œ(pressed) ì²˜ë¦¬í•  Abilityì˜ Handle ëª©ë¡
 	TArray<FGameplayAbilitySpecHandle> InputPressedSpecHandles;
 
-	// ÀÌ¹ø Frame¿¡¼­, ¶¼¾úÀ» ¶§(released) Ã³¸®ÇÒ AbilityÀÇ Handle ¸ñ·Ï
+	// ì´ë²ˆ Frameì—ì„œ, ë–¼ì—ˆì„ ë•Œ(released) ì²˜ë¦¬í•  Abilityì˜ Handle ëª©ë¡
 	TArray<FGameplayAbilitySpecHandle> InputReleasedSpecHandles;
 
-	// ´©¸£°í ÀÖÀ» ¶§(Held) Ã³¸®ÇÒ AbilityÀÇ Handle ¸ñ·Ï
+	// ëˆ„ë¥´ê³  ìˆì„ ë•Œ(Held) ì²˜ë¦¬í•  Abilityì˜ Handle ëª©ë¡
 	TArray<FGameplayAbilitySpecHandle> InputHeldSpecHandles;
 
 private:

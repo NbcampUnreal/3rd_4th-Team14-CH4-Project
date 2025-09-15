@@ -18,7 +18,6 @@ public class ITTest : ModuleRules
 		PrivateIncludePaths.AddRange(
 			new string[] {
 				// ... add other private include paths required here ...
-				""
 			}
 			);
 			
@@ -39,7 +38,8 @@ public class ITTest : ModuleRules
 				"CoreUObject",
 				"Engine",
 				"Slate",
-				"SlateCore",
+				"SlateCore", 
+				"EnhancedInput",
 				// ... add private dependencies that you statically link with here ...	
 				
 				// Gameplay

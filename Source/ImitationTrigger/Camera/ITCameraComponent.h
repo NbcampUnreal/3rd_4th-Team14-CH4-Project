@@ -36,34 +36,3 @@ public:
 	FITCameraModeDelegate DetermineCameraModeDelegate;
 
 };
-
-
-
-// ITHeroComponent에 정의할 내용
-
-//if (bIsLocallyControlled && PawnData)
-//{
-//	if (UITCameraComponent* CameraComponent = UITCameraComponent::FindCameraComponent(Pawn))
-//	{
-//		CameraComponent->DetermineCameraModeDelegate.BindUObject(this, &ThisClass::DetermineCameraMode);
-//	}
-//}
-
-//TSubclassOf<UITCameraMode> UITHeroComponent::DetermineCameraMode() const
-//{
-//	const APawn* Pawn = GetPawn<APawn>();
-//	if (!Pawn)
-//	{
-//		return nullptr;
-//	}
-//
-//	if (UITPawnExtensionComponent* PawnExtComp = UITPawnExtensionComponent::FindPawnExtensionComponent(Pawn))
-//	{
-//		if (const UITPawnData* PawnData = PawnExtComp->GetPawnData<UITPawnData>())
-//		{
-//			return PawnData->DefaultCameraMode;
-//		}
-//	}
-//
-//	return nullptr;
-//}

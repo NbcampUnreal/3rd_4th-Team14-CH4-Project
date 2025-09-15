@@ -7,7 +7,6 @@
 
 class UITAbilitySet;
 class UITInputConfig;
-class UITCameraMode;
 class UDataTable;
 
 /**

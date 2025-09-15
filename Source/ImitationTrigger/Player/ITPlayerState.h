@@ -29,7 +29,6 @@ public:
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
-
 protected:
 	UPROPERTY()
 	TObjectPtr<const UITHealthSet> HealthSet;

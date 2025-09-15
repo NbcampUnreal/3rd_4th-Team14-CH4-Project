@@ -44,6 +44,7 @@ UAbilitySystemComponent* AITCharacter::GetAbilitySystemComponent() const
 void AITCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	SetBodyMeshes();
 }
 
 void AITCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -76,12 +77,6 @@ UITCharacterPartComponent* AITCharacter::GetITCharacterPartComponent()
 	UActorComponent* FindComponent = GetComponentByClass(UITCharacterPartComponent::StaticClass());
 	UITCharacterPartComponent* PartComponent = Cast<UITCharacterPartComponent>(FindComponent);
 	return PartComponent;
-}
-
-void AITCharacter::OnRep_Owner()
-{
-	Super::OnRep_Owner();
-	SetBodyMeshes();
 }
 
 void AITCharacter::AddInitCharacterPartsAtServer()

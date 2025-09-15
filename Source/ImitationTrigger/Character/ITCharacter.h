@@ -42,12 +42,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Replicated, Category = "PawnData")
 	TObjectPtr<const UITPawnData> PawnData;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Lyra|Character")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UITHeroComponent> HeroComponent;
 
 	UITCharacterPartComponent* GetITCharacterPartComponent();
-
-	virtual void OnRep_Owner() override;
 
 private:
 	TArray<FITCharacterPartHandle> CharacterPartHandles;

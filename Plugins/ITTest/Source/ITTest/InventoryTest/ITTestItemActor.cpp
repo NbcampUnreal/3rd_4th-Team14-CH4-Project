@@ -114,7 +114,7 @@ void AITTestItemActor::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent,
 		{
 			if (ItemInstance)
 			{
-				InventoryComponent->Server_AddPickupItem(this);
+				InventoryComponent->ServerRPC_AddPickupItem(this);
 			}
 		}
 	}

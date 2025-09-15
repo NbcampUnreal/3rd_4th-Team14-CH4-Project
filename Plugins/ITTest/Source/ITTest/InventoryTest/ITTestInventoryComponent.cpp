@@ -4,6 +4,7 @@
 #include "ITTestInventoryComponent.h"
 
 #include "AbilitySystemComponent.h"
+#include "AbilitySystemInterface.h"
 #include "ITTestItemActor.h"
 #include "ITTestItemData.h"
 #include "ITTestItemData_Usable.h"
@@ -49,9 +50,15 @@ void UITTestInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimePrope
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(UITTestInventoryComponent, InventoryItems);
+	DOREPLIFETIME(UITTestInventoryComponent, InventorySize);
 }
 
-void UITTestInventoryComponent::OnRep_InventoryItems()
+bool UITTestInventoryComponent::HasAuthorityOwner()
+{
+	return GetOwner()->HasAuthority();
+}
+
+void UITTestInventoryComponent::OnRep_InventoryUpdate()
 {
 	OnInventoryUpdated.Broadcast();
 }
@@ -117,137 +124,158 @@ int32 UITTestInventoryComponent::TryAddItem(UITTestItemData* ItemData, int32 Add
 
 	if (ActuallyAddedQuantity > 0)
 	{
-		OnRep_InventoryItems();
+		OnRep_InventoryUpdate();
 	}
 
 	return ActuallyAddedQuantity;
 }
 
-void UITTestInventoryComponent::Server_AddPickupItem_Implementation(AITTestItemActor* ItemActorToPickup)
+void UITTestInventoryComponent::ServerRPC_AddPickupItem_Implementation(AITTestItemActor* ItemActorToPickup)
 {
-	if (!IsValid(ItemActorToPickup) || !IsValid(ItemActorToPickup->GetItemInstance()))
+	if (HasAuthorityOwner())
 	{
-		return;
-	}
-
-	UITTestItemInstance* InstanceOnGround = ItemActorToPickup->GetItemInstance();
-	UITTestItemData* DataToPickup = InstanceOnGround->ItemData;
-	const int32 QuantityToPickup = InstanceOnGround->Quantity;
-
-	const int32 AddedQuantity = TryAddItem(DataToPickup, QuantityToPickup);
-
-	if (AddedQuantity >= QuantityToPickup)
-	{
-		ItemActorToPickup->Destroy();
-	}
-	else if (AddedQuantity > 0)
-	{
-		InstanceOnGround->Quantity -= AddedQuantity;
-	}
-}
-
-void UITTestInventoryComponent::Server_RemoveItem_Implementation(int32 SlotIndex)
-{
-	if (!InventoryItems.IsValidIndex(SlotIndex) || InventoryItems[SlotIndex] == nullptr)
-	{
-		return;
-	}
-
-	InventoryItems[SlotIndex] = nullptr;
-}
-
-void UITTestInventoryComponent::Server_DropItem_Implementation(int32 SlotIndex)
-{
-	if (!InventoryItems.IsValidIndex(SlotIndex) || InventoryItems[SlotIndex] == nullptr)
-	{
-		return;
-	}
-
-	UITTestItemInstance* ItemToDrop = InventoryItems[SlotIndex];
-
-	if (GetOwner() && GetWorld())
-	{
-		FVector DropLocation = GetOwner()->GetActorLocation() + GetOwner()->GetActorUpVector() * 2000.0f;
-		FRotator DropRotation = FRotator::ZeroRotator;
-		FActorSpawnParameters SpawnParameters;
-		SpawnParameters.Owner = GetOwner();
-		SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-		AITTestItemActor* DroppedItemActor = GetWorld()->SpawnActor<AITTestItemActor>(
-			AITTestItemActor::StaticClass(), DropLocation, DropRotation, SpawnParameters);
-
-		if (DroppedItemActor)
+		if (!IsValid(ItemActorToPickup) || !IsValid(ItemActorToPickup->GetItemInstance()))
 		{
-			DroppedItemActor->InitializeItem(ItemToDrop);
-			Server_RemoveItem(SlotIndex);
+			return;
+		}
+
+		UITTestItemInstance* InstanceOnGround = ItemActorToPickup->GetItemInstance();
+		UITTestItemData* DataToPickup = InstanceOnGround->ItemData;
+		const int32 QuantityToPickup = InstanceOnGround->Quantity;
+
+		const int32 AddedQuantity = TryAddItem(DataToPickup, QuantityToPickup);
+
+		if (AddedQuantity >= QuantityToPickup)
+		{
+			ItemActorToPickup->Destroy();
+		}
+		else if (AddedQuantity > 0)
+		{
+			InstanceOnGround->Quantity -= AddedQuantity;
 		}
 	}
 }
 
-void UITTestInventoryComponent::Server_UseItem_Implementation(UITTestItemInstance* ItemInstance)
+void UITTestInventoryComponent::ServerRPC_RemoveItem_Implementation(int32 SlotIndex)
 {
-	if (!ItemInstance || !ItemInstance->ItemData || !InventoryItems.Contains(ItemInstance))
+	if (HasAuthorityOwner())
 	{
-		return;
+		if (!InventoryItems.IsValidIndex(SlotIndex) || InventoryItems[SlotIndex] == nullptr)
+		{
+			return;
+		}
+
+		InventoryItems[SlotIndex] = nullptr;
 	}
-
-	const UITTestItemData_Usable* UsableItemData = Cast<UITTestItemData_Usable>(ItemInstance->ItemData);
-	if (!UsableItemData || !UsableItemData->ItemAbility)
-	{
-		return;
-	}
-
-	UAbilitySystemComponent* ASC = GetOwner()->FindComponentByClass<UAbilitySystemComponent>();
-	if (!ASC)
-	{
-		return;
-	}
-
-	FGameplayAbilitySpec Spec(UsableItemData->ItemAbility);
-	Spec.SourceObject = ItemInstance;
-
-	ASC->GiveAbilityAndActivateOnce(Spec);
 }
 
-void UITTestInventoryComponent::Server_ConsumeItem_Implementation(UITTestItemInstance* ItemInstance, int Quantity)
+void UITTestInventoryComponent::ServerRPC_DropItem_Implementation(int32 SlotIndex)
 {
-	if (!ItemInstance || !InventoryItems.Contains(ItemInstance))
+	if (HasAuthorityOwner())
 	{
-		return;
+		if (!InventoryItems.IsValidIndex(SlotIndex) || InventoryItems[SlotIndex] == nullptr)
+		{
+			return;
+		}
+
+		UITTestItemInstance* ItemToDrop = InventoryItems[SlotIndex];
+
+		if (GetOwner() && GetWorld())
+		{
+			FVector DropLocation = GetOwner()->GetActorLocation() + GetOwner()->GetActorUpVector() * 2000.0f;
+			FRotator DropRotation = FRotator::ZeroRotator;
+			FActorSpawnParameters SpawnParameters;
+			SpawnParameters.SpawnCollisionHandlingOverride
+				= ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+			AITTestItemActor* DroppedItemActor = GetWorld()->SpawnActor<AITTestItemActor>(
+				AITTestItemActor::StaticClass(), DropLocation, DropRotation, SpawnParameters);
+
+			if (DroppedItemActor)
+			{
+				DroppedItemActor->InitializeItem(ItemToDrop);
+				ServerRPC_RemoveItem(SlotIndex);
+			}
+		}
 	}
+}
 
-	int32 ItemIndex;
-	InventoryItems.Find(ItemInstance, ItemIndex);
-
-	if (ItemInstance->ItemData->bIsStackable)
+void UITTestInventoryComponent::ServerRPC_UseItem_Implementation(UITTestItemInstance* ItemInstance)
+{
+	if (HasAuthorityOwner())
 	{
-		ItemInstance->Quantity -= Quantity;
-		if (ItemInstance->Quantity <= 0)
+		if (!ItemInstance || !ItemInstance->ItemData || !InventoryItems.Contains(ItemInstance))
+		{
+			return;
+		}
+
+		const UITTestItemData_Usable* UsableItemData = Cast<UITTestItemData_Usable>(ItemInstance->ItemData);
+		if (!UsableItemData || !UsableItemData->ItemAbility)
+		{
+			return;
+		}
+
+		if (IAbilitySystemInterface* ASI = Cast<IAbilitySystemInterface>(GetOwner()))
+		{
+			if (UAbilitySystemComponent* ASC = ASI->GetAbilitySystemComponent())
+			{
+				FGameplayAbilitySpec Spec(UsableItemData->ItemAbility);
+				Spec.SourceObject = ItemInstance;
+
+				ASC->GiveAbilityAndActivateOnce(Spec);
+			}
+		}
+	}
+}
+
+void UITTestInventoryComponent::ServerRPC_ReduceItem_Implementation(UITTestItemInstance* ItemInstance, int Quantity)
+{
+	if (HasAuthorityOwner())
+	{
+		if (!ItemInstance || !InventoryItems.Contains(ItemInstance))
+		{
+			return;
+		}
+
+		int32 ItemIndex;
+		InventoryItems.Find(ItemInstance, ItemIndex);
+
+		if (ItemInstance->ItemData->bIsStackable)
+		{
+			ItemInstance->Quantity -= Quantity;
+			if (ItemInstance->Quantity <= 0)
+			{
+				InventoryItems[ItemIndex] = nullptr;
+			}
+		}
+		else
 		{
 			InventoryItems[ItemIndex] = nullptr;
 		}
-	}
-	else
-	{
-		InventoryItems[ItemIndex] = nullptr;
-	}
 
-	OnRep_InventoryItems();
+		OnRep_InventoryUpdate();
+	}
 }
 
-void UITTestInventoryComponent::Server_TestAddItem_Implementation(UITTestItemData* ItemData, int32 AddQuantity)
+void UITTestInventoryComponent::ServerRPC_TestAddItem_Implementation(UITTestItemData* ItemData, int32 AddQuantity)
 {
-	TryAddItem(ItemData, AddQuantity);
+	if (HasAuthorityOwner())
+	{
+		TryAddItem(ItemData, AddQuantity);
+	}
 }
 
-void UITTestInventoryComponent::Server_TestUseItem_Implementation(int32 SlotIndex)
+void UITTestInventoryComponent::ServerRPC_TestUseItem_Implementation(int32 SlotIndex)
 {
-	if (!InventoryItems.IsValidIndex(SlotIndex) && InventoryItems[SlotIndex] != nullptr)
+	if (HasAuthorityOwner())
 	{
-		return;
+		if (!InventoryItems.IsValidIndex(SlotIndex) && InventoryItems[SlotIndex] != nullptr)
+		{
+			return;
+		}
+
+		UITTestItemInstance* ItemToUse = InventoryItems[SlotIndex];
+
+		ServerRPC_UseItem(ItemToUse);
 	}
-
-	UITTestItemInstance* ItemToUse = InventoryItems[SlotIndex];
-
-	Server_UseItem(ItemToUse);
 }

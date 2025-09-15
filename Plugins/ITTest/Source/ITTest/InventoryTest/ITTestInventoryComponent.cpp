@@ -168,6 +168,8 @@ void UITTestInventoryComponent::ServerRPC_RemoveItem_Implementation(int32 SlotIn
 		}
 
 		InventoryItems[SlotIndex] = nullptr;
+
+		OnRep_InventoryUpdate();
 	}
 }
 
@@ -199,6 +201,7 @@ void UITTestInventoryComponent::ServerRPC_DropItem_Implementation(int32 SlotInde
 				ServerRPC_RemoveItem(SlotIndex);
 			}
 		}
+		OnRep_InventoryUpdate();
 	}
 }
 

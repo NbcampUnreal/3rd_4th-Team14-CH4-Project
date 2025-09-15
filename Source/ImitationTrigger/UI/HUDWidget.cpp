@@ -3,6 +3,8 @@
 
 #include "UI/HUDWidget.h"
 
+#include "Components/ScrollBox.h"
+#include "KillLog/KillLogWidget.h"
 #include "PlayerBar/PlayerBarWidget.h"
 #include "UltimateGauge/UltimateGaugeWidget.h"
 #include "WeaponSlot/WeaponSlotNumberWidget.h"
@@ -72,4 +74,39 @@ void UHUDWidget::SetWeaponOneInfo(FText WeaponName)
 void UHUDWidget::SetWeaponTwoInfo(FText WeaponName)
 {
 	WeaponSlotNumber2->SetWeaponText(WeaponName);
+}
+
+void UHUDWidget::AddKillLog(UTexture2D* KillCharacter, FText KillName, UTexture2D* KillWeapon, FText DieName, UTexture2D* DieCharacter)
+{
+
+	if (!KillLogWidgetClass)
+	{
+		return;
+	}
+
+	UKillLogWidget* NewKillLog = CreateWidget<UKillLogWidget>(this,KillLogWidgetClass);
+
+	if (NewKillLog && KillLogBox)
+	{
+		NewKillLog->SetKillLog(KillCharacter,KillName,KillWeapon,DieName,DieCharacter);
+		KillLogBox->AddChild(NewKillLog);
+	}
+	
+}
+
+void UHUDWidget::AddNotifyText(FText KillPlayer, FText DiePlayer)
+{
+	if (!KillNotifyTextWidgetClass)
+	{
+		return;
+	}
+
+	UKillNotifyWidget* NewKillNotify = CreateWidget<UKillNotifyWidget>(this,KillNotifyTextWidgetClass);
+
+	if (NewKillNotify && KillNotifyBox)
+	{
+		NewKillNotify->SetNotify(KillPlayer,DiePlayer);
+		KillNotifyBox->AddChild(NewKillNotify);
+	}
+	
 }

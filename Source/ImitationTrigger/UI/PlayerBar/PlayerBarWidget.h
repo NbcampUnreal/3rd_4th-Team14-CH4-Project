@@ -18,6 +18,7 @@ class IMITATIONTRIGGER_API UPlayerBarWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	
 	UFUNCTION(BlueprintCallable, Category = "PlayerBar")
 	void UpdateHealthBar(float CurrentHealth, float MaxHealth);
 

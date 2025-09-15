@@ -40,5 +40,7 @@ private:
 	UFUNCTION()
 	void OnReadyPawnData(APlayerState* Player, APawn* NewPawn, APawn* OldPawn);
 
+	void InitAttributeSet(UDataTable* InitDataTable);
+
 	FITAbilitySet_GrantedHandles GrantedHandles;
 };

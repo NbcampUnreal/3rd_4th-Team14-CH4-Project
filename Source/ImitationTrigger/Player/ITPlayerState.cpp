@@ -55,20 +55,28 @@ void AITPlayerState::OnReadyPawnData(APlayerState* Player, APawn* NewPawn, APawn
 				AbilitySet->GiveToAbilitySystem(AbilitySystemComponent, &GrantedHandles);
 			}
 
-			FString ContextString(TEXT("OnReadyPawnDataContext"));
-			TArray<FITAttributeTableRow*> InitRows;
-			PawnData->InitDataTable->GetAllRows(ContextString, InitRows);
+			InitAttributeSet(PawnData->InitDataTable);
+		}
+	}
+}
 
-			for (const FITAttributeTableRow* Row : InitRows)
+void AITPlayerState::InitAttributeSet(UDataTable* InitDataTable)
+{
+	if (IsValid(InitDataTable))
+	{
+		FString ContextString(TEXT("OnReadyPawnDataContext"));
+		TArray<FITAttributeTableRow*> InitRows;
+		InitDataTable->GetAllRows(ContextString, InitRows);
+
+		for (const FITAttributeTableRow* Row : InitRows)
+		{
+			if (Row && Row->Attribute.IsValid())
 			{
-				if (Row && Row->Attribute.IsValid())
-				{
-					AbilitySystemComponent->SetNumericAttributeBase(Row->Attribute, Row->InitValue);
+				AbilitySystemComponent->SetNumericAttributeBase(Row->Attribute, Row->InitValue);
 
-					if (Row->CurrentAttribute.IsValid())
-					{
-						AbilitySystemComponent->SetNumericAttributeBase(Row->CurrentAttribute, Row->InitValue);
-					}
+				if (Row->CurrentAttribute.IsValid())
+				{
+					AbilitySystemComponent->SetNumericAttributeBase(Row->CurrentAttribute, Row->InitValue);
 				}
 			}
 		}

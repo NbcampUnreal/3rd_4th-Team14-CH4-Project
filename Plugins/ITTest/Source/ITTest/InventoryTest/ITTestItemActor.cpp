@@ -93,6 +93,7 @@ void AITTestItemActor::OnRep_ItemInstance(UITTestItemInstance* OldItemInstance)
 		}
 		else
 		{
+			ItemInstance->OnItemInstanceUpdated.Clear();
 			ItemInstance->OnItemInstanceUpdated.AddUniqueDynamic(this, &AITTestItemActor::OnItemInstanceReady);
 		}
 	}

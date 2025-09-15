@@ -55,7 +55,7 @@ void UITTestInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimePrope
 
 bool UITTestInventoryComponent::HasAuthorityOwner()
 {
-	return GetOwner()->HasAuthority();
+	return GetOwner() && GetOwner()->HasAuthority();
 }
 
 void UITTestInventoryComponent::OnRep_InventoryUpdate()
@@ -139,19 +139,21 @@ void UITTestInventoryComponent::ServerRPC_AddPickupItem_Implementation(AITTestIt
 			return;
 		}
 
-		UITTestItemInstance* InstanceOnGround = ItemActorToPickup->GetItemInstance();
-		UITTestItemData* DataToPickup = InstanceOnGround->ItemData;
-		const int32 QuantityToPickup = InstanceOnGround->Quantity;
-
-		const int32 AddedQuantity = TryAddItem(DataToPickup, QuantityToPickup);
-
-		if (AddedQuantity >= QuantityToPickup)
+		if (UITTestItemInstance* InstanceOnGround = ItemActorToPickup->GetItemInstance())
 		{
-			ItemActorToPickup->Destroy();
-		}
-		else if (AddedQuantity > 0)
-		{
-			InstanceOnGround->Quantity -= AddedQuantity;
+			UITTestItemData* DataToPickup = InstanceOnGround->ItemData;
+			const int32 QuantityToPickup = InstanceOnGround->Quantity;
+
+			const int32 AddedQuantity = TryAddItem(DataToPickup, QuantityToPickup);
+
+			if (AddedQuantity >= QuantityToPickup)
+			{
+				ItemActorToPickup->Destroy();
+			}
+			else if (AddedQuantity > 0)
+			{
+				InstanceOnGround->Quantity -= AddedQuantity;
+			}
 		}
 	}
 }
@@ -232,13 +234,16 @@ void UITTestInventoryComponent::ServerRPC_ReduceItem_Implementation(UITTestItemI
 {
 	if (HasAuthorityOwner())
 	{
-		if (!ItemInstance || !InventoryItems.Contains(ItemInstance))
+		if (!ItemInstance)
 		{
 			return;
 		}
 
 		int32 ItemIndex;
-		InventoryItems.Find(ItemInstance, ItemIndex);
+		if (!InventoryItems.Find(ItemInstance, ItemIndex))
+		{
+			return;
+		}
 
 		if (ItemInstance->ItemData->bIsStackable)
 		{

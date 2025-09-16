@@ -1,0 +1,38 @@
+#pragma once
+#include "CoreMinimal.h"
+#include "GameFramework/PlayerController.h"
+#include "ITTitlePlayerController.generated.h"
+
+class UUserWidget;
+
+UCLASS()
+class ITTEST_API AITTitlePlayerController : public APlayerController
+{
+	GENERATED_BODY()
+	
+public:
+    UPROPERTY(EditDefaultsOnly, Category = "UI")
+    TSubclassOf<UUserWidget> TitleUIClass;
+
+protected:
+    UPROPERTY()
+    TObjectPtr<UUserWidget> TitleUIInstance;
+
+    virtual void BeginPlay() override;
+
+public:
+    UFUNCTION(BlueprintCallable)
+    void JoinServer(const FString& AddressOrMap);
+
+    // ¸ÅÄª °ü·Ã RPC
+    UFUNCTION(BlueprintCallable, Server, Reliable)
+    void ServerRPC_StartMatchmaking();
+
+    UFUNCTION(BlueprintCallable, Server, Reliable)
+    void ServerRPC_JoinMatchmakingQueue();
+
+    UFUNCTION(BlueprintCallable, Server, Reliable)
+    void ServerRPC_LeaveMatchmakingQueue();
+	
+	
+};

@@ -6,6 +6,10 @@
 #include "Blueprint/UserWidget.h"
 #include "HUDWidget.generated.h"
 
+class UVerticalBox;
+class UKillNotifyWidget;
+class UKillLogWidget;
+class UScrollBox;
 class UWeaponSlotNumberWidget;
 class UWeaponSlotWidget;
 class UPlayerBarWidget;
@@ -49,6 +53,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void SetWeaponTwoInfo(FText WeaponName);
 
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void AddKillLog(UTexture2D* KillCharacter, FText KillName, UTexture2D* DieCharacter, FText DieName, UTexture2D* KillWeapon);
+
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void AddNotifyText(FText KillPlayer, FText DiePlayer);
 	
 	
 protected:
@@ -70,13 +79,28 @@ protected:
 	// UPROPERTY(meta = (BindWidget))
 	// UPlayerBarWidget* TeamPlayer3Bar;
 	//
-	 UPROPERTY(meta = (BindWidget))
-	 UWeaponSlotWidget* WeaponSlot;
+	UPROPERTY(meta = (BindWidget))
+	UWeaponSlotWidget* WeaponSlot;
 	
-	 UPROPERTY(meta = (BindWidget))
-	 UWeaponSlotNumberWidget* WeaponSlotNumber1;
+	UPROPERTY(meta = (BindWidget))
+	UWeaponSlotNumberWidget* WeaponSlotNumber1;
 	
-	 UPROPERTY(meta = (BindWidget))
-	 UWeaponSlotNumberWidget* WeaponSlotNumber2;
+	UPROPERTY(meta = (BindWidget))
+	UWeaponSlotNumberWidget* WeaponSlotNumber2;
+
+	UPROPERTY(meta = (BindWidget))
+	UScrollBox* KillLogBox;
+
+	UPROPERTY(meta = (BindWidget))
+	UScrollBox* KillNotifyBox;
+
+
+private:
+
+	UPROPERTY(EditDefaultsOnly, Category = "KillLog")
+	TSubclassOf<UKillLogWidget> KillLogWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "KillNotify")
+	TSubclassOf<UKillNotifyWidget> KillNotifyTextWidgetClass;
 	
 };

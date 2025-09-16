@@ -4,6 +4,6 @@
 
 AITTitleGameMode::AITTitleGameMode()
 {
-    PlayerControllerClass = AITTitlePlayerController::StaticClass();
+	PlayerControllerClass = AITTitlePlayerController::StaticClass();
 }
 

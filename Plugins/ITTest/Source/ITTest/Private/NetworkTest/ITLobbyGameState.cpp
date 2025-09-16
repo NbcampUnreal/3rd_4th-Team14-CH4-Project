@@ -4,10 +4,10 @@
 
 void AITLobbyGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
-    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-    DOREPLIFETIME(AITLobbyGameState, AlivePlayerControllerCount);
-    DOREPLIFETIME(AITLobbyGameState, MatchState);
-    DOREPLIFETIME(AITLobbyGameState, MatchmakingPlayerCount);
-    DOREPLIFETIME(AITLobbyGameState, CountdownTime);
-    DOREPLIFETIME(AITLobbyGameState, bMatchmakingActive);
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AITLobbyGameState, AlivePlayerControllerCount);
+	DOREPLIFETIME(AITLobbyGameState, MatchState);
+	DOREPLIFETIME(AITLobbyGameState, MatchmakingPlayerCount);
+	DOREPLIFETIME(AITLobbyGameState, CountdownTime);
+	DOREPLIFETIME(AITLobbyGameState, bMatchmakingActive);
 }

@@ -9,9 +9,9 @@ UCLASS()
 class ITTEST_API AITTitleGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+
 public:
 	AITTitleGameMode();
-	
-	
+
+
 };

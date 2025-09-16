@@ -11,30 +11,30 @@ UCLASS()
 class ITTEST_API UITTitleWidget : public UUserWidget
 {
 	GENERATED_BODY()
-	
+
 public:
-    virtual void NativeConstruct() override;
+	virtual void NativeConstruct() override;
 
 protected:
-    UPROPERTY(meta = (BindWidget), BlueprintReadWrite) 
-    UEditableTextBox* ServerIPEdit;
-    UPROPERTY(meta = (BindWidget), BlueprintReadWrite) 
-    UButton* PlayButton;
-    UPROPERTY(meta = (BindWidget), BlueprintReadWrite) 
-    UButton* ExitButton;
-    UPROPERTY(meta = (BindWidget), BlueprintReadWrite) 
-    UButton* StartButton;
+	UPROPERTY(meta = (BindWidget), BlueprintReadWrite)
+	UEditableTextBox* ServerIPEdit;
+	UPROPERTY(meta = (BindWidget), BlueprintReadWrite)
+	UButton* PlayButton;
+	UPROPERTY(meta = (BindWidget), BlueprintReadWrite)
+	UButton* ExitButton;
+	UPROPERTY(meta = (BindWidget), BlueprintReadWrite)
+	UButton* StartButton;
 
 
 
-    UFUNCTION()
-    void OnPlayClicked();
+	UFUNCTION()
+	void OnPlayClicked();
 
-    UFUNCTION()
-    void OnExitClicked();
+	UFUNCTION()
+	void OnExitClicked();
 
-    UFUNCTION()
-    void OnStartClicked();
-	
-	
+	UFUNCTION()
+	void OnStartClicked();
+
+
 };

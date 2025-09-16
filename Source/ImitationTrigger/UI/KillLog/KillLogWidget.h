@@ -19,7 +19,7 @@ class IMITATIONTRIGGER_API UKillLogWidget : public UUserWidget
 public:
 
 	UFUNCTION(BlueprintCallable, Category = "KillLogWidget")
-	void SetKillLog(UTexture2D* KillCharacter, FText KillName, FText DieName, UTexture2D* DieCharacter, UTexture2D* KillWeapon);
+	void SetKillLog(UTexture2D* KillCharacter, FText KillName, UTexture2D* DieCharacter, FText DieName, UTexture2D* KillWeapon);
 	
 
 

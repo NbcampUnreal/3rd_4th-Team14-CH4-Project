@@ -54,7 +54,7 @@ public:
 	void SetWeaponTwoInfo(FText WeaponName);
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
-	void AddKillLog(UTexture2D* KillCharacter, FText KillName, FText DieName, UTexture2D* DieCharacter, UTexture2D* KillWeapon);
+	void AddKillLog(UTexture2D* KillCharacter, FText KillName, UTexture2D* DieCharacter, FText DieName, UTexture2D* KillWeapon);
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void AddNotifyText(FText KillPlayer, FText DiePlayer);

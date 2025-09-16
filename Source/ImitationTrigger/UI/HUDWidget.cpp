@@ -79,7 +79,7 @@ void UHUDWidget::SetWeaponTwoInfo(FText WeaponName)
 	WeaponSlotNumber2->SetWeaponText(WeaponName);
 }
 
-void UHUDWidget::AddKillLog(UTexture2D* KillCharacter, FText KillName, FText DieName, UTexture2D* DieCharacter, UTexture2D* KillWeapon)
+void UHUDWidget::AddKillLog(UTexture2D* KillCharacter, FText KillName, UTexture2D* DieCharacter, FText DieName, UTexture2D* KillWeapon)
 {
 
 	if (!KillLogWidgetClass)
@@ -91,7 +91,7 @@ void UHUDWidget::AddKillLog(UTexture2D* KillCharacter, FText KillName, FText Die
 
 	if (NewKillLog && KillLogBox)
 	{
-		NewKillLog->SetKillLog(KillCharacter,KillName, DieName, DieCharacter, KillWeapon);
+		NewKillLog->SetKillLog(KillCharacter,KillName, DieCharacter, DieName, KillWeapon);
 		KillLogBox->AddChild(NewKillLog);
 		KillLogBox->ScrollToEnd();
 		

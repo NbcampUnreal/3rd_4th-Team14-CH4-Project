@@ -9,6 +9,13 @@
 #include "Item/ITItemFragment.h"
 #include "ITItemDefinition.generated.h"
 
+UENUM(BlueprintType)
+enum class EItemPickupType : uint8
+{
+	Automatic, // 자동 획득
+	Manual // 수동(상호작용) 후 획득
+};
+
 UCLASS(Blueprintable, BlueprintType, Const)
 class IMITATIONTRIGGER_API UITItemDefinition : public UDataAsset
 {
@@ -23,6 +30,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item", meta = (ClampMin = 1))
 	int32 MaxStackSize = 1;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item")
+	EItemPickupType ItemPickupType;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item|Appearance")
 	TSoftObjectPtr<UStaticMesh> ItemMesh;

@@ -36,11 +36,14 @@ void AITItemActor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (HasAuthority() && ItemInstance == nullptr && PlacedItemDefinition != nullptr)
+	if (HasAuthority())
 	{
-		UITItemInstance* NewItemInstance = NewObject<UITItemInstance>(this);
-		NewItemInstance->InitItemInstance(PlacedItemDefinition, PlacedItemQuantity);
-		InitItemActor(NewItemInstance);
+		if (ItemInstance == nullptr && PlacedItemDefinition != nullptr)
+		{
+			UITItemInstance* NewItemInstance = NewObject<UITItemInstance>(this);
+			NewItemInstance->InitItemInstance(PlacedItemDefinition, PlacedItemQuantity);
+			InitItemActor(NewItemInstance);
+		}
 	}
 }
 

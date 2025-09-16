@@ -5,6 +5,8 @@
 
 namespace ITItemGameplayTags
 {
+	/* 아이템 FX: 이펙트, 사운드 */
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Item_FX, "Item.FX", "아이템 효과");
 	/* 사용 아이템: 포션, 수류탄 */
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Item_Use_Potion, "Item.Use.Potion", "포션");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Item_Use_Grenade, "Item.Use.Grenade", "수류탄");

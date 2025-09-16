@@ -4,28 +4,61 @@
 #include "ITItemDefinition.h"
 #include "Engine/StaticMesh.h"
 
-bool UITItemDefinition::FindFragmentInBlueprint(
-	const UScriptStruct* FragmentStructType, FInstancedStruct& OutFragment) const
+TArray<FInstancedStruct> UITItemDefinition::FindFragmentByTag(FGameplayTag Tag) const
 {
-	if (!FragmentStructType)
+	TArray<FInstancedStruct> FoundFragments;
+
+	for (const FInstancedStruct& Fragment : Fragments)
 	{
-		return false;
+		if (const FITItemFragment* FragmentToMatch = Fragment.GetPtr<FITItemFragment>())
+		{
+			if (FragmentToMatch->FragmentTag.MatchesTag(Tag))
+			{
+				FoundFragments.Add(Fragment);
+			}
+		}
 	}
-	if (!FragmentStructType->IsChildOf(FITItemFragment::StaticStruct()))
+
+	return FoundFragments;
+}
+
+bool UITItemDefinition::HasItemTag(FGameplayTag TagToFind) const
+{
+	if (!TagToFind.IsValid())
 	{
 		return false;
 	}
 
 	for (const FInstancedStruct& Fragment : Fragments)
 	{
-		if (Fragment.GetScriptStruct() == FragmentStructType)
+		if (const FITItemFragment* BaseFragment = Fragment.GetPtr<FITItemFragment>())
 		{
-			OutFragment = Fragment;
-			return true;
+			if (BaseFragment->FragmentTag == TagToFind)
+			{
+				return true;
+			}
 		}
 	}
 	return false;
 }
+
+FGameplayTagContainer UITItemDefinition::GetItemTags() const
+{
+	FGameplayTagContainer FoundTags;
+
+	for (const FInstancedStruct& Fragment : Fragments)
+	{
+		if (const FITItemFragment* BaseFragment = Fragment.GetPtr<FITItemFragment>())
+		{
+			if (BaseFragment->FragmentTag.IsValid())
+			{
+				FoundTags.AddTag(BaseFragment->FragmentTag);
+			}
+		}
+	}
+	return FoundTags;
+}
+
 
 #if WITH_EDITOR
 void UITItemDefinition::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)

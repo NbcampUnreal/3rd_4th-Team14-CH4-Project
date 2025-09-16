@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
+#include "ITItemGameplayTags.h"
 #include "ITItemFragment.generated.h"
 
 // 베이스 아이템 프래그먼트
@@ -10,7 +12,9 @@ USTRUCT(BlueprintType)
 struct FITItemFragment
 {
 	GENERATED_BODY()
-	virtual ~FITItemFragment() = default;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Fragment")
+	FGameplayTag FragmentTag;
 };
 
 // 시각, 청각 효과
@@ -18,6 +22,11 @@ USTRUCT(BlueprintType)
 struct FITItemFragment_FX : public FITItemFragment
 {
 	GENERATED_BODY()
+
+	FITItemFragment_FX()
+	{
+		FragmentTag = ITItemGameplayTags::Item_FX;
+	}
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "FX")
 	TSoftObjectPtr<class UNiagaraSystem> ItemVFX;
@@ -32,6 +41,11 @@ struct FITItemFragment_Potion : public FITItemFragment
 {
 	GENERATED_BODY()
 
+	FITItemFragment_Potion()
+	{
+		FragmentTag = ITItemGameplayTags::Item_Use_Potion;
+	}
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Potion")
 	TSubclassOf<class UGameplayEffect> PotionEffect;
 
@@ -44,6 +58,11 @@ USTRUCT(BlueprintType)
 struct FITItemFragment_Grenade : public FITItemFragment
 {
 	GENERATED_BODY()
+
+	FITItemFragment_Grenade()
+	{
+		FragmentTag = ITItemGameplayTags::Item_Use_Grenade;
+	}
 
 	// 투척 어빌리티
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Grenade")

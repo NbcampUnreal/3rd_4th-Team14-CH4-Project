@@ -22,3 +22,8 @@ void UITItemInstance::InitItemInstance(UITItemDefinition* InItemDefinition, int3
 	ItemDefinition = InItemDefinition;
 	ItemQuantity = InitQuantity;
 }
+
+UITItemDefinition* UITItemInstance::GetItemDefinition() const
+{
+	return ItemDefinition;
+}

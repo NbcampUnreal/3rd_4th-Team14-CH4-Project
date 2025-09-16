@@ -36,16 +36,32 @@ public:
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Item|Fragment")
-	TArray<FInstancedStruct> FindFragmentByTag(FGameplayTag Tag) const;
-
-	UFUNCTION(BlueprintCallable, Category = "Item|Fragment")
 	bool HasItemTag(FGameplayTag TagToFind) const;
 
 	UFUNCTION(BlueprintCallable, Category = "Item|Fragment")
 	FGameplayTagContainer GetItemTags() const;
+
+	// C++용 프래그먼트 반환 함수
+	template <typename T>
+	const T* GetFragment() const;
 
 #if WITH_EDITOR
 	// 메시에 필요한 머티리얼 개수로 자동으로 변경해주는 에디터 함수
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif
 };
+
+template <typename T>
+const T* UITItemDefinition::GetFragment() const
+{
+	static_assert(TIsDerivedFrom<T, FITItemFragment>::IsDerived, "C++ 전용 템플릿 함수, 컴파일 안정성 보장");
+
+	for (const FInstancedStruct& Fragment : Fragments)
+	{
+		if (const T* FoundFragment = Fragment.GetPtr<T>())
+		{
+			return FoundFragment;
+		}
+	}
+	return nullptr;
+}

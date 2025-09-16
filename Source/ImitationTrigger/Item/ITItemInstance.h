@@ -18,6 +18,8 @@ public:
 
 	void InitItemInstance(UITItemDefinition* InItemDefinition, int32 InitQuantity = 1);
 
+	UITItemDefinition* GetItemDefinition() const;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "Item")
 	TObjectPtr<UITItemDefinition> ItemDefinition;
 

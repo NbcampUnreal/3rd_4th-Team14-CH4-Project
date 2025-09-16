@@ -4,24 +4,6 @@
 #include "ITItemDefinition.h"
 #include "Engine/StaticMesh.h"
 
-TArray<FInstancedStruct> UITItemDefinition::FindFragmentByTag(FGameplayTag Tag) const
-{
-	TArray<FInstancedStruct> FoundFragments;
-
-	for (const FInstancedStruct& Fragment : Fragments)
-	{
-		if (const FITItemFragment* FragmentToMatch = Fragment.GetPtr<FITItemFragment>())
-		{
-			if (FragmentToMatch->FragmentTag.MatchesTag(Tag))
-			{
-				FoundFragments.Add(Fragment);
-			}
-		}
-	}
-
-	return FoundFragments;
-}
-
 bool UITItemDefinition::HasItemTag(FGameplayTag TagToFind) const
 {
 	if (!TagToFind.IsValid())

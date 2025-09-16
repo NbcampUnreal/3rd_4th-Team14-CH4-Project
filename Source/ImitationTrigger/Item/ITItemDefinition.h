@@ -6,10 +6,10 @@
 #include "Engine/DataAsset.h"
 #include "GameplayTagContainer.h"
 #include "StructUtils/InstancedStruct.h"
-#include "Inventory/ITItemFragment.h"
+#include "Item/ITItemFragment.h"
 #include "ITItemDefinition.generated.h"
 
-UCLASS()
+UCLASS(Blueprintable, BlueprintType, Const)
 class IMITATIONTRIGGER_API UITItemDefinition : public UDataAsset
 {
 	GENERATED_BODY()
@@ -37,10 +37,13 @@ public:
 		meta = (ShowInnerProperties, BaseStruct = "/Script/ImitationTrigger.ITItemFragment"))
 	TArray<FInstancedStruct> Fragments;
 
-	/* 특정 Fragment를 찾아주는 헬퍼 함수
+	// 특정 Fragment를 찾아주는 블루프린트 용 헬퍼 함수
+	UFUNCTION(BlueprintCallable, Category = "Item|Fragment", meta = (DisplayName = "Find Fragment By Type"))
+	bool FindFragmentInBlueprint(const UScriptStruct* FragmentStructType, FInstancedStruct& OutFragment) const;
+	
+	/* 특정 Fragment를 찾아주는 C++ 전용 헬퍼 함수
 	* GetPtr(): 못 찾을 경우, nullptr 반환하는 점을 이용해 아래와 같이 사용
-	* if (FITEquipableFragment* EquipFragment = ItemDef->FindFragment<FITEquipableFragment>())
-	*/
+	* if (FITEquipableFragment* EquipFragment = ItemDef->FindFragment<FITEquipableFragment>()) */
 	template <typename T>
 	const T* FindFragment() const;
 

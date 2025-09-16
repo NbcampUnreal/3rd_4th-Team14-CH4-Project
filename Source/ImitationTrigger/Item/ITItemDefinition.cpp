@@ -4,6 +4,29 @@
 #include "ITItemDefinition.h"
 #include "Engine/StaticMesh.h"
 
+bool UITItemDefinition::FindFragmentInBlueprint(
+	const UScriptStruct* FragmentStructType, FInstancedStruct& OutFragment) const
+{
+	if (!FragmentStructType)
+	{
+		return false;
+	}
+	if (!FragmentStructType->IsChildOf(FITItemFragment::StaticStruct()))
+	{
+		return false;
+	}
+
+	for (const FInstancedStruct& Fragment : Fragments)
+	{
+		if (Fragment.GetScriptStruct() == FragmentStructType)
+		{
+			OutFragment = Fragment;
+			return true;
+		}
+	}
+	return false;
+}
+
 #if WITH_EDITOR
 void UITItemDefinition::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {

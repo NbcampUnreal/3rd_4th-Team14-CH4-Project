@@ -15,7 +15,7 @@ struct FITItemFragment
 
 // 시각, 청각 효과
 USTRUCT(BlueprintType)
-struct FITItemFXFragment : public FITItemFragment
+struct FITItemFragment_FX : public FITItemFragment
 {
 	GENERATED_BODY()
 
@@ -28,7 +28,7 @@ struct FITItemFXFragment : public FITItemFragment
 
 // 포션
 USTRUCT(BlueprintType)
-struct FITPotionFragment : public FITItemFragment
+struct FITItemFragment_Potion : public FITItemFragment
 {
 	GENERATED_BODY()
 
@@ -41,10 +41,11 @@ struct FITPotionFragment : public FITItemFragment
 
 // 수류탄
 USTRUCT(BlueprintType)
-struct FITGrenadeFragment : public FITItemFragment
+struct FITItemFragment_Grenade : public FITItemFragment
 {
 	GENERATED_BODY()
 
+	// 투척 어빌리티
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Grenade")
 	TSubclassOf<class UGameplayAbility> ProjectileAbility;
 

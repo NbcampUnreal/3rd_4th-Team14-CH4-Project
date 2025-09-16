@@ -6,7 +6,7 @@
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 
-void UKillLogWidget::SetKillLog(UTexture2D* KillCharacter, FText KillName, UTexture2D* KillWeapon, FText DieName, UTexture2D* DieCharacter)
+void UKillLogWidget::SetKillLog(UTexture2D* KillCharacter, FText KillName, FText DieName, UTexture2D* DieCharacter, UTexture2D* KillWeapon)
 {
 
 	if (KillPlayerImage)

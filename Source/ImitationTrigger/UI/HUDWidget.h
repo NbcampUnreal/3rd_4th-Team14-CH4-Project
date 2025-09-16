@@ -4,9 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "KillNotify/KillNotifyWidget.h"
 #include "HUDWidget.generated.h"
 
+class UVerticalBox;
+class UKillNotifyWidget;
 class UKillLogWidget;
 class UScrollBox;
 class UWeaponSlotNumberWidget;
@@ -53,7 +54,7 @@ public:
 	void SetWeaponTwoInfo(FText WeaponName);
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
-	void AddKillLog(UTexture2D* KillCharacter, FText KillName, UTexture2D* KillWeapon, FText DieName, UTexture2D* DieCharacter);
+	void AddKillLog(UTexture2D* KillCharacter, FText KillName, FText DieName, UTexture2D* DieCharacter, UTexture2D* KillWeapon);
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void AddNotifyText(FText KillPlayer, FText DiePlayer);
@@ -92,6 +93,7 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	UScrollBox* KillNotifyBox;
+
 
 private:
 

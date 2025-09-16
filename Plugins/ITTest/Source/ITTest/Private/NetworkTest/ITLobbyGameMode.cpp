@@ -100,7 +100,6 @@ void AITLobbyGameMode::JoinMatchmakingQueue(APlayerController* Player)
 	NewPlayerInfo.PlayerController = Player;
 	NewPlayerInfo.PlayerName = Player->GetName();
 
-	// 리뷰어 제안 반영: 시간 중복 계산 개선
 	float NewPlayerJoinTime = GetWorld()->GetTimeSeconds();
 	NewPlayerInfo.JoinTime = NewPlayerJoinTime;
 	LastPlayerJoinTime = NewPlayerJoinTime;

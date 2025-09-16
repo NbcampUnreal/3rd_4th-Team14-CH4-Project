@@ -8,6 +8,8 @@
 #include "AbilitySystem/ITAbilitySystemComponent.h"
 #include "Net/UnrealNetwork.h"
 
+#include "System/ITLogChannel.h"
+
 AITCharacter::AITCharacter()
 {
 	PrimaryActorTick.bCanEverTick = false;
@@ -16,6 +18,8 @@ AITCharacter::AITCharacter()
 
 	CameraComponent = CreateDefaultSubobject<UITCameraComponent>(TEXT("CameraComponent"));
 	CameraComponent->SetRelativeLocation(FVector(-300.0f, 0.0f, 75.0f));
+
+
 }
 
 
@@ -49,6 +53,7 @@ void AITCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	SetBodyMeshes();
+
 }
 
 void AITCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

@@ -34,10 +34,13 @@ public:
 	virtual void BeginPlay() override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	virtual void PossessedBy(AController* NewController) override;
+	virtual void PossessedBy(AController* NewController) override; 
+	
 
 	const UITPawnData* GetPawnData() const { return PawnData; }
 	TArray<FITCharacterPartHandle>& GetCharacterPartHandles() { return CharacterPartHandles; }
+
+
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Replicated, Category = "PawnData")

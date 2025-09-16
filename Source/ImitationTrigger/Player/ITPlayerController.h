@@ -11,6 +11,8 @@ class IMITATIONTRIGGER_API AITPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 	
+
+
 public:
 	AITPlayerController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 

@@ -7,5 +7,11 @@ UCLASS()
 class IMITATIONTRIGGER_API AITGameStateBase : public AGameStateBase
 {
 	GENERATED_BODY()
+
+
+public:
+	AITGameStateBase();
+
+
 	
 };

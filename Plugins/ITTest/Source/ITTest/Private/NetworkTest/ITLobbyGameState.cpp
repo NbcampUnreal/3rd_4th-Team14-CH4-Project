@@ -9,5 +9,4 @@ void AITLobbyGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME(AITLobbyGameState, MatchState);
 	DOREPLIFETIME(AITLobbyGameState, MatchmakingPlayerCount);
 	DOREPLIFETIME(AITLobbyGameState, CountdownTime);
-	DOREPLIFETIME(AITLobbyGameState, bMatchmakingActive);
 }

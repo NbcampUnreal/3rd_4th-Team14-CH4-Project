@@ -7,17 +7,20 @@
 void AITTitlePlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-	if (!IsLocalController()) return;
-	if (TitleUIClass)
+
+	if (IsLocalController())
 	{
-		TitleUIInstance = CreateWidget<UUserWidget>(this, TitleUIClass);
-		if (TitleUIInstance)
+		if (TitleUIClass)
 		{
-			TitleUIInstance->AddToViewport();
-			FInputModeUIOnly Mode;
-			Mode.SetWidgetToFocus(TitleUIInstance->GetCachedWidget());
-			SetInputMode(Mode);
-			bShowMouseCursor = true;
+			TitleUIInstance = CreateWidget<UUserWidget>(this, TitleUIClass);
+			if (TitleUIInstance)
+			{
+				TitleUIInstance->AddToViewport();
+				FInputModeUIOnly Mode;
+				Mode.SetWidgetToFocus(TitleUIInstance->GetCachedWidget());
+				SetInputMode(Mode);
+				bShowMouseCursor = true;
+			}
 		}
 	}
 }
@@ -29,64 +32,72 @@ void AITTitlePlayerController::JoinServer(const FString& AddressOrMap)
 
 void AITTitlePlayerController::ServerRPC_StartMatchmaking_Implementation()
 {
-	UE_LOG(LogTemp, Warning, TEXT("ServerRPC_StartMatchmaking_Implementation called on server"));
-	if (AITLobbyGameMode* GameMode = GetWorld()->GetAuthGameMode<AITLobbyGameMode>())
+	if (HasAuthority())
 	{
-		GameMode->StartMatchmaking();
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to get GameMode in ServerRPC_StartMatchmaking"));
+		UE_LOG(LogTemp, Warning, TEXT("ServerRPC_StartMatchmaking_Implementation called on server"));
+		if (AITLobbyGameMode* GameMode = GetWorld()->GetAuthGameMode<AITLobbyGameMode>())
+		{
+			GameMode->StartMatchmaking();
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Failed to get GameMode in ServerRPC_StartMatchmaking"));
+		}
 	}
 }
 
 void AITTitlePlayerController::ServerRPC_JoinMatchmakingQueue_Implementation()
 {
-	UE_LOG(LogTemp, Warning, TEXT("ServerRPC_JoinMatchmakingQueue_Implementation called on server"));
-	UE_LOG(LogTemp, Warning, TEXT("PlayerController: %s"), *GetName());
-	UE_LOG(LogTemp, Warning, TEXT("HasAuthority: %s"), HasAuthority() ? TEXT("True") : TEXT("False"));
-
-	// ÇöÀç GameMode È®ÀÎ
-	AGameModeBase* CurrentGameMode = GetWorld()->GetAuthGameMode();
-	if (!CurrentGameMode)
+	if (HasAuthority())
 	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to get current GameMode"));
-		return;
-	}
+		UE_LOG(LogTemp, Warning, TEXT("ServerRPC_JoinMatchmakingQueue_Implementation called on server"));
+		UE_LOG(LogTemp, Warning, TEXT("PlayerController: %s"), *GetName());
+		UE_LOG(LogTemp, Warning, TEXT("HasAuthority: %s"), HasAuthority() ? TEXT("True") : TEXT("False"));
 
-	UE_LOG(LogTemp, Warning, TEXT("Current GameMode: %s"), *CurrentGameMode->GetClass()->GetName());
+		// í˜„ì¬ GameMode í™•ì¸
+		AGameModeBase* CurrentGameMode = GetWorld()->GetAuthGameMode();
+		if (!CurrentGameMode)
+		{
+			UE_LOG(LogTemp, Error, TEXT("Failed to get current GameMode"));
+			return;
+		}
 
-	// Title ¸Ê¿¡¼­´Â ´Ù¸¥ ·¹º§·Î ÀÌµ¿ÇÏ¶ó´Â ¸Ş½ÃÁö¸¸ Ãâ·Â
-	if (AITTitleGameMode* TitleGameMode = Cast<AITTitleGameMode>(CurrentGameMode))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("This is Title GameMode. Need to travel to Lobby first!"));
-		// Å¬¶óÀÌ¾ğÆ®¿¡°Ô ¾Ë¸²À» º¸³»°Å³ª, Á÷Á¢ IT_TestEntry·Î ÀÌµ¿
-		//ClientRPC_ShowMessage(TEXT("Please connect to Lobby first!"));
-		return;
-	}
+		UE_LOG(LogTemp, Warning, TEXT("Current GameMode: %s"), *CurrentGameMode->GetClass()->GetName());
 
-	// LobbyGameModeÀÎ °æ¿ì ¸ÅÄª ´ë±â¿­¿¡ Ãß°¡
-	if (AITLobbyGameMode* GameMode = Cast<AITLobbyGameMode>(CurrentGameMode))
-	{
-		GameMode->JoinMatchmakingQueue(this);
-		UE_LOG(LogTemp, Warning, TEXT("Successfully joined matchmaking queue"));
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("Current GameMode is not LobbyGameMode: %s"),
-			*CurrentGameMode->GetClass()->GetName());
+		// Title ë§µì—ì„œëŠ” ë‹¤ë¥¸ ë ˆë²¨ë¡œ ì´ë™í•˜ë¼ëŠ” ë©”ì‹œì§€ë§Œ ì¶œë ¥
+		if (AITTitleGameMode* TitleGameMode = Cast<AITTitleGameMode>(CurrentGameMode))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("This is Title GameMode. Need to travel to Lobby first!"));
+			// í´ë¼ì´ì–¸íŠ¸ì—ê²Œ ì•Œë¦¼ì„ ë³´ë‚´ê±°ë‚˜, ì§ì ‘ IT_TestEntryë¡œ ì´ë™
+			return;
+		}
+
+		// LobbyGameModeì¸ ê²½ìš° ë§¤ì¹­ ëŒ€ê¸°ì—´ì— ì¶”ê°€
+		if (AITLobbyGameMode* GameMode = Cast<AITLobbyGameMode>(CurrentGameMode))
+		{
+			GameMode->JoinMatchmakingQueue(this);
+			UE_LOG(LogTemp, Warning, TEXT("Successfully joined matchmaking queue"));
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Current GameMode is not LobbyGameMode: %s"),
+				*CurrentGameMode->GetClass()->GetName());
+		}
 	}
 }
 
 void AITTitlePlayerController::ServerRPC_LeaveMatchmakingQueue_Implementation()
 {
-	UE_LOG(LogTemp, Warning, TEXT("ServerRPC_LeaveMatchmakingQueue_Implementation called on server"));
-	if (AITLobbyGameMode* GameMode = GetWorld()->GetAuthGameMode<AITLobbyGameMode>())
+	if (HasAuthority())
 	{
-		GameMode->LeaveMatchmakingQueue(this);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to get GameMode in ServerRPC_LeaveMatchmakingQueue"));
+		UE_LOG(LogTemp, Warning, TEXT("ServerRPC_LeaveMatchmakingQueue_Implementation called on server"));
+		if (AITLobbyGameMode* GameMode = GetWorld()->GetAuthGameMode<AITLobbyGameMode>())
+		{
+			GameMode->LeaveMatchmakingQueue(this);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Failed to get GameMode in ServerRPC_LeaveMatchmakingQueue"));
+		}
 	}
 }

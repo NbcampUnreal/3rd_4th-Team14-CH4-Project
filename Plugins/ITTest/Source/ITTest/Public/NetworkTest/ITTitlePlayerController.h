@@ -24,7 +24,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void JoinServer(const FString& AddressOrMap);
 
-	// ¸ÅÄª °ü·Ã RPC
+	// ë§¤ì¹­ ê´€ë ¨ RPC
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void ServerRPC_StartMatchmaking();
 

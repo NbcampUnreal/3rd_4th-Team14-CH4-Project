@@ -6,17 +6,17 @@ UENUM(BlueprintType)
 enum class EMatchState : uint8
 {
 	None,
-	WaitingForPlayers,    // ÇÃ·¹ÀÌ¾î ´ë±â
-	InMatchmaking,        // ¸ÅÄª ÁøÇà Áß
-	CountingDown,         // °ÔÀÓ ½ÃÀÛ Ä«¿îÆ®´Ù¿î
-	Playing,              // °ÔÀÓ ÁøÇà Áß
+	WaitingForPlayers,    // í”Œë ˆì´ì–´ ëŒ€ê¸°
+	InMatchmaking,        // ë§¤ì¹­ ì§„í–‰ ì¤‘
+	CountingDown,         // ê²Œì„ ì‹œì‘ ì¹´ìš´íŠ¸ë‹¤ìš´
+	Playing,              // ê²Œì„ ì§„í–‰ ì¤‘
 	Ending,
 	End
 };
 
-// ¸ÅÄª ´ë±â¿­ ÇÃ·¹ÀÌ¾î Á¤º¸
+// ë§¤ì¹­ ëŒ€ê¸°ì—´ í”Œë ˆì´ì–´ ì •ë³´
 USTRUCT(BlueprintType)
-struct FMatchmakingPlayer
+struct FMatchmakingPlayerInfo
 {
 	GENERATED_BODY()
 
@@ -27,9 +27,9 @@ struct FMatchmakingPlayer
 	FString PlayerName;
 
 	UPROPERTY()
-	float JoinTime;  // ´ë±â¿­ ÀÔÀå ½Ã°£
+	float JoinTime;  // ëŒ€ê¸°ì—´ ì…ì¥ ì‹œê°„
 
-	FMatchmakingPlayer()
+	FMatchmakingPlayerInfo()
 	{
 		PlayerController = nullptr;
 		PlayerName = TEXT("");

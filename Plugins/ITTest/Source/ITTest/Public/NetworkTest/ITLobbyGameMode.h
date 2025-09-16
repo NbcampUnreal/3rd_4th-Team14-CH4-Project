@@ -19,7 +19,7 @@ public:
 	virtual void Logout(AController* Existing) override;
 	virtual void BeginPlay() override;
 
-	// ¸ÅÄª ½Ã½ºÅÛ
+	// ë§¤ì¹­ ì‹œìŠ¤í…œ
 	UFUNCTION(BlueprintCallable)
 	void StartMatchmaking();
 
@@ -30,18 +30,18 @@ public:
 	void LeaveMatchmakingQueue(APlayerController* Player);
 
 protected:
-	// ÀüÃ¼ ÇÃ·¹ÀÌ¾î
+	// ì „ì²´ í”Œë ˆì´ì–´
 	UPROPERTY()
 	TArray<TWeakObjectPtr<APlayerController>> AliveControllers;
 
-	// ¸ÅÄª ´ë±â¿­ ÇÃ·¹ÀÌ¾îµé
+	// ë§¤ì¹­ ëŒ€ê¸°ì—´ í”Œë ˆì´ì–´ë“¤
 	UPROPERTY()
-	TArray<FMatchmakingPlayer> MatchmakingQueue;
+	TArray<FMatchmakingPlayerInfo> MatchmakingQueue;
 
 	FTimerHandle MainTimerHandle;
 	FTimerHandle MatchmakingTimerHandle;
 
-	// ¸ÅÄª ¼³Á¤
+	// ë§¤ì¹­ ì„¤ì •
 	UPROPERTY(EditDefaultsOnly, Category = "Matchmaking")
 	int32 MinimumPlayers = 3;
 
@@ -49,15 +49,15 @@ protected:
 	int32 MaximumPlayers = 10;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Matchmaking")
-	float MatchmakingTimeout = 30.0f;  // ¸ÅÄª Å¸ÀÓ¾Æ¿ô (30ÃÊ)
+	float MatchmakingTimeout = 30.0f;  // ë§¤ì¹­ íƒ€ì„ì•„ì›ƒ (30ì´ˆ)
 
 	UPROPERTY(EditDefaultsOnly, Category = "Matchmaking")
-	float CountdownTime = 5.0f;  // °ÔÀÓ ½ÃÀÛ Ä«¿îÆ®´Ù¿î
+	float CountdownTime = 5.0f;  // ê²Œì„ ì‹œì‘ ì¹´ìš´íŠ¸ë‹¤ìš´
 
 	UPROPERTY(EditDefaultsOnly, Category = "Matchmaking")
-	float NoNewPlayerTimeout = 10.0f;  // »õ ÇÃ·¹ÀÌ¾î ¾øÀ» ¶§ ´ë±â ½Ã°£
+	float NoNewPlayerTimeout = 10.0f;  // ìƒˆ í”Œë ˆì´ì–´ ì—†ì„ ë•Œ ëŒ€ê¸° ì‹œê°„
 
-	// ³»ºÎ »óÅÂ
+	// ë‚´ë¶€ ìƒíƒœ
 	float LastPlayerJoinTime = 0.0f;
 	float MatchmakingStartTime = 0.0f;
 	int32 RemainCountdown = 0;

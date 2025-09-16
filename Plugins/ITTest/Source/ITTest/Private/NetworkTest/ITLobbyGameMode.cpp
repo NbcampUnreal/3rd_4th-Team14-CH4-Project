@@ -7,7 +7,7 @@
 AITLobbyGameMode::AITLobbyGameMode()
 {
 	GameStateClass = AITLobbyGameState::StaticClass();
-	bUseSeamlessTravel = true;
+	bUseSeamlessTravel = false;
 }
 
 void AITLobbyGameMode::PostLogin(APlayerController* NewPlayer)
@@ -37,19 +37,21 @@ void AITLobbyGameMode::BeginPlay()
 	RemainCountdown = CountdownTime;
 	GetWorld()->GetTimerManager().SetTimer(MainTimerHandle, this, &AITLobbyGameMode::OnMainTick, 1.f, true);
 
-	// ∑Œ∫Ò ¡¢º”Ω√ ¿⁄µø¿∏∑Œ ∏≈ƒ™ »∞º∫»≠
+	// ÏÑúÎ≤Ñ Ïã§ÌñâÏãú ÏûêÎèôÏúºÎ°ú Îß§Ïπ≠ ÌôúÏÑ±Ìôî
 	StartMatchmaking();
 }
 
 void AITLobbyGameMode::StartMatchmaking()
 {
 	AITLobbyGameState* GS = GetGameState<AITLobbyGameState>();
-	if (!GS) return;
+	if (!GS)
+	{
+		return;
+	}
 
 	if (GS->MatchState == EMatchState::WaitingForPlayers)
 	{
 		GS->MatchState = EMatchState::InMatchmaking;
-		GS->bMatchmakingActive = true;
 		MatchmakingStartTime = GetWorld()->GetTimeSeconds();
 
 		UE_LOG(LogTemp, Warning, TEXT("Matchmaking System Activated! Players can now press Start button."));
@@ -69,16 +71,17 @@ void AITLobbyGameMode::JoinMatchmakingQueue(APlayerController* Player)
 
 	AITLobbyGameState* GS = GetGameState<AITLobbyGameState>();
 	UE_LOG(LogTemp, Warning, TEXT("GameState: %s"), GS ? TEXT("Valid") : TEXT("NULL"));
-	UE_LOG(LogTemp, Warning, TEXT("bMatchmakingActive: %s"), GS && GS->bMatchmakingActive ? TEXT("True") : TEXT("False"));
 
-	if (!GS || !GS->bMatchmakingActive)
+	bool bIsMatchmakingActive = GS && (GS->MatchState == EMatchState::InMatchmaking || GS->MatchState == EMatchState::CountingDown);
+	UE_LOG(LogTemp, Warning, TEXT("IsMatchmakingActive: %s"), bIsMatchmakingActive ? TEXT("True") : TEXT("False"));
+
+	if (!GS || !bIsMatchmakingActive)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Matchmaking is not activated!"));
 		return;
 	}
 
-	// ≥™∏”¡ˆ ±‚¡∏ ƒ⁄µÂ...
-	for (const FMatchmakingPlayer& QueuePlayer : MatchmakingQueue)
+	for (const FMatchmakingPlayerInfo& QueuePlayer : MatchmakingQueue)
 	{
 		if (QueuePlayer.PlayerController == Player)
 		{
@@ -93,23 +96,28 @@ void AITLobbyGameMode::JoinMatchmakingQueue(APlayerController* Player)
 		return;
 	}
 
-	FMatchmakingPlayer NewPlayer;
-	NewPlayer.PlayerController = Player;
-	NewPlayer.PlayerName = Player->GetName();
-	NewPlayer.JoinTime = GetWorld()->GetTimeSeconds();
+	FMatchmakingPlayerInfo NewPlayerInfo;
+	NewPlayerInfo.PlayerController = Player;
+	NewPlayerInfo.PlayerName = Player->GetName();
 
-	MatchmakingQueue.Add(NewPlayer);
-	LastPlayerJoinTime = GetWorld()->GetTimeSeconds();
+	// Î¶¨Î∑∞Ïñ¥ Ï†úÏïà Î∞òÏòÅ: ÏãúÍ∞Ñ Ï§ëÎ≥µ Í≥ÑÏÇ∞ Í∞úÏÑ†
+	float NewPlayerJoinTime = GetWorld()->GetTimeSeconds();
+	NewPlayerInfo.JoinTime = NewPlayerJoinTime;
+	LastPlayerJoinTime = NewPlayerJoinTime;
 
+	MatchmakingQueue.Add(NewPlayerInfo);
 	UpdateMatchmakingState();
 
 	UE_LOG(LogTemp, Warning, TEXT("Player '%s' joined matchmaking queue! (%d/%d players)"),
-		*NewPlayer.PlayerName, MatchmakingQueue.Num(), MaximumPlayers);
+		*NewPlayerInfo.PlayerName, MatchmakingQueue.Num(), MaximumPlayers);
 }
 
 void AITLobbyGameMode::LeaveMatchmakingQueue(APlayerController* Player)
 {
-	if (!Player) return;
+	if (!Player)
+	{
+		return;
+	}
 
 	for (int32 i = MatchmakingQueue.Num() - 1; i >= 0; i--)
 	{
@@ -127,16 +135,22 @@ void AITLobbyGameMode::LeaveMatchmakingQueue(APlayerController* Player)
 
 void AITLobbyGameMode::UpdateAliveCount()
 {
-	if (AITLobbyGameState* GS = GetGameState<AITLobbyGameState>())
+	AITLobbyGameState* GS = GetGameState<AITLobbyGameState>();
+	if (!GS)
 	{
-		GS->AlivePlayerControllerCount = AliveControllers.Num();
+		return;
 	}
+
+	GS->AlivePlayerControllerCount = AliveControllers.Num();
 }
 
 void AITLobbyGameMode::UpdateMatchmakingState()
 {
 	AITLobbyGameState* GS = GetGameState<AITLobbyGameState>();
-	if (!GS) return;
+	if (!GS)
+	{
+		return;
+	}
 
 	GS->MatchmakingPlayerCount = MatchmakingQueue.Num();
 }
@@ -144,7 +158,10 @@ void AITLobbyGameMode::UpdateMatchmakingState()
 void AITLobbyGameMode::OnMainTick()
 {
 	AITLobbyGameState* GS = GetGameState<AITLobbyGameState>();
-	if (!GS) return;
+	if (!GS)
+	{
+		return;
+	}
 
 	switch (GS->MatchState)
 	{
@@ -171,12 +188,15 @@ void AITLobbyGameMode::OnMainTick()
 void AITLobbyGameMode::CheckMatchmakingConditions()
 {
 	AITLobbyGameState* GS = GetGameState<AITLobbyGameState>();
-	if (!GS) return;
+	if (!GS)
+	{
+		return;
+	}
 
 	float CurrentTime = GetWorld()->GetTimeSeconds();
 	int32 QueueSize = MatchmakingQueue.Num();
 
-	// ¡∂∞« 1: √÷¥Î ¿Œø¯ ¥ﬁº∫
+	// Ï°∞Í±¥ 1: ÏµúÎåÄ Ïù∏Ïõê Îã¨ÏÑ±
 	if (QueueSize >= MaximumPlayers)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Maximum players reached! Game starting soon"));
@@ -185,7 +205,7 @@ void AITLobbyGameMode::CheckMatchmakingConditions()
 		return;
 	}
 
-	// ¡∂∞« 2: √÷º“ ¿Œø¯ + ªı «√∑π¿ÃæÓ æ¯¿Ω ≈∏¿”æ∆øÙ
+	// Ï°∞Í±¥ 2: ÏµúÏÜå Ïù∏Ïõê + ÏÉà ÌîåÎ†àÏù¥Ïñ¥ ÏóÜÏùå ÌÉÄÏûÑÏïÑÏõÉ
 	if (QueueSize >= MinimumPlayers)
 	{
 		float TimeSinceLastJoin = CurrentTime - LastPlayerJoinTime;
@@ -198,7 +218,7 @@ void AITLobbyGameMode::CheckMatchmakingConditions()
 		}
 	}
 
-	// ¡∂∞« 3: ∏≈ƒ™ ¿¸√º ≈∏¿”æ∆øÙ
+	// Ï°∞Í±¥ 3: Îß§Ïπ≠ Ï†ÑÏ≤¥ ÌÉÄÏûÑÏïÑÏõÉ
 	float TotalMatchmakingTime = CurrentTime - MatchmakingStartTime;
 	if (TotalMatchmakingTime >= MatchmakingTimeout)
 	{
@@ -220,7 +240,10 @@ void AITLobbyGameMode::CheckMatchmakingConditions()
 void AITLobbyGameMode::StartGame()
 {
 	AITLobbyGameState* GS = GetGameState<AITLobbyGameState>();
-	if (!GS) return;
+	if (!GS)
+	{
+		return;
+	}
 
 	GS->MatchState = EMatchState::Playing;
 
@@ -231,14 +254,16 @@ void AITLobbyGameMode::StartGame()
 void AITLobbyGameMode::ResetMatchmaking()
 {
 	AITLobbyGameState* GS = GetGameState<AITLobbyGameState>();
-	if (!GS) return;
+	if (!GS)
+	{
+		return;
+	}
 
-	GS->MatchState = EMatchState::InMatchmaking;  // ¥ŸΩ√ ∏≈ƒ™ ªÛ≈¬∑Œ
-	GS->bMatchmakingActive = true;  // »∞º∫ ªÛ≈¬ ¿Ø¡ˆ
+	GS->MatchState = EMatchState::InMatchmaking;  // Îã§Ïãú Îß§Ïπ≠ ÏÉÅÌÉúÎ°ú
 	GS->MatchmakingPlayerCount = MatchmakingQueue.Num();
 	GS->CountdownTime = 0;
 
-	// ¥Î±‚ø≠¿∫ ¿Ø¡ˆ«œ∞Ì ≈∏¿Ã∏”∏∏ ¿ÁΩ√¿€
+	// ÎåÄÍ∏∞Ïó¥ÏùÄ Ïú†ÏßÄÌïòÍ≥† ÌÉÄÏù¥Î®∏Îßå Ïû¨ÏãúÏûë
 	RemainCountdown = CountdownTime;
 	MatchmakingStartTime = GetWorld()->GetTimeSeconds();
 

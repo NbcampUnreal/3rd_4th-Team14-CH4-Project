@@ -18,7 +18,7 @@ void UITTitleWidget::NativeConstruct()
 
 void UITTitleWidget::OnPlayClicked()
 {
-	// º≠πˆ ¡¢º” πˆ∆∞
+	// ÏÑúÎ≤Ñ Ï†ëÏÜç Î≤ÑÌäº
 	if (AITTitlePlayerController* PC = GetOwningPlayer<AITTitlePlayerController>())
 	{
 		const FString Address = ServerIPEdit ? ServerIPEdit->GetText().ToString() : TEXT("127.0.0.1:7777");
@@ -29,7 +29,7 @@ void UITTitleWidget::OnPlayClicked()
 
 void UITTitleWidget::OnExitClicked()
 {
-	// ∞‘¿” ¡æ∑·
+	// Í≤åÏûÑ Ï¢ÖÎ£å
 	UKismetSystemLibrary::QuitGame(GetWorld(), nullptr, EQuitPreference::Quit, false);
 }
 
@@ -37,25 +37,14 @@ void UITTitleWidget::OnStartClicked()
 {
 	if (AITTitlePlayerController* PC = GetOwningPlayer<AITTitlePlayerController>())
 	{
-		// ≥◊∆Æøˆ≈© ªÛ≈¬ »Æ¿Œ
+		// ÎÑ§Ìä∏ÏõåÌÅ¨ ÏÉÅÌÉú ÌôïÏù∏
 		UE_LOG(LogTemp, Warning, TEXT("=== Start Button Debug Info ==="));
 		UE_LOG(LogTemp, Warning, TEXT("PlayerController: %s"), PC ? TEXT("Valid") : TEXT("NULL"));
 		UE_LOG(LogTemp, Warning, TEXT("IsLocalController: %s"), PC->IsLocalController() ? TEXT("True") : TEXT("False"));
 		UE_LOG(LogTemp, Warning, TEXT("NetMode: %d"), GetWorld()->GetNetMode());
 		UE_LOG(LogTemp, Warning, TEXT("HasAuthority: %s"), PC->HasAuthority() ? TEXT("True") : TEXT("False"));
 
-		// ¡˜¡¢ ∑Œƒ√ GameModeø° ¡¢±Ÿ Ω√µµ (≈◊Ω∫∆ÆøÎ)
-		if (GetWorld()->GetNetMode() == NM_Standalone || GetWorld()->GetNetMode() == NM_ListenServer)
-		{
-			if (AITLobbyGameMode* GameMode = GetWorld()->GetAuthGameMode<AITLobbyGameMode>())
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Direct GameMode access successful! Calling JoinMatchmakingQueue directly"));
-				GameMode->JoinMatchmakingQueue(PC);
-				return;
-			}
-		}
-
-		// ServerRPC »£√‚
+		// ServerRPC Ìò∏Ï∂ú
 		UE_LOG(LogTemp, Warning, TEXT("Calling ServerRPC_JoinMatchmakingQueue"));
 		PC->ServerRPC_JoinMatchmakingQueue();
 		UE_LOG(LogTemp, Warning, TEXT("ServerRPC_JoinMatchmakingQueue called"));

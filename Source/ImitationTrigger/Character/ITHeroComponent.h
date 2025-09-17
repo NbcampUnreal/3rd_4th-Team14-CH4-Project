@@ -36,6 +36,7 @@ protected:
 	void Input_Move(const FInputActionValue& InputActionValue);
 	void Input_LookMouse(const FInputActionValue& InputActionValue);
 	void Input_Crouch(const FInputActionValue& InputActionValue);
+	void Input_Aim(const FInputActionValue& InputActionValue);
 
 private:
 	FORCEINLINE AITCharacter* GetOwnerCharacter();

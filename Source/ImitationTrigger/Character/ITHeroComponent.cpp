@@ -119,7 +119,9 @@ void UITHeroComponent::InitializePlayerInput(UInputComponent* PlayerInputCompone
 			const FITGameplayTags& ITGameplayTag = FITGameplayTags::Get();
 			InputComponent->BindNativeAction(InputConfig, ITGameplayTag.InputTag_Move, ETriggerEvent::Triggered, this, &ThisClass::Input_Move);
 			InputComponent->BindNativeAction(InputConfig, ITGameplayTag.InputTag_Look_Mouse, ETriggerEvent::Triggered, this, &ThisClass::Input_LookMouse);
+			InputComponent->BindNativeAction(InputConfig, ITGameplayTag.InputTag_Look_Aim, ETriggerEvent::Triggered, this, &ThisClass::Input_Aim);
 			InputComponent->BindNativeAction(InputConfig, ITGameplayTag.InputTag_Crouch, ETriggerEvent::Triggered, this, &ThisClass::Input_Crouch);
+		
 		}
 	}
 }
@@ -207,6 +209,13 @@ void UITHeroComponent::Input_Crouch(const FInputActionValue& InputActionValue)
 			Character->Crouch();
 		}
 	}
+}
+
+void UITHeroComponent::Input_Aim(const FInputActionValue& InputActionValue)
+{
+	const bool bIsPressed = InputActionValue.Get<bool>();
+	UE_LOG(LogTemp, Log, TEXT("Aim pressed? %s"), bIsPressed ? TEXT("true") : TEXT("false"));
+
 }
 
 AITCharacter* UITHeroComponent::GetOwnerCharacter()

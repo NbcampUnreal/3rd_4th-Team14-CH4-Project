@@ -12,7 +12,7 @@ FGameplayTagContainer UITItemDefinition::GetItemTags() const
 	{
 		if (Fragment)
 		{
-			AllTags.AddTag(Fragment->FragmentTag);
+			AllTags.AppendTags(Fragment->FragmentTags);
 		}
 	}
 	return AllTags;

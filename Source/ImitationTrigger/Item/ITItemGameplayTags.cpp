@@ -5,19 +5,27 @@
 
 namespace ITItemGameplayTags
 {
-	/* 아이템 FX: 이펙트, 사운드 */
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Item_FX, "Item.FX", "아이템 효과");
-	/* 사용 아이템: 포션, 수류탄 */
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Item_Use_Potion, "Item.Use.Potion", "포션");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Item_Use_Grenade, "Item.Use.Grenade", "수류탄");
-	/* 장착 아이템: 헬멧, 쉴드, 가방 */
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Item_Equip_Helmet, "Item.Equip.Helmet", "헬멧");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Item_Equip_Shield, "Item.Equip.Shield", "쉴드");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Item_Equip_Bag, "Item.Equip.Bag", "가방");
-	/* 기타 아이템: 탄약, 무기 부착물 */
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Item_Etc_Ammo, "Item.Etc.Ammo", "탄약");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Item_Etc_Attachment, "Item.Etc.Attachment", "무기 부착물");
-	/* 무기 아이템: 라이플, 샷건 등 */
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Item_Weapon_Rifle, "Item.Weapon.Rifle", "라이플");
+	// == 아이템 ==
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Item, "Item", "아이템");
+	/* 아이템 기타 프래그먼트 */
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Item_Etc, "Item.Etc", "아이템 기타 프래그먼트");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Item_Etc_FX, "Item.Etc.FX", "아이템 액터 이펙트, 사운드 효과");
+	/* 인벤토리 아이템 */
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Item_Inventory, "Item.Inventory", "인벤토리 아이템");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Item_Inventory_Potion, "Item.Inventory.Potion", "포션");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Item_Inventory_Grenade, "Item.Inventory.Grenade", "수류탄");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Item_Inventory_Attachment, "Item.Inventory.Attachment", "무기 부착물");
+	/* 장착 아이템 */
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Item_Equipment, "Item.Equipment", "장비 아이템");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Item_Equipment_Helmet, "Item.Equipment.Helmet", "헬멧");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Item_Equipment_Shield, "Item.Equipment.Shield", "쉴드");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Item_Equipment_Bag, "Item.Equipment.Bag", "가방");
+	/* 탄약 아이템 */
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Item_Ammo, "Item.Ammo", "탄약 아이템");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Item_Ammo_Rifle, "Item.Ammo.Rifle", "소총 탄약");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Item_Ammo_Shotgun, "Item.Ammo.Shotgun", "산탄총 탄약");
+	/* 무기 아이템 */
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Item_Weapon, "Item.Weapon", "무기 아이템");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Item_Weapon_Rifle, "Item.Weapon.Rifle", "소총");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Item_Weapon_Shotgun, "Item.Weapon.Shotgun", "산탄총");
 }

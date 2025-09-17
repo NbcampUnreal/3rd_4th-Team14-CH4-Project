@@ -16,5 +16,5 @@ class IMITATIONTRIGGER_API UITItemFragment : public UObject
 
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Fragment")
-	FGameplayTag FragmentTag;
+	FGameplayTagContainer FragmentTags;
 };

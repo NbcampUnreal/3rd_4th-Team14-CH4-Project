@@ -69,15 +69,15 @@ void AITItemActor::UpdateAppearance()
 	}
 
 	const UITItemDefinition* ItemDefinition = ItemInstance->ItemDefinition;
-	if (UStaticMesh* NewMesh = ItemDefinition->ItemMesh.LoadSynchronous())
+	if (ItemDefinition->ItemMesh)
 	{
-		StaticMeshComponent->SetStaticMesh(NewMesh);
+		StaticMeshComponent->SetStaticMesh(ItemDefinition->ItemMesh);
 	}
 	for (int32 i = 0; i < ItemDefinition->ItemMaterial.Num(); i++)
 	{
-		if (UMaterialInterface* NewMaterial = ItemDefinition->ItemMaterial[i].LoadSynchronous())
+		if (ItemDefinition->ItemMaterial[i])
 		{
-			StaticMeshComponent->SetMaterial(i, NewMaterial);
+			StaticMeshComponent->SetMaterial(i, ItemDefinition->ItemMaterial[i]);
 		}
 	}
 }

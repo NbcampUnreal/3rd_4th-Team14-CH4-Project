@@ -1,11 +1,46 @@
 #pragma once
 
+#include "AbilitySystemInterface.h"
+#include "AbilitySystem/ITAbilitySet.h"
 #include "GameFramework/PlayerState.h"
 #include "ITPlayerState.generated.h"
 
+class AITPlayerController;
+class AITCharacter;
+class UITAbilitySystemComponent;
+class UITHealthSet;
+
 UCLASS()
-class IMITATIONTRIGGER_API AITPlayerState : public APlayerState
+class IMITATIONTRIGGER_API AITPlayerState : public APlayerState, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 	
+public:
+	AITPlayerState(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+	UFUNCTION(BlueprintCallable, Category = "ITPlayerState")
+	AITPlayerController* GetITPlayerController() const;
+
+	UFUNCTION(BlueprintCallable, Category = "ITPlayerState")
+	AITCharacter* GetITCharacter() const;
+
+	UFUNCTION(BlueprintCallable, Category = "ITPlayerState")
+	UITAbilitySystemComponent* GetITAbilitySystemComponent() const { return AbilitySystemComponent; }
+
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
+protected:
+	UPROPERTY()
+	TObjectPtr<const UITHealthSet> HealthSet;
+
+private:
+	UPROPERTY(VisibleAnywhere, Category = "ITPlayerState|AbilitySystemComponent")
+	TObjectPtr<UITAbilitySystemComponent> AbilitySystemComponent;
+
+	UFUNCTION()
+	void OnReadyPawnData(APlayerState* Player, APawn* NewPawn, APawn* OldPawn);
+
+	void InitAttributeSet(UDataTable* InitDataTable);
+
+	FITAbilitySet_GrantedHandles GrantedHandles;
 };

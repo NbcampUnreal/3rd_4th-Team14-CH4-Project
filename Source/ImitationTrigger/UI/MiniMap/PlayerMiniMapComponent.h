@@ -34,6 +34,8 @@ protected:
 
 	virtual void BeginPlay() override;
 
+	UPROPERTY()
+	AActor* OwnerActor = nullptr;
 	
 private:
 

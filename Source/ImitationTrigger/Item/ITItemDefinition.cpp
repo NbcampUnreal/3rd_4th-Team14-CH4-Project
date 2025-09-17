@@ -2,45 +2,39 @@
 
 
 #include "ITItemDefinition.h"
+#include "Fragment/ITItemFragment.h"
 #include "Engine/StaticMesh.h"
-
-bool UITItemDefinition::HasItemTag(FGameplayTag TagToFind) const
-{
-	if (!TagToFind.IsValid())
-	{
-		return false;
-	}
-
-	for (const FInstancedStruct& Fragment : Fragments)
-	{
-		if (const FITItemFragment* BaseFragment = Fragment.GetPtr<FITItemFragment>())
-		{
-			if (BaseFragment->FragmentTag == TagToFind)
-			{
-				return true;
-			}
-		}
-	}
-	return false;
-}
 
 FGameplayTagContainer UITItemDefinition::GetItemTags() const
 {
-	FGameplayTagContainer FoundTags;
-
-	for (const FInstancedStruct& Fragment : Fragments)
+	FGameplayTagContainer AllTags = ItemTags;
+	for (UITItemFragment* Fragment : Fragments)
 	{
-		if (const FITItemFragment* BaseFragment = Fragment.GetPtr<FITItemFragment>())
+		if (Fragment)
 		{
-			if (BaseFragment->FragmentTag.IsValid())
+			AllTags.AddTag(Fragment->FragmentTag);
+		}
+	}
+	return AllTags;
+}
+
+UITItemFragment* UITItemDefinition::FindFragmentByClass(const TSubclassOf<UITItemFragment> FragmentClass) const
+{
+	UITItemFragment* FoundFragment = nullptr;
+
+	if (UClass* TargetClass = FragmentClass.Get())
+	{
+		for (UITItemFragment* Fragment : Fragments)
+		{
+			if (Fragment && Fragment->IsA(TargetClass))
 			{
-				FoundTags.AddTag(BaseFragment->FragmentTag);
+				FoundFragment = Fragment;
+				break;
 			}
 		}
 	}
-	return FoundTags;
+	return FoundFragment;
 }
-
 
 #if WITH_EDITOR
 void UITItemDefinition::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
@@ -55,13 +49,10 @@ void UITItemDefinition::PostEditChangeProperty(FPropertyChangedEvent& PropertyCh
 
 	if (PropertyName == GET_MEMBER_NAME_CHECKED(UITItemDefinition, ItemMesh))
 	{
-		if (!ItemMesh.IsNull())
+		if (ItemMesh)
 		{
-			if (UStaticMesh* Mesh = ItemMesh.LoadSynchronous())
-			{
-				const int32 MaterialSlots = Mesh->GetStaticMaterials().Num();
-				ItemMaterial.SetNum(MaterialSlots);
-			}
+			const int32 MaterialSlots = ItemMesh->GetStaticMaterials().Num();
+			ItemMaterial.SetNum(MaterialSlots);
 		}
 		else
 		{

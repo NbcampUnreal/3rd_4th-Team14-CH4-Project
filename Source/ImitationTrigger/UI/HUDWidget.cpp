@@ -3,6 +3,7 @@
 
 #include "UI/HUDWidget.h"
 
+#include "Components/Image.h"
 #include "Components/ScrollBox.h"
 #include "Components/VerticalBox.h"
 #include "KillLog/KillLogWidget.h"
@@ -11,7 +12,7 @@
 #include "UltimateGauge/UltimateGaugeWidget.h"
 #include "WeaponSlot/WeaponSlotNumberWidget.h"
 #include "WeaponSlot/WeaponSlotWidget.h"
-
+#include "Engine/TextureRenderTarget2D.h"
 
 void UHUDWidget::NativeConstruct()
 {
@@ -115,4 +116,15 @@ void UHUDWidget::AddNotifyText(FText KillPlayer, FText DiePlayer)
 		KillNotifyBox->ScrollToEnd();
 	}
 	
+}
+
+void UHUDWidget::SetupMiniMap(UTextureRenderTarget2D* RenderTarget)
+{
+	if (MiniMapImage && RenderTarget)
+	{
+		FSlateBrush NewBrush;
+		NewBrush.SetResourceObject(RenderTarget);
+		NewBrush.ImageSize = FVector2d(512.0f, 512.0f);
+		MiniMapImage->SetBrush(NewBrush);
+	}
 }

@@ -16,6 +16,7 @@ class UPlayerBarWidget;
 class UUltimateGaugeWidget;
 class UTextBlock;
 class UImage;
+class UTextureRenderTarget2D;
 class UMaterialInstanceDynamic;
 
 
@@ -58,6 +59,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void AddNotifyText(FText KillPlayer, FText DiePlayer);
+
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void SetupMiniMap(UTextureRenderTarget2D* RenderTarget);
 	
 	
 protected:
@@ -93,6 +97,9 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	UScrollBox* KillNotifyBox;
+
+	UPROPERTY(meta = (BindWidget))
+	UImage* MiniMapImage;
 
 
 private:

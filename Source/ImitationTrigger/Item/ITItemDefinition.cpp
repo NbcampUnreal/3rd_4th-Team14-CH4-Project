@@ -5,17 +5,15 @@
 #include "Fragment/ITItemFragment.h"
 #include "Engine/StaticMesh.h"
 
-FGameplayTagContainer UITItemDefinition::GetItemTags() const
+UITItemDefinition::UITItemDefinition()
 {
-	FGameplayTagContainer AllTags = ItemTags;
 	for (UITItemFragment* Fragment : Fragments)
 	{
 		if (Fragment)
 		{
-			AllTags.AppendTags(Fragment->FragmentTags);
+			ItemTags.AppendTags(Fragment->FragmentTags);
 		}
 	}
-	return AllTags;
 }
 
 UITItemFragment* UITItemDefinition::FindFragmentByClass(const TSubclassOf<UITItemFragment> FragmentClass) const

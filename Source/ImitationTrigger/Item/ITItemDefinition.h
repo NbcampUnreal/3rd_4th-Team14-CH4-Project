@@ -37,8 +37,7 @@ public:
 	TArray<TObjectPtr<UITItemFragment>> Fragments;
 
 public:
-	UFUNCTION(BlueprintCallable, Category = "Item|Tags")
-	FGameplayTagContainer GetItemTags() const;
+	UITItemDefinition();
 
 	UFUNCTION(BlueprintCallable, Category = "Item|Fragment")
 	UITItemFragment* FindFragmentByClass(const TSubclassOf<UITItemFragment> FragmentClass) const;

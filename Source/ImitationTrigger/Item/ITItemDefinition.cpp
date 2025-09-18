@@ -51,6 +51,18 @@ void UITItemDefinition::PostEditChangeProperty(FPropertyChangedEvent& PropertyCh
 		{
 			const int32 MaterialSlots = ItemMesh->GetStaticMaterials().Num();
 			ItemMaterial.SetNum(MaterialSlots);
+
+			for (int32 i = 0; i < MaterialSlots; i++)
+			{
+				if (ItemMesh->GetStaticMaterials()[i].MaterialInterface)
+				{
+					ItemMaterial[i] = ItemMesh->GetStaticMaterials()[i].MaterialInterface;
+				}
+				else
+				{
+					ItemMaterial[i] = nullptr;
+				}
+			}
 		}
 		else
 		{

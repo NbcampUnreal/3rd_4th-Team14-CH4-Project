@@ -35,16 +35,14 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "IT|Component")
 	TObjectPtr<UStaticMeshComponent> StaticMeshComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, ReplicatedUsing = OnRep_ItemInstance, Category = "IT")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ItemInstance, Category = "IT")
 	TObjectPtr<UITItemInstance> ItemInstance;
 
 	// 레벨 배치 변수
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "IT|Placed",
-		meta = (EditCondition = "ItemInstance == nullptr"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "IT|Placed")
 	TObjectPtr<UITItemDefinition> PlacedItemDefinition;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "IT|Placed",
-		meta = (EditCondition = "ItemInstance == nullptr", ClampMin = 1))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "IT|Placed", meta = (ClampMin = 1))
 	int32 PlacedItemQuantity = 1;
 
 private:

@@ -118,13 +118,3 @@ void UHUDWidget::AddNotifyText(FText KillPlayer, FText DiePlayer)
 	
 }
 
-void UHUDWidget::SetupMiniMap(UTextureRenderTarget2D* RenderTarget)
-{
-	if (MiniMapImage && RenderTarget)
-	{
-		FSlateBrush NewBrush;
-		NewBrush.SetResourceObject(RenderTarget);
-		NewBrush.ImageSize = FVector2d(512.0f, 512.0f);
-		MiniMapImage->SetBrush(NewBrush);
-	}
-}

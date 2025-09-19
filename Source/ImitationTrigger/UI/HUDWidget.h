@@ -16,7 +16,6 @@ class UPlayerBarWidget;
 class UUltimateGaugeWidget;
 class UTextBlock;
 class UImage;
-class UTextureRenderTarget2D;
 class UMaterialInstanceDynamic;
 
 

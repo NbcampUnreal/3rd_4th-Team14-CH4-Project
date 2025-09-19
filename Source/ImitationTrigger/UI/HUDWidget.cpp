@@ -12,7 +12,6 @@
 #include "UltimateGauge/UltimateGaugeWidget.h"
 #include "WeaponSlot/WeaponSlotNumberWidget.h"
 #include "WeaponSlot/WeaponSlotWidget.h"
-#include "Engine/TextureRenderTarget2D.h"
 
 void UHUDWidget::NativeConstruct()
 {

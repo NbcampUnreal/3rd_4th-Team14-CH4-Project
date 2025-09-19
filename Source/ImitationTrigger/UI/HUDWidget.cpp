@@ -117,3 +117,18 @@ void UHUDWidget::AddNotifyText(FText KillPlayer, FText DiePlayer)
 	
 }
 
+void UHUDWidget::SetItemBag()
+{
+	
+}
+
+void UHUDWidget::SetItemArmor()
+{
+	
+}
+
+void UHUDWidget::SetItemHelmet()
+{
+	
+}
+

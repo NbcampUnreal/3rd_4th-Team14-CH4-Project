@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "HUDWidget.generated.h"
 
+class UItemSlotWidget;
 class UVerticalBox;
 class UKillNotifyWidget;
 class UKillLogWidget;
@@ -59,7 +60,15 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void AddNotifyText(FText KillPlayer, FText DiePlayer);
 
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void SetItemBag();
+
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void SetItemArmor();
 	
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void SetItemHelmet();
+
 protected:
 	
 	virtual void NativeConstruct() override;
@@ -93,6 +102,15 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	UScrollBox* KillNotifyBox;
+
+	UPROPERTY(meta = (BindWidget))
+	UItemSlotWidget* ItemSlot_Bag;
+
+	UPROPERTY(meta = (BindWidget))
+	UItemSlotWidget* ItemSlot_Armor;
+
+	UPROPERTY(meta = (BindWidget))
+	UItemSlotWidget* ItemSlot_Helmet;
 
 
 

@@ -28,4 +28,7 @@ namespace ITItemGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Item_Weapon, "Item.Weapon", "무기 아이템");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Item_Weapon_Rifle, "Item.Weapon.Rifle", "소총");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Item_Weapon_Shotgun, "Item.Weapon.Shotgun", "산탄총");
+
+	/* Weapon Ability Input Config Tag */
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(InputTag_Weapon_Fire, "InputTag.Weapon.Fire", "발사 어빌리티 인풋");
 }

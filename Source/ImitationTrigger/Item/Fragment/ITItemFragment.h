@@ -15,6 +15,6 @@ class IMITATIONTRIGGER_API UITItemFragment : public UObject
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (Category = "Fragment"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (Categories = "Fragment"))
 	FGameplayTagContainer FragmentTags;
 };

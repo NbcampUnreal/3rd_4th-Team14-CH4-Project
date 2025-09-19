@@ -1,6 +1,7 @@
-#include "NetworkTest/ITLobbyGameState.h"
+#include "Network/ITLobbyGameState.h"
 #include "Engine/Engine.h"
 #include "Net/UnrealNetwork.h"
+
 
 void AITLobbyGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -9,4 +10,7 @@ void AITLobbyGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME(AITLobbyGameState, MatchState);
 	DOREPLIFETIME(AITLobbyGameState, MatchmakingPlayerCount);
 	DOREPLIFETIME(AITLobbyGameState, CountdownTime);
+
+	DOREPLIFETIME(AITLobbyGameState, ActiveMatchSessions);
+	DOREPLIFETIME(AITLobbyGameState, ActiveMatchCount);
 }

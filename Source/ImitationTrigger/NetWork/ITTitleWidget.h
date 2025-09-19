@@ -8,7 +8,7 @@ class UEditableTextBox;
 class UButton;
 
 UCLASS()
-class ITTEST_API UITTitleWidget : public UUserWidget
+class IMITATIONTRIGGER_API UITTitleWidget : public UUserWidget
 {
 	GENERATED_BODY()
 

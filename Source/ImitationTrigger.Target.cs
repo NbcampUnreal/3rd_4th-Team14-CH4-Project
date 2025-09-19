@@ -5,11 +5,11 @@ using System.Collections.Generic;
 
 public class ImitationTriggerTarget : TargetRules
 {
-    public ImitationTriggerTarget(TargetInfo Target) : base(Target)
-    {
-        Type = TargetType.Game;
-        DefaultBuildSettings = BuildSettingsVersion.V5;
-        IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_5;
-        ExtraModuleNames.Add("ImitationTrigger");
-    }
+	public ImitationTriggerTarget(TargetInfo Target) : base(Target)
+	{
+		Type = TargetType.Game;
+		DefaultBuildSettings = BuildSettingsVersion.V5;
+		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_5;
+		ExtraModuleNames.Add("ImitationTrigger");
+	}
 }

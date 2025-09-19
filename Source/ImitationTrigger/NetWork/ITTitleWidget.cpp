@@ -1,9 +1,9 @@
-#include "NetworkTest/ITTitleWidget.h"
+#include "Network/ITTitleWidget.h"
 #include "Components/EditableTextBox.h"
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
-#include "NetworkTest/ITTitlePlayerController.h"
-#include "NetworkTest/ITLobbyGameMode.h"
+#include "Network/ITTitlePlayerController.h"
+#include "Network/ITLobbyGameMode.h"
 
 void UITTitleWidget::NativeConstruct()
 {

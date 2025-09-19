@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "AbilitySystem/ITAbilitySet.h"
+#include "Cosmetics/ITCharacterPartType.h"
 #include "ITWeaponManagerComponent.generated.h"
 
 class UITItemInstance;
@@ -34,4 +35,7 @@ protected:
 
 	UPROPERTY()
 	FITAbilitySet_GrantedHandles GrantedHandles;
+
+	UPROPERTY()
+	FITCharacterPartHandle WeaponPartHandle;
 };

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Cosmetics/ITCharacterPartType.h"
 #include "Item/ITItemDefinition.h"
 #include "ITItemDefinition_Weapon.generated.h"
 
@@ -16,4 +17,7 @@ class IMITATIONTRIGGER_API UITItemDefinition_Weapon : public UITItemDefinition
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	TObjectPtr<UITAbilitySet> WeaponAbilitySet;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+	FITCharacterPart WeaponPart;
 };

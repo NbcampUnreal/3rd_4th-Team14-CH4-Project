@@ -23,7 +23,10 @@ public:
 	void AddInitCharacterParts(const TArray<FITCharacterPart>& InitCharacterParts);
 	void ClearCharacterParts();
 
+	UFUNCTION(BlueprintCallable, Category = "IT|Cosmetic")
 	FITCharacterPartHandle AddCharacterPart(const FITCharacterPart& NewPart);
+	
+	UFUNCTION(BlueprintCallable, Category = "IT|Cosmetic")
 	void RemoveCharacterPart(FITCharacterPartHandle Handle);
 	
 

@@ -6,6 +6,7 @@
 #include "Item/ITItemInstance.h"
 #include "Player/ITPlayerState.h"
 #include "AbilitySystem/ITAbilitySystemComponent.h"
+#include "Cosmetics/ITCharacterPartComponent.h"
 #include "Net/UnrealNetwork.h"
 
 UITWeaponManagerComponent::UITWeaponManagerComponent()
@@ -44,6 +45,14 @@ void UITWeaponManagerComponent::ServerRPC_EquipWeapon_Implementation(UITItemInst
 			return;
 		}
 
+		UITCharacterPartComponent* CPC = PlayerState->GetPawn()->FindComponentByClass<UITCharacterPartComponent>();
+		if (!CPC)
+		{
+			return;
+		}
+
+		WeaponPartHandle = CPC->AddCharacterPart(WeaponDefinition->WeaponPart);
+
 		ServerRPC_UnequipWeapon();
 
 		if (WeaponDefinition->WeaponAbilitySet)
@@ -71,9 +80,19 @@ void UITWeaponManagerComponent::ServerRPC_UnequipWeapon_Implementation()
 		{
 			return;
 		}
-		
+
+		UITCharacterPartComponent* CPC = PlayerState->GetPawn()->FindComponentByClass<UITCharacterPartComponent>();
+		if (!CPC)
+		{
+			return;
+		}
+
+		if (WeaponPartHandle.IsValid())
+		{
+			CPC->RemoveCharacterPart(WeaponPartHandle);
+		}
+
 		GrantedHandles.TakeFromAbilitySystem(AbilitySystemComponent);
 		PrimaryWeaponInstance = nullptr;
-		// TODO: 장착 해제 시, 무기 아이템 오브젝트가 GC에 들어가지 않도록 조치 필요
 	}
 }

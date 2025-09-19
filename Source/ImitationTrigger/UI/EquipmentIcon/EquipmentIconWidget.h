@@ -4,16 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "ItemSlotWidget.generated.h"
+#include "EquipmentIconWidget.generated.h"
 
 class UImage;
 /**
  * 
  */
 UCLASS()
-class IMITATIONTRIGGER_API UItemSlotWidget : public UUserWidget
+class IMITATIONTRIGGER_API UEquipmentIconWidget : public UUserWidget
 {
 	GENERATED_BODY()
+
 
 public:
 	
@@ -27,9 +28,8 @@ public:
 protected:
 
 	UPROPERTY(meta = (BindWidget))
-	UImage* ItemSlot_0;
+	UImage* EquipmentIcon_0;
 
 	UPROPERTY(meta = (BindWidget))
-	UImage* ItemSlot_1;
-	
+	UImage* EquipmentIcon_1;
 };

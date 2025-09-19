@@ -58,7 +58,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void AddNotifyText(FText KillPlayer, FText DiePlayer);
-	
+
 	
 protected:
 	
@@ -93,6 +93,7 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	UScrollBox* KillNotifyBox;
+
 
 
 private:

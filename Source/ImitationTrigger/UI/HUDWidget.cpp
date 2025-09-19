@@ -3,6 +3,7 @@
 
 #include "UI/HUDWidget.h"
 
+#include "Components/Image.h"
 #include "Components/ScrollBox.h"
 #include "Components/VerticalBox.h"
 #include "KillLog/KillLogWidget.h"
@@ -11,7 +12,6 @@
 #include "UltimateGauge/UltimateGaugeWidget.h"
 #include "WeaponSlot/WeaponSlotNumberWidget.h"
 #include "WeaponSlot/WeaponSlotWidget.h"
-
 
 void UHUDWidget::NativeConstruct()
 {
@@ -116,3 +116,4 @@ void UHUDWidget::AddNotifyText(FText KillPlayer, FText DiePlayer)
 	}
 	
 }
+

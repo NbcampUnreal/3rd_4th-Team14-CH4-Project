@@ -18,6 +18,7 @@ class IMITATIONTRIGGER_API AITItemActor : public AActor
 public:
 	AITItemActor();
 
+	UFUNCTION(BlueprintCallable, Category = "IT|Item")
 	UITItemInstance* GetItemInstance() const;
 
 	void InitItemActor(UITItemInstance* InitItemInstance);

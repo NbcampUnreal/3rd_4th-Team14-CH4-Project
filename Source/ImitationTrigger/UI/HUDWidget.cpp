@@ -35,7 +35,7 @@ void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 		return;
 	}
 
-	if (FireCount > 0 && GetWorld()->GetTimeSeconds() - LastFireTime >= 1.5f)
+	if (FireCount > 0 && GetWorld()->GetTimeSeconds() - LastFireTime >= SpreadRecoveryTime)
 	{
 		bIsFire = false;
 		FireCount = 0;
@@ -45,14 +45,14 @@ void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	{
 		if (FireSpread < MaxFireSpread)
 		{
-			FireSpread += 200 * InDeltaTime;
+			FireSpread += IncreaseFireSpreadSpeed * InDeltaTime;
 		}
 	}
 	else
 	{
 		if (FireSpread > 0)
 		{
-			FireSpread -= 100 * InDeltaTime;
+			FireSpread -= DecreaseFireSpreadSpeed * InDeltaTime;
 		}
 	}
 
@@ -62,28 +62,28 @@ void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	{
 		if (Spread < MaxWalkSpread)
 		{
-			Spread += 100 * InDeltaTime;
+			Spread += IncreaseSpreadSpeed * InDeltaTime;
 		}
 	}
 	else
 	{
-		Spread -= 100 * InDeltaTime;
+		Spread -= DecreaseSpreadSpeed * InDeltaTime;
 	}
 
-	FireSpread = FMath::Clamp(FireSpread,0.0f, MaxFireSpread);
+	FireSpread = FMath::Clamp(FireSpread, 0.0f, MaxFireSpread);
 	Spread = FMath::Clamp(Spread, 0.0f, MaxSpread);
-
-	SetAimMaker(Spread);
+	
+	SetAimMaker(Spread + FireSpread);
 	
 }
 
 
 void UHUDWidget::SetAimMaker(float Value)
 {
-	AimMakerUp->SetRenderTranslation(FVector2d(0,-(Value + FireSpread)));
-	AimMakerDown->SetRenderTranslation(FVector2d(0,(Value + FireSpread)));
-	AimMakerLeft->SetRenderTranslation(FVector2d(-(Value + FireSpread),0));
-	AimMakerRight->SetRenderTranslation(FVector2d((Value + FireSpread),0));
+	AimMakerUp->SetRenderTranslation(FVector2d(0,-Value));
+	AimMakerDown->SetRenderTranslation(FVector2d(0,Value));
+	AimMakerLeft->SetRenderTranslation(FVector2d(-Value,0));
+	AimMakerRight->SetRenderTranslation(FVector2d(Value,0));
 }
 
 void UHUDWidget::OnFire()

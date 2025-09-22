@@ -157,23 +157,38 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "KillNotify")
 	TSubclassOf<UKillNotifyWidget> KillNotifyTextWidgetClass;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Spread")
+	UPROPERTY()
 	float Spread = 0.0f;
 
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly, Category = "Spread")
 	float MaxWalkSpread = 25.0f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Spread")
+	UPROPERTY()
 	int32 FireCount = 0;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Spread")
 	int32 MaxFireCount = 5;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Spread")
+	UPROPERTY()
 	float FireSpread = 0.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Spread")
 	float MaxFireSpread = 15.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Spread")
+	float IncreaseFireSpreadSpeed = 100.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Spread")
+	float DecreaseFireSpreadSpeed = 200.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Spread")
+	float IncreaseSpreadSpeed = 100.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Spread")
+	float DecreaseSpreadSpeed = 100.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Spread")
+	float SpreadRecoveryTime = 1.5f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Spread")
 	float MaxSpread = 50.0f;

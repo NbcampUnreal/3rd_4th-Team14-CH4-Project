@@ -13,7 +13,6 @@ void UITCameraComponent::OnRegister()
 
 	if (!CameraModeStack)
 	{
-		// 초기화 (BeginPlay와 같은)가 딱히 필요없는 객체로 NewObject로 할당
 		CameraModeStack = NewObject<UITCameraModeStack>(this);
 	}
 }

@@ -95,37 +95,22 @@ FRotator UITCameraMode::GetPivotRotation() const
 
 void UITCameraMode::UpdateBlending(float DeltaTime)
 {
-	if (BlendTime > 0.f)
-	{
-		BlendAlpha += (DeltaTime / BlendTime);
-	}
-	else
-	{
-		BlendAlpha = 1.0f;
-	}
+	if (BlendTime > 0.f) { BlendAlpha += (DeltaTime / BlendTime); }
+	else { BlendAlpha = 1.0f; }
+
+	BlendAlpha = FMath::Clamp(BlendAlpha, 0.0f, 1.0f);
 
 	const float Exponent = (BlendExponent > 0.0f) ? BlendExponent : 1.0f;
 	switch (BlendFunction)
 	{
-	case EITCameraModeBlendFunction::Linear:
-		BlendWeight = BlendAlpha;
-		break;
-	case EITCameraModeBlendFunction::EaseIn:
-		BlendWeight = FMath::InterpEaseIn(0.0f, 1.0f, BlendAlpha, Exponent);
-		break;
-	case EITCameraModeBlendFunction::EaseOut:
-		BlendWeight = FMath::InterpEaseOut(0.0f, 1.0f, BlendAlpha, Exponent);
-		break;
-	case EITCameraModeBlendFunction::EaseInOut:
-		BlendWeight = FMath::InterpEaseInOut(0.0f, 1.0f, BlendAlpha, Exponent);
-		break;
-	default:
-		checkf(false, TEXT("UpdateBlending: Invalid BlendFunction [%d]\n"), (uint8)BlendFunction);
-		break;
+	case EITCameraModeBlendFunction::Linear:    BlendWeight = BlendAlpha; break;
+	case EITCameraModeBlendFunction::EaseIn:    BlendWeight = FMath::InterpEaseIn(0.f, 1.f, BlendAlpha, Exponent); break;
+	case EITCameraModeBlendFunction::EaseOut:   BlendWeight = FMath::InterpEaseOut(0.f, 1.f, BlendAlpha, Exponent); break;
+	case EITCameraModeBlendFunction::EaseInOut: BlendWeight = FMath::InterpEaseInOut(0.f, 1.f, BlendAlpha, Exponent); break;
+	default: checkNoEntry(); break;
 	}
 
-	UE_LOG(LogTemp, Verbose, TEXT("[%s] Alpha=%.3f Weight=%.3f Time=%.2f"),
-		*GetName(), BlendAlpha, BlendWeight, BlendTime);
+	BlendWeight = FMath::Clamp(BlendWeight, 0.0f, 1.0f);
 }
 
 UITCameraComponent* UITCameraMode::GetITCameraComponent() const
@@ -201,19 +186,29 @@ void UITCameraModeStack::PushCameraMode(TSubclassOf<UITCameraMode>& CameraModeCl
 	{
 		CameraModeStack.RemoveAt(ExistingStackIndex);
 		StackSize--;
+
+		CameraMode->BlendAlpha = FMath::Clamp(CameraMode->BlendAlpha, 0.0f, 1.0f);
+		CameraMode->BlendWeight = FMath::Clamp(ExistingStackContribution, 0.0f, 1.0f);
 	}
 	else
 	{
-		ExistingStackContribution = 0.0f;
+		CameraMode->BlendAlpha = 0.0f;
+		CameraMode->BlendWeight = 0.0f;
 	}
 
 	const bool bShouldBlend = ((CameraMode->BlendTime > 0.f) && (StackSize > 0));
-	const float BlendWeight = (bShouldBlend ? ExistingStackContribution : 1.0f);
-	CameraMode->BlendWeight = BlendWeight;
+	if (!bShouldBlend)
+	{
+		CameraMode->BlendAlpha = 1.0f;
+		CameraMode->BlendWeight = 1.0f;
+	}
 
 	CameraModeStack.Insert(CameraMode, 0);
 
-	CameraModeStack.Last()->BlendWeight = 1.0f;
+	if (CameraModeStack.Num() > 0)
+	{
+		CameraModeStack.Last()->BlendWeight = 1.0f;
+	}
 }
 
 void UITCameraModeStack::EvaluateStack(float DeltaTime, FITCameraModeView& OutCameraModeView)

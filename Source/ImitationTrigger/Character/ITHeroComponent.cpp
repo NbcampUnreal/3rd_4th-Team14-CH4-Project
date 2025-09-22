@@ -27,24 +27,13 @@ void UITHeroComponent::SetupPlayerInputComponent(class UInputComponent* PlayerIn
 	}
 }
 
-// 1.
-//TSubclassOf<UITCameraMode> UITHeroComponent::DetermineCameraMode() const
-//{
-//	const AITCharacter* ITChar = GetOwnerCharacter();
-//	if (!ITChar) return nullptr;
-//
-//	if (const UITPawnData* PawnData = ITChar->GetPawnData())
-//	{
-//		return PawnData->DefaultCameraMode;
-//	}
-//	return nullptr;
-//}
-
-// 2. 
 TSubclassOf<UITCameraMode> UITHeroComponent::DetermineCameraMode() const
 {
 	const AITCharacter* ITChar = GetOwnerCharacter();
-	if (!ITChar) return nullptr;
+	if (!ITChar)
+	{
+		return nullptr;
+	}
 
 	// Aim중이면 ADS모드로 결정.
 	if (bIsAiming && AimCameraModeClass)
@@ -118,7 +107,7 @@ void UITHeroComponent::InitializePlayerInput(UInputComponent* PlayerInputCompone
 	{
 		if (const UITInputConfig* InputConfig = PawnData->InputConfig)
 		{
-			// Input Mapping Context 처리
+
 			for (const FInputMappingContextAndPriority Mapping : InputConfig->DefaultMappings)
 			{
 				if (UInputMappingContext* IMC = Mapping.InputMapping)
@@ -129,7 +118,6 @@ void UITHeroComponent::InitializePlayerInput(UInputComponent* PlayerInputCompone
 				}
 			}
 
-			// Bind Input Action 처리
 			UITInputComponent* InputComponent = Cast<UITInputComponent>(PlayerInputComponent);
 			check(InputComponent);
 			
@@ -139,7 +127,6 @@ void UITHeroComponent::InitializePlayerInput(UInputComponent* PlayerInputCompone
 			const FITGameplayTags& ITGameplayTag = FITGameplayTags::Get();
 			InputComponent->BindNativeAction(InputConfig, ITGameplayTag.InputTag_Move, ETriggerEvent::Triggered, this, &ThisClass::Input_Move);
 			InputComponent->BindNativeAction(InputConfig, ITGameplayTag.InputTag_Look_Mouse, ETriggerEvent::Triggered, this, &ThisClass::Input_LookMouse);
-		/*	InputComponent->BindNativeAction(InputConfig, ITGameplayTag.InputTag_Look_Aim, ETriggerEvent::Triggered, this, &ThisClass::Input_Aim);*/
 			InputComponent->BindNativeAction(InputConfig, ITGameplayTag.InputTag_Look_Aim, ETriggerEvent::Started, this, &ThisClass::OnAimStart);
 			InputComponent->BindNativeAction(InputConfig, ITGameplayTag.InputTag_Look_Aim, ETriggerEvent::Completed, this, &ThisClass::OnAimEnd);
 			InputComponent->BindNativeAction(InputConfig, ITGameplayTag.InputTag_Crouch, ETriggerEvent::Triggered, this, &ThisClass::Input_Crouch);
@@ -233,7 +220,6 @@ void UITHeroComponent::Input_Crouch(const FInputActionValue& InputActionValue)
 	}
 }
 
-// Trigger방식 : 나중에 안쓰면 지울 예정. Started와 Completed 방식을 더 권장함. Trigger는 매프레임 호출됌.
 void UITHeroComponent::Input_Aim(const FInputActionValue& InputActionValue)
 {
 	const bool bIsPressed = InputActionValue.Get<bool>();
@@ -242,14 +228,11 @@ void UITHeroComponent::Input_Aim(const FInputActionValue& InputActionValue)
 
 }
 
-
-// 우클릭 내려갈 때
 void UITHeroComponent::OnAimStart(const FInputActionValue& Value)
 {
 	bIsAiming = true;
 }
 
-// 우클릭 올라올 때
 void UITHeroComponent::OnAimEnd(const FInputActionValue& Value)
 {
 	bIsAiming = false;

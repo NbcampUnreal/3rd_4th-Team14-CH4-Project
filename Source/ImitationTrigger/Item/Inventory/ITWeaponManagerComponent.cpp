@@ -24,9 +24,19 @@ void UITWeaponManagerComponent::GetLifetimeReplicatedProps(TArray<FLifetimePrope
 	DOREPLIFETIME(UITWeaponManagerComponent, SubWeaponInstance);
 }
 
-void UITWeaponManagerComponent::OnRep_WeaponUpdate()
+void UITWeaponManagerComponent::OnRep_CurrentWeaponChanged()
 {
-	// TODO: UI에 데이터 전달하기
+	OnCurrentWeaponChanged.Broadcast(CurrentWeapon);
+}
+
+void UITWeaponManagerComponent::OnRep_CurrentMainWeaponChanged()
+{
+	OnMainWeaponChanged.Broadcast(MainWeaponInstance);
+}
+
+void UITWeaponManagerComponent::OnRep_CurrentSubWeaponChanged()
+{
+	OnSubWeaponChanged.Broadcast(SubWeaponInstance);
 }
 
 void UITWeaponManagerComponent::ServerRPC_PickupWeapon_Implementation(UITItemInstance* NewWeaponInstance)

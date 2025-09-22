@@ -12,12 +12,16 @@ class AITCharacter;
 class AITPlayerState;
 class UITItemInstance;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCurrentWeaponChanged, ECurrentWeaponSlot, CurrentWeapon);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMainWeaponChanged, UITItemInstance*, MainWeaponInstance);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSubWeaponChanged, UITItemInstance*, SubWeaponInstance);
+
 UENUM(BlueprintType)
 enum class ECurrentWeaponSlot : uint8
 {
+	None,
 	MainWeapon,
-	SubWeapon,
-	None
+	SubWeapon
 };
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -43,14 +47,24 @@ public:
 	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "IT|Weapon")
 	void ServerRPC_DropCurrentWeapon();
 
+	// UI 델리게이트 프로퍼티
+	UPROPERTY(BlueprintAssignable, Category = "IT|Weapon")
+	FOnCurrentWeaponChanged OnCurrentWeaponChanged;
+
+	UPROPERTY(BlueprintAssignable, Category = "IT|Weapon")
+	FOnMainWeaponChanged OnMainWeaponChanged;
+
+	UPROPERTY(BlueprintAssignable, Category = "IT|Weapon")
+	FOnSubWeaponChanged OnSubWeaponChanged;
+
 protected:
-	UPROPERTY(ReplicatedUsing = OnRep_WeaponUpdate)
+	UPROPERTY(ReplicatedUsing = OnRep_CurrentWeaponChanged)
 	ECurrentWeaponSlot CurrentWeapon = ECurrentWeaponSlot::None;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(ReplicatedUsing = OnRep_CurrentMainWeaponChanged)
 	TObjectPtr<UITItemInstance> MainWeaponInstance;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(ReplicatedUsing = OnRep_CurrentSubWeaponChanged)
 	TObjectPtr<UITItemInstance> SubWeaponInstance;
 
 	UPROPERTY()
@@ -60,7 +74,13 @@ protected:
 	FITCharacterPartHandle WeaponPartHandle;
 
 	UFUNCTION()
-	void OnRep_WeaponUpdate();
+	void OnRep_CurrentWeaponChanged();
+
+	UFUNCTION()
+	void OnRep_CurrentMainWeaponChanged();
+
+	UFUNCTION()
+	void OnRep_CurrentSubWeaponChanged();
 
 private:
 	void EquipWeapon();

@@ -158,22 +158,24 @@ private:
 	TSubclassOf<UKillNotifyWidget> KillNotifyTextWidgetClass;
 
 	UPROPERTY()
-	float Spread = 0.0f;
+	float WalkSpread = 0.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Spread")
 	float MaxWalkSpread = 25.0f;
 
 	UPROPERTY()
-	int32 FireCount = 0;
+	int32 FireSpreadCount = 0;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Spread")
-	int32 MaxFireCount = 5;
+	float FireSpreadAmount = 5;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Spread")
+	int32 MaxFireSpreadCount = 5;
 
 	UPROPERTY()
 	float FireSpread = 0.0f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Spread")
-	float MaxFireSpread = 15.0f;
+	float MaxFireSpread = 0.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Spread")
 	float IncreaseFireSpreadSpeed = 100.0f;

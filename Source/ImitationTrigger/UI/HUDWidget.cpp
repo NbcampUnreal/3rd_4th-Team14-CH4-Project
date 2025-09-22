@@ -35,10 +35,10 @@ void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 		return;
 	}
 
-	if (FireCount > 0 && GetWorld()->GetTimeSeconds() - LastFireTime >= SpreadRecoveryTime)
+	if (FireSpreadCount > 0 && GetWorld()->GetTimeSeconds() - LastFireTime >= SpreadRecoveryTime)
 	{
 		bIsFire = false;
-		FireCount = 0;
+		FireSpreadCount = 0;
 	}
 
 	if (bIsFire)
@@ -60,20 +60,23 @@ void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	
 	if (PlayerCharacter->GetVelocity().Size() > 300)
 	{
-		if (Spread < MaxWalkSpread)
+		if (WalkSpread < MaxWalkSpread)
 		{
-			Spread += IncreaseSpreadSpeed * InDeltaTime;
+			WalkSpread += IncreaseSpreadSpeed * InDeltaTime;
 		}
 	}
 	else
 	{
-		Spread -= DecreaseSpreadSpeed * InDeltaTime;
+		WalkSpread -= DecreaseSpreadSpeed * InDeltaTime;
 	}
 
 	FireSpread = FMath::Clamp(FireSpread, 0.0f, MaxFireSpread);
-	Spread = FMath::Clamp(Spread, 0.0f, MaxSpread);
+	WalkSpread = FMath::Clamp(WalkSpread, 0.0f, MaxWalkSpread);
+
+	float TotalSpread = WalkSpread + FireSpread;
+	TotalSpread = FMath::Clamp(TotalSpread, 0.0f, MaxSpread);
 	
-	SetAimMaker(Spread + FireSpread);
+	SetAimMaker(TotalSpread);
 	
 }
 
@@ -88,12 +91,12 @@ void UHUDWidget::SetAimMaker(float Value)
 
 void UHUDWidget::OnFire()
 {
-	if (FireCount < MaxFireCount)
+	if (FireSpreadCount < MaxFireSpreadCount)
 	{
-		FireCount++;
+		FireSpreadCount++;
 	}
 	LastFireTime = GetWorld()->GetTimeSeconds();
-	MaxFireSpread = 10 * FireCount;
+	MaxFireSpread = FireSpreadAmount * FireSpreadCount;
 	bIsFire = true;
 }
 

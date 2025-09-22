@@ -6,7 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "HUDWidget.generated.h"
 
-
+class UBorder;
 class UEquipmentIconWidget;
 class UVerticalBox;
 class UKillNotifyWidget;
@@ -70,9 +70,23 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void SetEquipmentIconHelmet();
 
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void SetAimMaker(float Value);
+
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void OnFire();
+
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void PlayHitMarkerAnimation();
+	
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void PlayKillMarkerAnimation();
+	
 protected:
 	
 	virtual void NativeConstruct() override;
+
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 	UPROPERTY(meta = (BindWidget))
 	UUltimateGaugeWidget* UltimateGaugeWidget;
@@ -113,6 +127,26 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	UEquipmentIconWidget* EquipmentIcon_Helmet;
 
+	UPROPERTY(meta = (BindWidget))
+	UBorder* AimMakerUp;
+
+	UPROPERTY(meta = (BindWidget))
+	UBorder* AimMakerDown;
+
+	UPROPERTY(meta = (BindWidget))
+	UBorder* AimMakerLeft;
+
+	UPROPERTY(meta = (BindWidget))
+	UBorder* AimMakerRight;
+
+	UPROPERTY()
+	ACharacter* PlayerCharacter;
+
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* HitMarkerAnimation;
+
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* KillMarkerAnimation;
 
 
 private:
@@ -122,5 +156,32 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "KillNotify")
 	TSubclassOf<UKillNotifyWidget> KillNotifyTextWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Spread")
+	float Spread = 0.0f;
+
+	UPROPERTY()
+	float MaxWalkSpread = 25.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Spread")
+	int32 FireCount = 0;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Spread")
+	int32 MaxFireCount = 5;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Spread")
+	float FireSpread = 0.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Spread")
+	float MaxFireSpread = 15.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Spread")
+	float MaxSpread = 50.0f;
+
+	UPROPERTY()
+	float LastFireTime = 0.0f;
+
+	UPROPERTY()
+	bool bIsFire = false;
 	
 };

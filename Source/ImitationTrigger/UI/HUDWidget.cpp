@@ -3,12 +3,15 @@
 
 #include "UI/HUDWidget.h"
 
+#include "Components/Border.h"
 #include "Components/Image.h"
 #include "Components/ScrollBox.h"
 #include "Components/VerticalBox.h"
 #include "EquipmentIcon/EquipmentIconWidget.h"
+#include "GameFramework/Character.h"
 #include "KillLog/KillLogWidget.h"
 #include "KillNotify/KillNotifyWidget.h"
+#include "Kismet/GameplayStatics.h"
 #include "PlayerBar/PlayerBarWidget.h"
 #include "UltimateGauge/UltimateGaugeWidget.h"
 #include "WeaponSlot/WeaponSlotNumberWidget.h"
@@ -19,7 +22,95 @@ void UHUDWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	UpdateUltimateGauge(0);
+	PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(),0);
+	
+}
 
+void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	if (!PlayerCharacter)
+	{
+		return;
+	}
+
+	if (FireCount > 0 && GetWorld()->GetTimeSeconds() - LastFireTime >= 1.5f)
+	{
+		bIsFire = false;
+		FireCount = 0;
+	}
+
+	if (bIsFire)
+	{
+		if (FireSpread < MaxFireSpread)
+		{
+			FireSpread += 200 * InDeltaTime;
+		}
+	}
+	else
+	{
+		if (FireSpread > 0)
+		{
+			FireSpread -= 100 * InDeltaTime;
+		}
+	}
+
+
+	
+	if (PlayerCharacter->GetVelocity().Size() > 300)
+	{
+		if (Spread < MaxWalkSpread)
+		{
+			Spread += 100 * InDeltaTime;
+		}
+	}
+	else
+	{
+		Spread -= 100 * InDeltaTime;
+	}
+
+	FireSpread = FMath::Clamp(FireSpread,0.0f, MaxFireSpread);
+	Spread = FMath::Clamp(Spread, 0.0f, MaxSpread);
+
+	SetAimMaker(Spread);
+	
+}
+
+
+void UHUDWidget::SetAimMaker(float Value)
+{
+	AimMakerUp->SetRenderTranslation(FVector2d(0,-(Value + FireSpread)));
+	AimMakerDown->SetRenderTranslation(FVector2d(0,(Value + FireSpread)));
+	AimMakerLeft->SetRenderTranslation(FVector2d(-(Value + FireSpread),0));
+	AimMakerRight->SetRenderTranslation(FVector2d((Value + FireSpread),0));
+}
+
+void UHUDWidget::OnFire()
+{
+	if (FireCount < MaxFireCount)
+	{
+		FireCount++;
+	}
+	LastFireTime = GetWorld()->GetTimeSeconds();
+	MaxFireSpread = 10 * FireCount;
+	bIsFire = true;
+}
+
+void UHUDWidget::PlayHitMarkerAnimation()
+{
+	if (HitMarkerAnimation)
+	{
+		PlayAnimation(HitMarkerAnimation);
+	}
+}
+
+void UHUDWidget::PlayKillMarkerAnimation()
+{
+	if (KillMarkerAnimation)
+	{
+		PlayAnimation(KillMarkerAnimation);
+	}
 }
 
 void UHUDWidget::UpdateUltimateGauge(float UltimateGauge)
@@ -132,4 +223,5 @@ void UHUDWidget::SetEquipmentIconHelmet()
 {
 	EquipmentIcon_Helmet->SetRareItem();
 }
+
 

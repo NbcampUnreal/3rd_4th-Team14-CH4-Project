@@ -2,7 +2,7 @@
 #include "Player/ITPlayerController.h"
 #include "Character/ITCharacter.h"
 #include "Character/ITPawnData.h"
-#include "Item/Inventory/ITWeaponManagerComponent.h"
+#include "Item/Weapon/ITWeaponManagerComponent.h"
 #include "AbilitySystem/Attributes/ITHealthSet.h"
 #include "AbilitySystem/Attributes/ITAttributeTableRow.h"
 #include "AbilitySystem/ITAbilitySystemComponent.h"

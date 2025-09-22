@@ -12,10 +12,6 @@ class AITCharacter;
 class AITPlayerState;
 class UITItemInstance;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCurrentWeaponChanged, ECurrentWeaponSlot, CurrentWeapon);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMainWeaponChanged, UITItemInstance*, MainWeaponInstance);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSubWeaponChanged, UITItemInstance*, SubWeaponInstance);
-
 UENUM(BlueprintType)
 enum class ECurrentWeaponSlot : uint8
 {
@@ -23,6 +19,10 @@ enum class ECurrentWeaponSlot : uint8
 	MainWeapon,
 	SubWeapon
 };
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCurrentWeaponChanged, ECurrentWeaponSlot, CurrentWeapon);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMainWeaponChanged, UITItemInstance*, MainWeaponInstance);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSubWeaponChanged, UITItemInstance*, SubWeaponInstance);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class IMITATIONTRIGGER_API UITWeaponManagerComponent : public UActorComponent

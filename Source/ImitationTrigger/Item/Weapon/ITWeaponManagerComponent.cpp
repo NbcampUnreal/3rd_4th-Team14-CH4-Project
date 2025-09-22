@@ -2,7 +2,7 @@
 
 
 #include "ITWeaponManagerComponent.h"
-#include "Item/ITItemDefinition_Weapon.h"
+#include "ITItemDefinition_Weapon.h"
 #include "Item/ITItemInstance.h"
 #include "Player/ITPlayerState.h"
 #include "AbilitySystem/ITAbilitySystemComponent.h"

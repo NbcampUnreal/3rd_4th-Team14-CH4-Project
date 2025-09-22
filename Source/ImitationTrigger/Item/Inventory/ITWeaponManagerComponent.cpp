@@ -7,6 +7,7 @@
 #include "Player/ITPlayerState.h"
 #include "AbilitySystem/ITAbilitySystemComponent.h"
 #include "Cosmetics/ITCharacterPartComponent.h"
+#include "Item/ITItemActor.h"
 #include "Net/UnrealNetwork.h"
 
 UITWeaponManagerComponent::UITWeaponManagerComponent()
@@ -18,81 +19,217 @@ void UITWeaponManagerComponent::GetLifetimeReplicatedProps(TArray<FLifetimePrope
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UITWeaponManagerComponent, PrimaryWeaponInstance);
-	DOREPLIFETIME(UITWeaponManagerComponent, SecondaryWeaponInstance);
+	DOREPLIFETIME(UITWeaponManagerComponent, CurrentWeapon);
+	DOREPLIFETIME(UITWeaponManagerComponent, MainWeaponInstance);
+	DOREPLIFETIME(UITWeaponManagerComponent, SubWeaponInstance);
 }
 
-void UITWeaponManagerComponent::ServerRPC_EquipWeapon_Implementation(UITItemInstance* WeaponInstance)
+void UITWeaponManagerComponent::OnRep_WeaponUpdate()
 {
-	if (GetOwner()->HasAuthority() && WeaponInstance)
+	// TODO: UI에 데이터 전달하기
+}
+
+void UITWeaponManagerComponent::ServerRPC_PickupWeapon_Implementation(UITItemInstance* NewWeaponInstance)
+{
+	if (!GetOwner()->HasAuthority() || !NewWeaponInstance)
 	{
-		UITItemDefinition_Weapon* WeaponDefinition
-			= Cast<UITItemDefinition_Weapon>(WeaponInstance->GetItemDefinition());
-		if (!WeaponDefinition)
+		return;
+	}
+
+	if (MainWeaponInstance == nullptr)
+	{
+		MainWeaponInstance = NewWeaponInstance;
+		if (CurrentWeapon == ECurrentWeaponSlot::None)
 		{
-			return;
+			CurrentWeapon = ECurrentWeaponSlot::MainWeapon;
+			EquipWeapon();
 		}
+		return;
+	}
 
-		AITPlayerState* PlayerState = GetOwner<AITPlayerState>();
-		if (!PlayerState)
+	if (SubWeaponInstance == nullptr)
+	{
+		SubWeaponInstance = NewWeaponInstance;
+		if (CurrentWeapon == ECurrentWeaponSlot::None)
 		{
-			return;
+			CurrentWeapon = ECurrentWeaponSlot::SubWeapon;
+			EquipWeapon();
 		}
+		return;
+	}
 
-		UITAbilitySystemComponent* AbilitySystemComponent = PlayerState->GetITAbilitySystemComponent();
-		if (!AbilitySystemComponent)
-		{
-			return;
-		}
+	ServerRPC_DropCurrentWeapon();
+	if (MainWeaponInstance == nullptr)
+	{
+		MainWeaponInstance = NewWeaponInstance;
+		CurrentWeapon = ECurrentWeaponSlot::MainWeapon;
+	}
+	else if (SubWeaponInstance == nullptr)
+	{
+		SubWeaponInstance = NewWeaponInstance;
+		CurrentWeapon = ECurrentWeaponSlot::SubWeapon;
+	}
+	EquipWeapon();
+}
 
-		UITCharacterPartComponent* CPC = PlayerState->GetPawn()->FindComponentByClass<UITCharacterPartComponent>();
-		if (!CPC)
-		{
-			return;
-		}
+void UITWeaponManagerComponent::ServerRPC_SwapWeapon_Implementation()
+{
+	if (!GetOwner()->HasAuthority())
+	{
+		return;
+	}
 
-		WeaponPartHandle = CPC->AddCharacterPart(WeaponDefinition->WeaponPart);
+	ECurrentWeaponSlot TargetSlot = ECurrentWeaponSlot::None;
+	if (CurrentWeapon == ECurrentWeaponSlot::MainWeapon && SubWeaponInstance != nullptr)
+	{
+		TargetSlot = ECurrentWeaponSlot::SubWeapon;
+	}
+	else if (CurrentWeapon == ECurrentWeaponSlot::SubWeapon && MainWeaponInstance != nullptr)
+	{
+		TargetSlot = ECurrentWeaponSlot::MainWeapon;
+	}
 
-		ServerRPC_UnequipWeapon();
-
-		if (WeaponDefinition->WeaponAbilitySet)
-		{
-			WeaponDefinition->WeaponAbilitySet->GiveToAbilitySystem(
-				AbilitySystemComponent, &GrantedHandles, WeaponInstance);
-		}
-
-		PrimaryWeaponInstance = WeaponInstance;
+	if (TargetSlot != ECurrentWeaponSlot::None)
+	{
+		UnequipWeapon();
+		CurrentWeapon = TargetSlot;
+		EquipWeapon();
 	}
 }
 
-void UITWeaponManagerComponent::ServerRPC_UnequipWeapon_Implementation()
+void UITWeaponManagerComponent::ServerRPC_DropCurrentWeapon_Implementation()
 {
-	if (GetOwner()->HasAuthority() && PrimaryWeaponInstance)
+	if (!GetOwner()->HasAuthority() || CurrentWeapon == ECurrentWeaponSlot::None)
 	{
-		AITPlayerState* PlayerState = GetOwner<AITPlayerState>();
-		if (!PlayerState)
-		{
-			return;
-		}
-
-		UITAbilitySystemComponent* AbilitySystemComponent = PlayerState->GetITAbilitySystemComponent();
-		if (!AbilitySystemComponent)
-		{
-			return;
-		}
-
-		UITCharacterPartComponent* CPC = PlayerState->GetPawn()->FindComponentByClass<UITCharacterPartComponent>();
-		if (!CPC)
-		{
-			return;
-		}
-
-		if (WeaponPartHandle.IsValid())
-		{
-			CPC->RemoveCharacterPart(WeaponPartHandle);
-		}
-
-		GrantedHandles.TakeFromAbilitySystem(AbilitySystemComponent);
-		PrimaryWeaponInstance = nullptr;
+		return;
 	}
+
+	AITPlayerState* PlayerState = GetOwner<AITPlayerState>();
+	if (!PlayerState)
+	{
+		return;
+	}
+
+	if (GetWorld())
+	{
+		FVector DropLocation
+			= PlayerState->GetPawn()->GetActorLocation() + PlayerState->GetPawn()->GetActorForwardVector() * 300.0f;
+		FRotator DropRotation = FRotator::ZeroRotator;
+		FActorSpawnParameters SpawnParameters;
+		SpawnParameters.SpawnCollisionHandlingOverride
+			= ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+		AITItemActor* WeaponActorToDrop = GetWorld()->SpawnActor<AITItemActor>(
+			AITItemActor::StaticClass(), DropLocation, DropRotation, SpawnParameters);
+
+		if (WeaponActorToDrop)
+		{
+			WeaponActorToDrop->InitItemActor(GetCurrentWeapon());
+		}
+	}
+
+	if (CurrentWeapon == ECurrentWeaponSlot::MainWeapon)
+	{
+		MainWeaponInstance = nullptr;
+	}
+	else if (CurrentWeapon == ECurrentWeaponSlot::SubWeapon)
+	{
+		SubWeaponInstance = nullptr;
+	}
+
+	UnequipWeapon();
+}
+
+void UITWeaponManagerComponent::EquipWeapon()
+{
+	UITItemInstance* WeaponToEquip = GetCurrentWeapon();
+	if (!WeaponToEquip)
+	{
+		return;
+	}
+
+	UITItemDefinition_Weapon* WeaponDefinition
+		= Cast<UITItemDefinition_Weapon>(WeaponToEquip->GetItemDefinition());
+	if (!WeaponDefinition)
+	{
+		return;
+	}
+
+	AITPlayerState* PlayerState = GetOwner<AITPlayerState>();
+	if (!PlayerState)
+	{
+		return;
+	}
+
+	UITAbilitySystemComponent* AbilitySystemComponent = PlayerState->GetITAbilitySystemComponent();
+	if (!AbilitySystemComponent)
+	{
+		return;
+	}
+
+	UITCharacterPartComponent* CharacterPartComponent
+		= PlayerState->GetPawn()->FindComponentByClass<UITCharacterPartComponent>();
+	if (!CharacterPartComponent)
+	{
+		return;
+	}
+
+	WeaponPartHandle = CharacterPartComponent->AddCharacterPart(WeaponDefinition->WeaponPart);
+
+	if (WeaponDefinition->WeaponAbilitySet)
+	{
+		WeaponDefinition->WeaponAbilitySet->GiveToAbilitySystem(
+			AbilitySystemComponent, &GrantedHandles, WeaponToEquip);
+	}
+}
+
+void UITWeaponManagerComponent::UnequipWeapon()
+{
+	if (CurrentWeapon == ECurrentWeaponSlot::None)
+	{
+		return;
+	}
+
+	AITPlayerState* PlayerState = GetOwner<AITPlayerState>();
+	if (!PlayerState)
+	{
+		return;
+	}
+
+	UITAbilitySystemComponent* AbilitySystemComponent = PlayerState->GetITAbilitySystemComponent();
+	if (!AbilitySystemComponent)
+	{
+		return;
+	}
+
+	UITCharacterPartComponent* CharacterPartComponent
+		= PlayerState->GetPawn()->FindComponentByClass<UITCharacterPartComponent>();
+	if (!CharacterPartComponent)
+	{
+		return;
+	}
+
+	if (WeaponPartHandle.IsValid())
+	{
+		CharacterPartComponent->RemoveCharacterPart(WeaponPartHandle);
+		WeaponPartHandle.Reset();
+	}
+
+	GrantedHandles.TakeFromAbilitySystem(AbilitySystemComponent);
+	CurrentWeapon = ECurrentWeaponSlot::None;
+}
+
+UITItemInstance* UITWeaponManagerComponent::GetCurrentWeapon() const
+{
+	if (CurrentWeapon == ECurrentWeaponSlot::MainWeapon)
+	{
+		return MainWeaponInstance;
+	}
+
+	if (CurrentWeapon == ECurrentWeaponSlot::SubWeapon)
+	{
+		return SubWeaponInstance;
+	}
+
+	return nullptr;
 }

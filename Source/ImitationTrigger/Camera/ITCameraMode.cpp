@@ -123,6 +123,9 @@ void UITCameraMode::UpdateBlending(float DeltaTime)
 		checkf(false, TEXT("UpdateBlending: Invalid BlendFunction [%d]\n"), (uint8)BlendFunction);
 		break;
 	}
+
+	UE_LOG(LogTemp, Verbose, TEXT("[%s] Alpha=%.3f Weight=%.3f Time=%.2f"),
+		*GetName(), BlendAlpha, BlendWeight, BlendTime);
 }
 
 UITCameraComponent* UITCameraMode::GetITCameraComponent() const

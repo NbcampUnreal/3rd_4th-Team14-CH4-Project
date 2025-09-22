@@ -5,32 +5,38 @@
 
 #include "Components/Image.h"
 
+
+UEquipmentIconWidget::UEquipmentIconWidget(const FObjectInitializer& ObjectInitializer)
+	:Super(ObjectInitializer)
+{
+	CommonColor = FLinearColor::White;
+	RareColor = FLinearColor::Green;
+	EpicColor = FLinearColor::Red + FLinearColor::Blue;
+}
+
 void UEquipmentIconWidget::SetCommonItem()
 {
-	FLinearColor NewColor = FLinearColor::White;
 
-	if (EquipmentIcon_0)
+	if (EquipmentIconBackGround)
 	{
-		EquipmentIcon_0->SetBrushTintColor(FSlateColor(NewColor));
+		EquipmentIconBackGround->SetBrushTintColor(FSlateColor(CommonColor));
 	}
 }
 
 void UEquipmentIconWidget::SetRareItem()
 {
-	FLinearColor NewColor = FLinearColor::Green;
-
-	if (EquipmentIcon_0)
+	
+	if (EquipmentIconBackGround)
 	{
-		EquipmentIcon_0->SetBrushTintColor(FSlateColor(NewColor));
+		EquipmentIconBackGround->SetBrushTintColor(FSlateColor(RareColor));
 	}
 }
 
 void UEquipmentIconWidget::SetEpicItem()
 {
-	FLinearColor NewColor = FLinearColor::Red + FLinearColor::Blue;
 
-	if (EquipmentIcon_0)
+	if (EquipmentIconBackGround)
 	{
-		EquipmentIcon_0->SetBrushTintColor(FSlateColor(NewColor));
+		EquipmentIconBackGround->SetBrushTintColor(FSlateColor(EpicColor));
 	}
 }

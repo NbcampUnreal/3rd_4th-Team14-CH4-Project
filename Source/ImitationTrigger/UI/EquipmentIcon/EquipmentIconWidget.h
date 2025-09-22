@@ -17,6 +17,7 @@ class IMITATIONTRIGGER_API UEquipmentIconWidget : public UUserWidget
 
 
 public:
+	UEquipmentIconWidget(const FObjectInitializer& ObjectInitializer);
 	
 	void SetCommonItem();
 
@@ -28,8 +29,17 @@ public:
 protected:
 
 	UPROPERTY(meta = (BindWidget))
-	UImage* EquipmentIcon_0;
+	UImage* EquipmentIconBackGround;
 
-	UPROPERTY(meta = (BindWidget))
-	UImage* EquipmentIcon_1;
+	UPROPERTY(editanywhere, BlueprintReadOnly)
+	FLinearColor CommonColor;
+	
+	UPROPERTY(editanywhere, BlueprintReadOnly)
+	FLinearColor RareColor;
+	
+	UPROPERTY(editanywhere, BlueprintReadOnly)
+	FLinearColor EpicColor;
+
+	
+	
 };

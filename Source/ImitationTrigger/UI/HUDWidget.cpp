@@ -6,6 +6,7 @@
 #include "Components/Image.h"
 #include "Components/ScrollBox.h"
 #include "Components/VerticalBox.h"
+#include "EquipmentIcon/EquipmentIconWidget.h"
 #include "KillLog/KillLogWidget.h"
 #include "KillNotify/KillNotifyWidget.h"
 #include "PlayerBar/PlayerBarWidget.h"
@@ -119,16 +120,16 @@ void UHUDWidget::AddNotifyText(FText KillPlayer, FText DiePlayer)
 
 void UHUDWidget::SetEquipmentIconBag()
 {
-	
+	EquipmentIcon_Bag->SetCommonItem();
 }
 
 void UHUDWidget::SetEquipmentIconArmor()
 {
-	
+	EquipmentIcon_Armor->SetEpicItem();
 }
 
 void UHUDWidget::SetEquipmentIconHelmet()
 {
-	
+	EquipmentIcon_Helmet->SetRareItem();
 }
 

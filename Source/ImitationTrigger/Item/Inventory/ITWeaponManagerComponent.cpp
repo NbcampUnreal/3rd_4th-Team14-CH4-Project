@@ -88,13 +88,18 @@ void UITWeaponManagerComponent::ServerRPC_SwapWeapon_Implementation()
 	{
 		TargetSlot = ECurrentWeaponSlot::MainWeapon;
 	}
-
-	if (TargetSlot != ECurrentWeaponSlot::None)
+	else if (CurrentWeapon == ECurrentWeaponSlot::None && MainWeaponInstance != nullptr)
 	{
-		UnequipWeapon();
-		CurrentWeapon = TargetSlot;
-		EquipWeapon();
+		TargetSlot = ECurrentWeaponSlot::MainWeapon;
 	}
+	else if (CurrentWeapon == ECurrentWeaponSlot::None && SubWeaponInstance != nullptr)
+	{
+		TargetSlot = ECurrentWeaponSlot::SubWeapon;
+	}
+
+	UnequipWeapon();
+	CurrentWeapon = TargetSlot;
+	EquipWeapon();
 }
 
 void UITWeaponManagerComponent::ServerRPC_DropCurrentWeapon_Implementation()

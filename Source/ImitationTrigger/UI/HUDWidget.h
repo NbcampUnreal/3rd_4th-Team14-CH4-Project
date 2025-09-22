@@ -175,6 +175,7 @@ private:
 	UPROPERTY()
 	float FireSpread = 0.0f;
 
+	UPROPERTY()
 	float MaxFireSpread = 0.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Spread")

@@ -5,6 +5,7 @@
 #include "Cosmetics/ITCharacterPartType.h"
 #include "ITPawnData.generated.h"
 
+class UITCameraMode;
 class UITAbilitySet;
 class UITInputConfig;
 class UDataTable;
@@ -37,8 +38,8 @@ public:
 	FITAnimBodyStyleSelectionSet InitBodyMeshes;
 
 	// Character에 적용할 기본 카메라 모드
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "PawnData|Camera")
-	//TSubclassOf<UITCameraMode> DefaultCameraMode;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "PawnData|Camera")
+	TSubclassOf<UITCameraMode> DefaultCameraMode;
 
 	// Character의 Attribute Set 초기값
 	UPROPERTY(EditDefaultsOnly, Category = "PawnData|Attributes", meta = (RowType = "ITAttributeTableRow"))

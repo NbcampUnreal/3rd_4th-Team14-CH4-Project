@@ -3,6 +3,7 @@
 #include "AbilitySystemInterface.h"
 #include "Cosmetics/ITCharacterPartType.h"
 #include "GameFramework/Character.h"
+#include "GameplayTagContainer.h"
 #include "ITCharacter.generated.h"
 
 class AITPlayerController;
@@ -38,6 +39,8 @@ public:
 
 	const UITPawnData* GetPawnData() const { return PawnData; }
 	TArray<FITCharacterPartHandle>& GetCharacterPartHandles() { return CharacterPartHandles; }
+
+	FGameplayTagContainer GetASCGameplayTags() const;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Replicated, Category = "PawnData")

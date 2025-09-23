@@ -37,13 +37,16 @@ TSubclassOf<UITCameraMode> UITHeroComponent::DetermineCameraMode() const
 
 	if (const UITPawnData* PawnData = ITCharacter->GetPawnData())
 	{
-		FGameplayTagContainer Tags = ITCharacter->GetAbilitySystemComponent()->GetOwnedGameplayTags();
-
-		for (const FCameraModeWithTag& Element : PawnData->CameraModeRules)
+		UAbilitySystemComponent* ASC = ITCharacter->GetAbilitySystemComponent();
+		if (IsValid(ASC))
 		{
-			if (Element.CameraModeTag.MatchesAnyExact(Tags))
+			FGameplayTagContainer Tags = ASC->GetOwnedGameplayTags();
+			for (const FCameraModeWithTag& Element : PawnData->CameraModeRules)
 			{
-				return Element.CameraModeClass;
+				if (Element.CameraModeTag.MatchesAnyExact(Tags))
+				{
+					return Element.CameraModeClass;
+				}
 			}
 		}
 		return PawnData->DefaultCameraMode;

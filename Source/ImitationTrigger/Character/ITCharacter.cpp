@@ -76,6 +76,19 @@ void AITCharacter::PossessedBy(AController* NewController)
 	AddInitCharacterPartsAtServer();
 }
 
+FGameplayTagContainer AITCharacter::GetASCGameplayTags() const
+{
+	UAbilitySystemComponent* ASC = this->GetAbilitySystemComponent();
+	if (IsValid(ASC))
+	{
+		return ASC->GetOwnedGameplayTags();
+	}
+	else
+	{
+		return FGameplayTagContainer();
+	}
+}
+
 UITCharacterPartComponent* AITCharacter::GetITCharacterPartComponent()
 {
 	UActorComponent* FindComponent = GetComponentByClass(UITCharacterPartComponent::StaticClass());

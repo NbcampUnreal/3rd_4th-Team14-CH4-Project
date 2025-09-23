@@ -12,5 +12,5 @@ class IMITATIONTRIGGER_API UITWeaponFireAbility_Hitscan : public UITWeaponFireAb
 	GENERATED_BODY()
 
 protected:
-	virtual void FireType(const FVector& TraceStart, const FVector& TraceDirection) override;
+	virtual void Fire(const FVector& TraceStart, const FVector& TraceDirection) override;
 };

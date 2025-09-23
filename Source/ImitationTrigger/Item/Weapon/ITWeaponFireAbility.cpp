@@ -5,6 +5,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "ITItemDefinition_Weapon.h"
+#include "AI/NavigationSystemBase.h"
 #include "Item/ITItemGameplayTags.h"
 #include "Item/ITItemInstance.h"
 
@@ -61,7 +62,7 @@ void UITWeaponFireAbility::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	ActorInfo->PlayerController->GetPlayerViewPoint(TraceStart, ViewRotation);
 	FVector TraceDirection = ViewRotation.Vector();
 
-	FireType(TraceStart, TraceDirection);
+	Fire(TraceStart, TraceDirection);
 
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }
@@ -73,7 +74,7 @@ void UITWeaponFireAbility::ApplyCooldown(const FGameplayAbilitySpecHandle Handle
 	return;
 }
 
-void UITWeaponFireAbility::FireType(const FVector& TraceStart, const FVector& TraceDirection)
+void UITWeaponFireAbility::Fire(const FVector& StartLocation, const FVector& FireDirection)
 {
 }
 
@@ -114,9 +115,13 @@ void UITWeaponFireAbility::ApplyWeaponDamage(AActor* TargetActor)
 	{
 		DamageSpecHandle.Data->SetSetByCallerMagnitude(ITItemGameplayTags::Weapon_Damage, Damage);
 
-		if (UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor))
-		{
-			TargetASC->ApplyGameplayEffectSpecToSelf(*DamageSpecHandle.Data.Get());
-		}
+		FGameplayAbilityTargetDataHandle TargetDataHandle
+			= UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(TargetActor);
+
+		ApplyGameplayEffectSpecToTarget(Spec->Handle,
+		                                ActorInfo,
+		                                GetCurrentActivationInfo(),
+		                                DamageSpecHandle,
+		                                TargetDataHandle);
 	}
 }

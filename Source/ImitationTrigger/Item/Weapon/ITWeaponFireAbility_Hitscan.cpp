@@ -6,9 +6,9 @@
 #include "Item/ITItemInstance.h"
 #include "Kismet/KismetSystemLibrary.h"
 
-void UITWeaponFireAbility_Hitscan::FireType(const FVector& TraceStart, const FVector& TraceDirection)
+void UITWeaponFireAbility_Hitscan::Fire(const FVector& TraceStart, const FVector& TraceDirection)
 {
-	Super::FireType(TraceStart, TraceDirection);
+	Super::Fire(TraceStart, TraceDirection);
 
 	FGameplayAbilitySpec* Spec = GetCurrentAbilitySpec();
 	if (!Spec)

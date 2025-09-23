@@ -29,14 +29,11 @@ protected:
 
 	// 상속 후, 발사 방식 구현 // Ex. 히트스캔(라인트레이스), 투사체, 범위 공격 등
 	UFUNCTION(BlueprintCallable, Category = "IT|Ability")
-	virtual void FireType(const FVector& TraceStart, const FVector& TraceDirection);
+	virtual void Fire(const FVector& StartLocation, const FVector& FireDirection);
 
 	UFUNCTION(BlueprintCallable, Category = "IT|Ability")
 	void ApplyWeaponDamage(AActor* TargetActor);
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "IT|Effect")
-	TSubclassOf<UGameplayEffect> DamageEffect;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "IT|Effect")
-	TSubclassOf<UGameplayEffect> CooldownEffect;
+	TSubclassOf<UGameplayEffect> DamageEffect;
 };

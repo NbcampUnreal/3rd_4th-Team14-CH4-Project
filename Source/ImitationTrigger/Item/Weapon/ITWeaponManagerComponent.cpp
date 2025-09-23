@@ -19,22 +19,22 @@ void UITWeaponManagerComponent::GetLifetimeReplicatedProps(TArray<FLifetimePrope
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UITWeaponManagerComponent, CurrentWeapon);
+	DOREPLIFETIME(UITWeaponManagerComponent, CurrentWeaponType);
 	DOREPLIFETIME(UITWeaponManagerComponent, MainWeaponInstance);
 	DOREPLIFETIME(UITWeaponManagerComponent, SubWeaponInstance);
 }
 
-void UITWeaponManagerComponent::OnRep_CurrentWeaponChanged()
+void UITWeaponManagerComponent::OnRep_CurrentWeaponTypeChanged()
 {
-	OnCurrentWeaponChanged.Broadcast(CurrentWeapon);
+	OnCurrentWeaponTypeChanged.Broadcast(CurrentWeaponType);
 }
 
-void UITWeaponManagerComponent::OnRep_CurrentMainWeaponChanged()
+void UITWeaponManagerComponent::OnRep_MainWeaponChanged()
 {
 	OnMainWeaponChanged.Broadcast(MainWeaponInstance);
 }
 
-void UITWeaponManagerComponent::OnRep_CurrentSubWeaponChanged()
+void UITWeaponManagerComponent::OnRep_SubWeaponChanged()
 {
 	OnSubWeaponChanged.Broadcast(SubWeaponInstance);
 }
@@ -49,9 +49,9 @@ void UITWeaponManagerComponent::ServerRPC_PickupWeapon_Implementation(UITItemIns
 	if (MainWeaponInstance == nullptr)
 	{
 		MainWeaponInstance = NewWeaponInstance;
-		if (CurrentWeapon == ECurrentWeaponSlot::None)
+		if (CurrentWeaponType == ECurrentWeaponSlot::None)
 		{
-			CurrentWeapon = ECurrentWeaponSlot::MainWeapon;
+			CurrentWeaponType = ECurrentWeaponSlot::MainWeapon;
 			EquipWeapon();
 		}
 		return;
@@ -60,9 +60,9 @@ void UITWeaponManagerComponent::ServerRPC_PickupWeapon_Implementation(UITItemIns
 	if (SubWeaponInstance == nullptr)
 	{
 		SubWeaponInstance = NewWeaponInstance;
-		if (CurrentWeapon == ECurrentWeaponSlot::None)
+		if (CurrentWeaponType == ECurrentWeaponSlot::None)
 		{
-			CurrentWeapon = ECurrentWeaponSlot::SubWeapon;
+			CurrentWeaponType = ECurrentWeaponSlot::SubWeapon;
 			EquipWeapon();
 		}
 		return;
@@ -72,12 +72,12 @@ void UITWeaponManagerComponent::ServerRPC_PickupWeapon_Implementation(UITItemIns
 	if (MainWeaponInstance == nullptr)
 	{
 		MainWeaponInstance = NewWeaponInstance;
-		CurrentWeapon = ECurrentWeaponSlot::MainWeapon;
+		CurrentWeaponType = ECurrentWeaponSlot::MainWeapon;
 	}
 	else if (SubWeaponInstance == nullptr)
 	{
 		SubWeaponInstance = NewWeaponInstance;
-		CurrentWeapon = ECurrentWeaponSlot::SubWeapon;
+		CurrentWeaponType = ECurrentWeaponSlot::SubWeapon;
 	}
 	EquipWeapon();
 }
@@ -90,31 +90,31 @@ void UITWeaponManagerComponent::ServerRPC_SwapWeapon_Implementation()
 	}
 
 	ECurrentWeaponSlot TargetSlot = ECurrentWeaponSlot::None;
-	if (CurrentWeapon == ECurrentWeaponSlot::MainWeapon && SubWeaponInstance != nullptr)
+	if (CurrentWeaponType == ECurrentWeaponSlot::MainWeapon && SubWeaponInstance != nullptr)
 	{
 		TargetSlot = ECurrentWeaponSlot::SubWeapon;
 	}
-	else if (CurrentWeapon == ECurrentWeaponSlot::SubWeapon && MainWeaponInstance != nullptr)
+	else if (CurrentWeaponType == ECurrentWeaponSlot::SubWeapon && MainWeaponInstance != nullptr)
 	{
 		TargetSlot = ECurrentWeaponSlot::MainWeapon;
 	}
-	else if (CurrentWeapon == ECurrentWeaponSlot::None && MainWeaponInstance != nullptr)
+	else if (CurrentWeaponType == ECurrentWeaponSlot::None && MainWeaponInstance != nullptr)
 	{
 		TargetSlot = ECurrentWeaponSlot::MainWeapon;
 	}
-	else if (CurrentWeapon == ECurrentWeaponSlot::None && SubWeaponInstance != nullptr)
+	else if (CurrentWeaponType == ECurrentWeaponSlot::None && SubWeaponInstance != nullptr)
 	{
 		TargetSlot = ECurrentWeaponSlot::SubWeapon;
 	}
 
 	UnequipWeapon();
-	CurrentWeapon = TargetSlot;
+	CurrentWeaponType = TargetSlot;
 	EquipWeapon();
 }
 
 void UITWeaponManagerComponent::ServerRPC_DropCurrentWeapon_Implementation()
 {
-	if (!GetOwner()->HasAuthority() || CurrentWeapon == ECurrentWeaponSlot::None)
+	if (!GetOwner()->HasAuthority() || CurrentWeaponType == ECurrentWeaponSlot::None)
 	{
 		return;
 	}
@@ -143,11 +143,11 @@ void UITWeaponManagerComponent::ServerRPC_DropCurrentWeapon_Implementation()
 		}
 	}
 
-	if (CurrentWeapon == ECurrentWeaponSlot::MainWeapon)
+	if (CurrentWeaponType == ECurrentWeaponSlot::MainWeapon)
 	{
 		MainWeaponInstance = nullptr;
 	}
-	else if (CurrentWeapon == ECurrentWeaponSlot::SubWeapon)
+	else if (CurrentWeaponType == ECurrentWeaponSlot::SubWeapon)
 	{
 		SubWeaponInstance = nullptr;
 	}
@@ -200,7 +200,7 @@ void UITWeaponManagerComponent::EquipWeapon()
 
 void UITWeaponManagerComponent::UnequipWeapon()
 {
-	if (CurrentWeapon == ECurrentWeaponSlot::None)
+	if (CurrentWeaponType == ECurrentWeaponSlot::None)
 	{
 		return;
 	}
@@ -231,17 +231,17 @@ void UITWeaponManagerComponent::UnequipWeapon()
 	}
 
 	GrantedHandles.TakeFromAbilitySystem(AbilitySystemComponent);
-	CurrentWeapon = ECurrentWeaponSlot::None;
+	CurrentWeaponType = ECurrentWeaponSlot::None;
 }
 
 UITItemInstance* UITWeaponManagerComponent::GetCurrentWeapon() const
 {
-	if (CurrentWeapon == ECurrentWeaponSlot::MainWeapon)
+	if (CurrentWeaponType == ECurrentWeaponSlot::MainWeapon)
 	{
 		return MainWeaponInstance;
 	}
 
-	if (CurrentWeapon == ECurrentWeaponSlot::SubWeapon)
+	if (CurrentWeaponType == ECurrentWeaponSlot::SubWeapon)
 	{
 		return SubWeaponInstance;
 	}

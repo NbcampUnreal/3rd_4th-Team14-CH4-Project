@@ -2,6 +2,12 @@
 #include "Camera/ITCameraComponent.h"
 #include "Camera/ITPlayerCameraManager.h"
 
+namespace ITCameraModeTags
+{
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CameraMode, "CameraMode", "CameraMode Tag");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CameraMode_ADS, "CameraMode.ADS", "Aiming Down Sight, 조준 시야");
+}
+
 FITCameraModeView::FITCameraModeView()
 	: Location(ForceInit)
 	, Rotation(ForceInit)

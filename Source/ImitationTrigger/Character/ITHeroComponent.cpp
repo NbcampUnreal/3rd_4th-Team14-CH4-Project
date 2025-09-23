@@ -29,20 +29,23 @@ void UITHeroComponent::SetupPlayerInputComponent(class UInputComponent* PlayerIn
 
 TSubclassOf<UITCameraMode> UITHeroComponent::DetermineCameraMode() const
 {
-	const AITCharacter* ITChar = GetOwnerCharacter();
-	if (!ITChar)
+	const AITCharacter* ITCharacter = GetOwnerCharacter();
+	if (!ITCharacter)
 	{
 		return nullptr;
 	}
 
-	// Aim중이면 ADS모드로 결정.
-	if (bIsAiming && AimCameraModeClass)
+	if (const UITPawnData* PawnData = ITCharacter->GetPawnData())
 	{
-		return AimCameraModeClass;
-	}
+		FGameplayTagContainer Tags = ITCharacter->GetAbilitySystemComponent()->GetOwnedGameplayTags();
 
-	if (const UITPawnData* PawnData = ITChar->GetPawnData())
-	{
+		for (const FCameraModeWithTag& Element : PawnData->CameraModeRules)
+		{
+			if (Element.CameraModeTag.MatchesAnyExact(Tags))
+			{
+				return Element.CameraModeClass;
+			}
+		}
 		return PawnData->DefaultCameraMode;
 	}
 	return nullptr;
@@ -59,13 +62,6 @@ void UITHeroComponent::TryBindCameraMode()
 	if (!Pawn->IsLocallyControlled())
 	{
 		// 로컬만 카메라 제어
-		return;
-	}
-
-	// PawnData가 아직 복제 전이면 여기서 실패할 수 있음
-	const AITCharacter* ITChar = GetOwnerCharacter();
-	if (!ITChar || !ITChar->GetPawnData())
-	{
 		return;
 	}
 
@@ -127,8 +123,6 @@ void UITHeroComponent::InitializePlayerInput(UInputComponent* PlayerInputCompone
 			const FITGameplayTags& ITGameplayTag = FITGameplayTags::Get();
 			InputComponent->BindNativeAction(InputConfig, ITGameplayTag.InputTag_Move, ETriggerEvent::Triggered, this, &ThisClass::Input_Move);
 			InputComponent->BindNativeAction(InputConfig, ITGameplayTag.InputTag_Look_Mouse, ETriggerEvent::Triggered, this, &ThisClass::Input_LookMouse);
-			InputComponent->BindNativeAction(InputConfig, ITGameplayTag.InputTag_Look_Aim, ETriggerEvent::Started, this, &ThisClass::OnAimStart);
-			InputComponent->BindNativeAction(InputConfig, ITGameplayTag.InputTag_Look_Aim, ETriggerEvent::Completed, this, &ThisClass::OnAimEnd);
 			InputComponent->BindNativeAction(InputConfig, ITGameplayTag.InputTag_Crouch, ETriggerEvent::Triggered, this, &ThisClass::Input_Crouch);
 		
 		}
@@ -218,24 +212,6 @@ void UITHeroComponent::Input_Crouch(const FInputActionValue& InputActionValue)
 			Character->Crouch();
 		}
 	}
-}
-
-void UITHeroComponent::Input_Aim(const FInputActionValue& InputActionValue)
-{
-	const bool bIsPressed = InputActionValue.Get<bool>();
-	bIsAiming = bIsPressed;
-	UE_LOG(LogTemp, Log, TEXT("Aim pressed? %s"), bIsPressed ? TEXT("true") : TEXT("false"));
-
-}
-
-void UITHeroComponent::OnAimStart(const FInputActionValue& Value)
-{
-	bIsAiming = true;
-}
-
-void UITHeroComponent::OnAimEnd(const FInputActionValue& Value)
-{
-	bIsAiming = false;
 }
 
 AITCharacter* UITHeroComponent::GetOwnerCharacter()

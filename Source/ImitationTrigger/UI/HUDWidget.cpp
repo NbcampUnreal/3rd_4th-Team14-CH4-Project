@@ -3,6 +3,7 @@
 
 #include "UI/HUDWidget.h"
 
+#include "Ammo/AmmoWidget.h"
 #include "Components/Border.h"
 #include "Components/Image.h"
 #include "Components/ScrollBox.h"
@@ -113,6 +114,38 @@ void UHUDWidget::PlayKillMarkerAnimation()
 	if (KillMarkerAnimation)
 	{
 		PlayAnimation(KillMarkerAnimation);
+	}
+}
+
+void UHUDWidget::UpdateRifleAmmo(int32 CurrentAmmo, int32 MaxAmmo)
+{
+	if (AmmoWidget)
+	{
+		AmmoWidget->SetRifleAmmo(CurrentAmmo, MaxAmmo);
+	}
+}
+
+void UHUDWidget::UpdateShotgunAmmo(int32 CurrentAmmo, int32 MaxAmmo)
+{
+	if (AmmoWidget)
+	{
+		AmmoWidget->SetShotgunAmmo(CurrentAmmo, MaxAmmo);
+	}
+}
+
+void UHUDWidget::UpdateSniperAmmo(int32 CurrentAmmo, int32 MaxAmmo)
+{
+	if (AmmoWidget)
+	{
+		AmmoWidget->SetSniperAmmo(CurrentAmmo, MaxAmmo);
+	}
+}
+
+void UHUDWidget::HasWeapon(bool bHasWeapon)
+{
+	if (AmmoWidget)
+	{
+		AmmoWidget->HasWeapon(bHasWeapon);
 	}
 }
 

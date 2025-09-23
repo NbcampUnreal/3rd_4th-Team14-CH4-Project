@@ -95,7 +95,10 @@ FRotator UITCameraMode::GetPivotRotation() const
 
 void UITCameraMode::UpdateBlending(float DeltaTime)
 {
-	if (BlendTime > 0.f) { BlendAlpha += (DeltaTime / BlendTime); }
+	if (BlendTime > 0.f) 
+	{ 
+		BlendAlpha += (DeltaTime / BlendTime); 
+	}
 	else { BlendAlpha = 1.0f; }
 
 	BlendAlpha = FMath::Clamp(BlendAlpha, 0.0f, 1.0f);

@@ -46,7 +46,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "IT|Character")
 	TObjectPtr<UITCameraComponent> CameraComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Lyra|Character")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "IT|Character")
 	TObjectPtr<UITHeroComponent> HeroComponent;
 
 	UITCharacterPartComponent* GetITCharacterPartComponent();

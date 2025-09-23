@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "HUDWidget.generated.h"
 
+class UAmmoWidget;
 class UBorder;
 class UEquipmentIconWidget;
 class UVerticalBox;
@@ -81,6 +82,15 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void PlayKillMarkerAnimation();
+
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void UpdateRifleAmmo(int32 CurrentAmmo, int32 MaxAmmo);
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void UpdateShotgunAmmo(int32 CurrentAmmo, int32 MaxAmmo);
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void UpdateSniperAmmo(int32 CurrentAmmo, int32 MaxAmmo);
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void HasWeapon(bool bHasWeapon);
 	
 protected:
 	
@@ -147,6 +157,9 @@ protected:
 
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	UWidgetAnimation* KillMarkerAnimation;
+
+	UPROPERTY(meta = (BindWidget))
+	UAmmoWidget* AmmoWidget;
 
 
 private:

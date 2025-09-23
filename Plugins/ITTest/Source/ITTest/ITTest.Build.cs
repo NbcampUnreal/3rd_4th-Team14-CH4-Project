@@ -25,8 +25,13 @@ public class ITTest : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core",
-				// ... add other public dependencies that you statically link with here ...
+				"Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput",
+				"UMG",
+				"Slate",
+				"SlateCore",
+				"OnlineSubsystem",
+				"Networking",
+				"Sockets",
 				"ImitationTrigger",
 			}
 			);
@@ -38,11 +43,10 @@ public class ITTest : ModuleRules
 				"CoreUObject",
 				"Engine",
 				"Slate",
-				"SlateCore", 
-				"EnhancedInput",
-				// ... add private dependencies that you statically link with here ...	
-				
-				// Gameplay
+				"SlateCore",
+				"InputCore",
+				"ApplicationCore",
+				"OnlineSubsystemSteam",
 				"GameplayTags",
 				"GameplayTasks",
 				"GameplayAbilities",

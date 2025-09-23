@@ -14,13 +14,13 @@ struct FITGameplayTags
 	void AddTag(FGameplayTag& OutTag, const ANSICHAR* TagName, const ANSICHAR* TagComment);
 	void AddAllTags(UGameplayTagsManager& TagsManager);
 
-	/* ÀÔ·Â ÅÂ±× */
+	/* ìž…ë ¥ íƒœê·¸ */
 	FGameplayTag InputTag_Move;
 	FGameplayTag InputTag_Look_Mouse;
 	FGameplayTag InputTag_Look_Aim;
 	FGameplayTag InputTag_Crouch;
 
-	/* Ability ÅÂ±× */
+	/* Ability íƒœê·¸ */
 	FGameplayTag Ability_InputBlocked;
 
 private:

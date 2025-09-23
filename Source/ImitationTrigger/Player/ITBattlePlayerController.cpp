@@ -40,15 +40,61 @@ void AITBattlePlayerController::InitHUD()
 	{
 		if (IsValid(HUDWidget))
 		{
-			BindAttributeChangeDelegate(ITASC, UITHealthSet::GetMaxHealthAttribute(), this, &ThisClass::OnHealthChanged);
+			BindAttributeChangeDelegate(ITASC, UITHealthSet::GetHealthAttribute(), this, &ThisClass::OnHealthChanged);
+			BindAttributeChangeDelegate(ITASC, UITHealthSet::GetMaxHealthAttribute(), this, &ThisClass::OnMaxHealthChanged);
+			BindAttributeChangeDelegate(ITASC, UITHealthSet::GetShieldAttribute(), this, &ThisClass::OnShieldChanged);
+			BindAttributeChangeDelegate(ITASC, UITHealthSet::GetMaxShieldAttribute(), this, &ThisClass::OnMaxShieldChanged);
 		}
 	}
+
+	UpdateHealth();
+	UpdateShield();
 }
 
 void AITBattlePlayerController::OnHealthChanged(const FOnAttributeChangeData& Data)
 {
+	UpdateHealth();
 }
 
 void AITBattlePlayerController::OnMaxHealthChanged(const FOnAttributeChangeData& Data)
 {
+	UpdateHealth();
+}
+
+void AITBattlePlayerController::UpdateHealth()
+{
+	UITAbilitySystemComponent* ITASC = GetITAbilitySystemComponent();
+	if (IsValid(ITASC))
+	{
+		if (IsValid(HUDWidget))
+		{
+			const float Health = ITASC->GetNumericAttribute(UITHealthSet::GetHealthAttribute());
+			const float MaxHealth = ITASC->GetNumericAttribute(UITHealthSet::GetMaxHealthAttribute());
+			HUDWidget->UpdateHealth(Health, MaxHealth);
+		}
+	}
+}
+
+void AITBattlePlayerController::OnShieldChanged(const FOnAttributeChangeData& Data)
+{
+	UpdateShield();
+}
+
+void AITBattlePlayerController::OnMaxShieldChanged(const FOnAttributeChangeData& Data)
+{
+	UpdateShield();
+}
+
+void AITBattlePlayerController::UpdateShield()
+{
+	UITAbilitySystemComponent* ITASC = GetITAbilitySystemComponent();
+	if (IsValid(ITASC))
+	{
+		if (IsValid(HUDWidget))
+		{
+			const float Shield = ITASC->GetNumericAttribute(UITHealthSet::GetShieldAttribute());
+			const float MaxShield = ITASC->GetNumericAttribute(UITHealthSet::GetMaxShieldAttribute());
+			HUDWidget->UpdateShield(Shield, MaxShield);
+		}
+	}
 }

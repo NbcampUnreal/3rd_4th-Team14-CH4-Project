@@ -36,6 +36,11 @@ private:
 
 	void OnHealthChanged(const FOnAttributeChangeData& Data);
 	void OnMaxHealthChanged(const FOnAttributeChangeData& Data);
+	void UpdateHealth();
+
+	void OnShieldChanged(const FOnAttributeChangeData& Data);
+	void OnMaxShieldChanged(const FOnAttributeChangeData& Data);
+	void UpdateShield();
 };
 
 template<class UClass, typename FuncType>

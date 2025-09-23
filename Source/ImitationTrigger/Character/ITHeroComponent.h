@@ -5,6 +5,7 @@
 #include "ITHeroComponent.generated.h"
 
 class AITCharacter;
+class UITCameraMode;
 struct FInputActionValue;
 
 /**
@@ -20,6 +21,10 @@ public:
 	UITHeroComponent(const FObjectInitializer& ObjectInitializer);
 	void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent);
 
+	TSubclassOf<UITCameraMode> DetermineCameraMode() const;
+	void TryBindCameraMode();
+
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
@@ -32,7 +37,20 @@ protected:
 	void Input_Move(const FInputActionValue& InputActionValue);
 	void Input_LookMouse(const FInputActionValue& InputActionValue);
 	void Input_Crouch(const FInputActionValue& InputActionValue);
+	void Input_Aim(const FInputActionValue& InputActionValue);
+
+public:
+	void OnAimStart(const FInputActionValue& Value);
+	void OnAimEnd(const FInputActionValue& Value);
+
+public:
+	UPROPERTY(Transient)
+	bool bIsAiming = false;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Camera")
+	TSubclassOf<UITCameraMode> AimCameraModeClass;
 
 private:
 	FORCEINLINE AITCharacter* GetOwnerCharacter();
+	FORCEINLINE const AITCharacter* GetOwnerCharacter() const;
 };

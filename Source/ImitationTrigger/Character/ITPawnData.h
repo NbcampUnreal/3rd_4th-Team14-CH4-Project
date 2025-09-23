@@ -17,7 +17,7 @@ UCLASS(BlueprintType, Const)
 class IMITATIONTRIGGER_API UITPawnData : public UDataAsset
 {
 	GENERATED_BODY()
-	
+
 public:
 	UITPawnData(const FObjectInitializer& ObjectInitializer);
 

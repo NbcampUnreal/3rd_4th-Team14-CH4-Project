@@ -21,7 +21,9 @@ void FITGameplayTags::AddAllTags(UGameplayTagsManager& TagsManager)
 {
 	AddTag(InputTag_Move, "InputTag.Move", "Move");
 	AddTag(InputTag_Look_Mouse, "InputTag.Look.Mouse", "Look using Mouse");
+	AddTag(InputTag_Look_Aim, "InputTag.Look.Aim", "Look using Aim");
 	AddTag(InputTag_Crouch, "InputTag.Crouch", "Crouch");
+
 
 	AddTag(Ability_InputBlocked, "Ability.InputBlocked", "Blocks Input");
 }

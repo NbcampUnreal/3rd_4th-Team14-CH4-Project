@@ -3,6 +3,7 @@
 #include "Character/ITPawnData.h"
 #include "Player/ITPlayerState.h"
 #include "Player/ITPlayerController.h"
+#include "Camera/ITCameraComponent.h"
 #include "Cosmetics/ITCharacterPartComponent.h"
 #include "AbilitySystem/ITAbilitySystemComponent.h"
 #include "Net/UnrealNetwork.h"
@@ -12,6 +13,9 @@ AITCharacter::AITCharacter()
 	PrimaryActorTick.bCanEverTick = false;
 
 	HeroComponent = CreateDefaultSubobject<UITHeroComponent>(TEXT("HeroComponent"));
+
+	CameraComponent = CreateDefaultSubobject<UITCameraComponent>(TEXT("CameraComponent"));
+	CameraComponent->SetRelativeLocation(FVector(-300.0f, 0.0f, 75.0f));
 }
 
 

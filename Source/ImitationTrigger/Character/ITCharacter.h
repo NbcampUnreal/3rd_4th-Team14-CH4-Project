@@ -8,6 +8,7 @@
 class AITPlayerController;
 class AITPlayerState;
 class UITPawnData;
+class UITCameraComponent;
 class UITHeroComponent;
 class UITCharacterPartComponent;
 
@@ -42,7 +43,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Replicated, Category = "PawnData")
 	TObjectPtr<const UITPawnData> PawnData;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "IT|Character")
+	TObjectPtr<UITCameraComponent> CameraComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "IT|Character")
 	TObjectPtr<UITHeroComponent> HeroComponent;
 
 	UITCharacterPartComponent* GetITCharacterPartComponent();

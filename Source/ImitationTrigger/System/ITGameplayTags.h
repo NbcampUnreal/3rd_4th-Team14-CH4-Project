@@ -17,6 +17,7 @@ struct FITGameplayTags
 	/* 입력 태그 */
 	FGameplayTag InputTag_Move;
 	FGameplayTag InputTag_Look_Mouse;
+	FGameplayTag InputTag_Look_Aim;
 	FGameplayTag InputTag_Crouch;
 
 	/* Ability 태그 */

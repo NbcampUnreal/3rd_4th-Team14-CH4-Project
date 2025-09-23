@@ -1,4 +1,6 @@
 #include "Player/ITBattlePlayerController.h"
+#include "AbilitySystem/ITAbilitySystemComponent.h"
+#include "AbilitySystem/Attributes/ITHealthSet.h"
 #include "UI/HUDWidget.h"
 
 
@@ -16,6 +18,7 @@ void AITBattlePlayerController::BeginPlay()
 		if (IsValid(HUDWidget))
 		{
 			HUDWidget->AddToViewport();
+			InitHUD();
 		}
 	}
 }
@@ -28,4 +31,24 @@ void AITBattlePlayerController::EndPlay(EEndPlayReason::Type EndPlayReason)
 	{
 		HUDWidget->RemoveFromParent();
 	}
+}
+
+void AITBattlePlayerController::InitHUD()
+{
+	UITAbilitySystemComponent* ITASC = GetITAbilitySystemComponent();
+	if (IsValid(ITASC))
+	{
+		if (IsValid(HUDWidget))
+		{
+			BindAttributeChangeDelegate(ITASC, UITHealthSet::GetMaxHealthAttribute(), this, &ThisClass::OnHealthChanged);
+		}
+	}
+}
+
+void AITBattlePlayerController::OnHealthChanged(const FOnAttributeChangeData& Data)
+{
+}
+
+void AITBattlePlayerController::OnMaxHealthChanged(const FOnAttributeChangeData& Data)
+{
 }

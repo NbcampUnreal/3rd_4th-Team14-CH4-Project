@@ -12,6 +12,12 @@ AITBattlePlayerController::AITBattlePlayerController()
 void AITBattlePlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// StandAlone 상태라면 OnRep_PlayerState가 호출되지 않으므로, 직접 호출해야 한다.
+	if (GetNetMode() == NM_Standalone)
+	{
+		OnRep_PlayerState();
+	}
 }
 
 void AITBattlePlayerController::EndPlay(EEndPlayReason::Type EndPlayReason)

@@ -20,7 +20,7 @@ enum class ECurrentWeaponSlot : uint8
 	SubWeapon
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCurrentWeaponTypeChanged, ECurrentWeaponSlot, CurrentWeapon);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCurrentWeaponTypeChanged, ECurrentWeaponSlot, CurrentWeaponType);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMainWeaponChanged, UITItemInstance*, MainWeaponInstance);
 

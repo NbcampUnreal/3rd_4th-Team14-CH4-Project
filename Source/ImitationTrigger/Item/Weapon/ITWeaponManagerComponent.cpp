@@ -112,6 +112,28 @@ void UITWeaponManagerComponent::ServerRPC_SwapWeapon_Implementation()
 	EquipWeapon();
 }
 
+void UITWeaponManagerComponent::ServerRPC_ChangeWeapon_Implementation(ECurrentWeaponSlot WeaponToChange)
+{
+	if (!GetOwner()->HasAuthority())
+	{
+		return;
+	}
+
+	UITItemInstance* TargetWeapon = nullptr;
+	if (WeaponToChange == ECurrentWeaponSlot::MainWeapon)
+	{
+		TargetWeapon = MainWeaponInstance;
+	}
+	else if (WeaponToChange == ECurrentWeaponSlot::SubWeapon)
+	{
+		TargetWeapon = SubWeaponInstance;
+	}
+
+	UnequipWeapon();
+	CurrentWeaponType = WeaponToChange;
+	EquipWeapon();
+}
+
 void UITWeaponManagerComponent::ServerRPC_DropCurrentWeapon_Implementation()
 {
 	if (!GetOwner()->HasAuthority() || CurrentWeaponType == ECurrentWeaponSlot::None)
@@ -153,6 +175,29 @@ void UITWeaponManagerComponent::ServerRPC_DropCurrentWeapon_Implementation()
 	}
 
 	UnequipWeapon();
+}
+
+void UITWeaponManagerComponent::ServerRPC_HolsterWeapon_Implementation()
+{
+	if (!GetOwner()->HasAuthority() || CurrentWeaponType == ECurrentWeaponSlot::None)
+	{
+		return;
+	}
+
+	PreviousWeaponType = CurrentWeaponType;
+	UnequipWeapon();
+}
+
+void UITWeaponManagerComponent::ServerRPC_ReEquipWeapon_Implementation()
+{
+	if (!GetOwner()->HasAuthority() || PreviousWeaponType == ECurrentWeaponSlot::None)
+	{
+		return;
+	}
+
+	CurrentWeaponType = PreviousWeaponType;
+	PreviousWeaponType = ECurrentWeaponSlot::None;
+	EquipWeapon();
 }
 
 void UITWeaponManagerComponent::EquipWeapon()

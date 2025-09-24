@@ -57,6 +57,7 @@ void UITWeaponFireAbility::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 		}
 	}
 
+	// TODO: 추후, 총구에서 총알이 나갈 수 있게 수정 / 현재, 카메라 위치에서 발사
 	FVector TraceStart;
 	FRotator ViewRotation;
 	ActorInfo->PlayerController->GetPlayerViewPoint(TraceStart, ViewRotation);

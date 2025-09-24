@@ -16,7 +16,6 @@ AITItemActor::AITItemActor()
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
 	SetRootComponent(StaticMeshComponent);
 	StaticMeshComponent->SetIsReplicated(true);
-	StaticMeshComponent->SetCollisionProfileName(TEXT("PhysicsActor"));
 
 	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
 	SphereComponent->SetupAttachment(RootComponent);
@@ -45,6 +44,9 @@ void AITItemActor::BeginPlay()
 			InitItemActor(NewItemInstance);
 		}
 	}
+
+	StaticMeshComponent->SetSimulatePhysics(true);
+	StaticMeshComponent->SetCollisionProfileName(TEXT("PhysicsActor"));
 }
 
 UITItemInstance* AITItemActor::GetItemInstance() const

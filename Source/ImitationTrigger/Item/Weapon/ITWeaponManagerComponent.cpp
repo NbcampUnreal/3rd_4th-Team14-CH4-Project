@@ -68,6 +68,11 @@ void UITWeaponManagerComponent::ServerRPC_PickupWeapon_Implementation(UITItemIns
 		return;
 	}
 
+	if (MainWeaponInstance && SubWeaponInstance)
+	{
+		ServerRPC_ChangeWeapon(ECurrentWeaponSlot::MainWeapon);
+	}
+	
 	ServerRPC_DropCurrentWeapon();
 	if (MainWeaponInstance == nullptr)
 	{
@@ -117,16 +122,6 @@ void UITWeaponManagerComponent::ServerRPC_ChangeWeapon_Implementation(ECurrentWe
 	if (!GetOwner()->HasAuthority())
 	{
 		return;
-	}
-
-	UITItemInstance* TargetWeapon = nullptr;
-	if (WeaponToChange == ECurrentWeaponSlot::MainWeapon)
-	{
-		TargetWeapon = MainWeaponInstance;
-	}
-	else if (WeaponToChange == ECurrentWeaponSlot::SubWeapon)
-	{
-		TargetWeapon = SubWeaponInstance;
 	}
 
 	UnequipWeapon();

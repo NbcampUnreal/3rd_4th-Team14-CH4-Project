@@ -5,7 +5,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "ITItemDefinition_Weapon.h"
-#include "AI/NavigationSystemBase.h"
+#include "Character/ITCharacter.h"
 #include "Item/ITItemGameplayTags.h"
 #include "Item/ITItemInstance.h"
 
@@ -82,7 +82,7 @@ void UITWeaponFireAbility::Fire(const FVector& StartLocation, const FVector& Fir
 
 void UITWeaponFireAbility::ApplyWeaponDamage(AActor* TargetActor)
 {
-	if (!TargetActor || !DamageEffect)
+	if (!TargetActor || !DamageEffect || !Cast<AITCharacter>(TargetActor))
 	{
 		return;
 	}
@@ -98,14 +98,7 @@ void UITWeaponFireAbility::ApplyWeaponDamage(AActor* TargetActor)
 		return;
 	}
 
-
-	UITItemInstance* WeaponInstance = Cast<UITItemInstance>(Spec->SourceObject.Get());
-	if (!WeaponInstance)
-	{
-		return;
-	}
-
-	UITItemDefinition_Weapon* WeaponDefinition = Cast<UITItemDefinition_Weapon>(WeaponInstance->GetItemDefinition());
+	UITItemDefinition_Weapon* WeaponDefinition = GetWeaponDefinition();
 	if (!WeaponDefinition)
 	{
 		return;
@@ -126,4 +119,22 @@ void UITWeaponFireAbility::ApplyWeaponDamage(AActor* TargetActor)
 		                                DamageSpecHandle,
 		                                TargetDataHandle);
 	}
+}
+
+UITItemDefinition_Weapon* UITWeaponFireAbility::GetWeaponDefinition() const
+{
+	FGameplayAbilitySpec* Spec = GetCurrentAbilitySpec();
+	if (!Spec)
+	{
+		return nullptr;
+	}
+
+	const UITItemInstance* WeaponInstance = Cast<UITItemInstance>(Spec->SourceObject.Get());
+	if (!WeaponInstance)
+	{
+		return nullptr;
+	}
+
+	UITItemDefinition_Weapon* WeaponDefinition = Cast<UITItemDefinition_Weapon>(WeaponInstance->GetItemDefinition());
+	return WeaponDefinition;
 }

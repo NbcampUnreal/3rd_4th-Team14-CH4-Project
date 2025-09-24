@@ -3,26 +3,13 @@
 
 #include "ITWeaponFireAbility_Hitscan.h"
 #include "ITItemDefinition_Weapon.h"
-#include "Item/ITItemInstance.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 void UITWeaponFireAbility_Hitscan::Fire(const FVector& TraceStart, const FVector& TraceDirection)
 {
 	Super::Fire(TraceStart, TraceDirection);
 
-	FGameplayAbilitySpec* Spec = GetCurrentAbilitySpec();
-	if (!Spec)
-	{
-		return;
-	}
-
-	UITItemInstance* WeaponInstance = Cast<UITItemInstance>(Spec->SourceObject.Get());
-	if (!WeaponInstance)
-	{
-		return;
-	}
-
-	UITItemDefinition_Weapon* WeaponDefinition = Cast<UITItemDefinition_Weapon>(WeaponInstance->GetItemDefinition());
+	UITItemDefinition_Weapon* WeaponDefinition = GetWeaponDefinition();
 	if (!WeaponDefinition)
 	{
 		return;
@@ -35,15 +22,12 @@ void UITWeaponFireAbility_Hitscan::Fire(const FVector& TraceStart, const FVector
 	ActorsToIgnore.Add(GetAvatarActorFromActorInfo());
 
 	UKismetSystemLibrary::LineTraceSingle(
-		this,
-		TraceStart,
-		TraceEnd,
+		this, TraceStart, TraceEnd,
 		UEngineTypes::ConvertToTraceType(ECC_Visibility),
-		false,
-		ActorsToIgnore,
+		false, ActorsToIgnore,
 		EDrawDebugTrace::ForDuration,
-		HitResult,
-		true
+		HitResult, true,
+		FLinearColor::White, FLinearColor::Red, 1.0f
 	);
 
 	if (HitResult.bBlockingHit && HitResult.GetActor())

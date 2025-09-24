@@ -1,6 +1,7 @@
 #include "Player/ITBattlePlayerController.h"
 #include "AbilitySystem/ITAbilitySystemComponent.h"
 #include "AbilitySystem/Attributes/ITHealthSet.h"
+#include "System/ITLogChannel.h"
 #include "UI/HUDWidget.h"
 
 
@@ -11,44 +12,59 @@ AITBattlePlayerController::AITBattlePlayerController()
 void AITBattlePlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (IsValid(HUDWidgetClass) && HUDWidget == nullptr)
-	{
-		HUDWidget = CreateWidget<UHUDWidget>(this, HUDWidgetClass);
-		if (IsValid(HUDWidget))
-		{
-			HUDWidget->AddToViewport();
-			InitHUD();
-		}
-	}
 }
 
 void AITBattlePlayerController::EndPlay(EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
-	if (IsValid(HUDWidget) && HUDWidget->IsInViewport())
+	if (IsLocalController())
 	{
-		HUDWidget->RemoveFromParent();
+		if (IsValid(HUDWidget) && HUDWidget->IsInViewport())
+		{
+			HUDWidget->RemoveFromParent();
+		}
+	}
+}
+
+void AITBattlePlayerController::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	// 클라이언트에 PlayerState가 준비 되어야 HUD를 초기화할 수 있다.
+	if (IsLocalController())
+	{
+		if (IsValid(HUDWidgetClass) && HUDWidget == nullptr)
+		{
+			HUDWidget = CreateWidget<UHUDWidget>(this, HUDWidgetClass);
+			if (IsValid(HUDWidget))
+			{
+				HUDWidget->AddToViewport();
+				InitHUD();
+			}
+		}
 	}
 }
 
 void AITBattlePlayerController::InitHUD()
 {
-	UITAbilitySystemComponent* ITASC = GetITAbilitySystemComponent();
-	if (IsValid(ITASC))
+	if (IsLocalController())
 	{
-		if (IsValid(HUDWidget))
+		UITAbilitySystemComponent* ITASC = GetITAbilitySystemComponent();
+		if (IsValid(ITASC))
 		{
-			BindAttributeChangeDelegate(ITASC, UITHealthSet::GetHealthAttribute(), this, &ThisClass::OnHealthChanged);
-			BindAttributeChangeDelegate(ITASC, UITHealthSet::GetMaxHealthAttribute(), this, &ThisClass::OnMaxHealthChanged);
-			BindAttributeChangeDelegate(ITASC, UITHealthSet::GetShieldAttribute(), this, &ThisClass::OnShieldChanged);
-			BindAttributeChangeDelegate(ITASC, UITHealthSet::GetMaxShieldAttribute(), this, &ThisClass::OnMaxShieldChanged);
+			if (IsValid(HUDWidget))
+			{
+				BindAttributeChangeDelegate(ITASC, UITHealthSet::GetHealthAttribute(), this, &ThisClass::OnHealthChanged);
+				BindAttributeChangeDelegate(ITASC, UITHealthSet::GetMaxHealthAttribute(), this, &ThisClass::OnMaxHealthChanged);
+				BindAttributeChangeDelegate(ITASC, UITHealthSet::GetShieldAttribute(), this, &ThisClass::OnShieldChanged);
+				BindAttributeChangeDelegate(ITASC, UITHealthSet::GetMaxShieldAttribute(), this, &ThisClass::OnMaxShieldChanged);
+			}
 		}
-	}
 
-	UpdateHealth();
-	UpdateShield();
+		UpdateHealth();
+		UpdateShield();
+	}
 }
 
 void AITBattlePlayerController::OnHealthChanged(const FOnAttributeChangeData& Data)

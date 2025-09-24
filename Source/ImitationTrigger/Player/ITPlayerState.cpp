@@ -2,6 +2,7 @@
 #include "Player/ITPlayerController.h"
 #include "Character/ITCharacter.h"
 #include "Character/ITPawnData.h"
+#include "Item/Weapon/ITWeaponManagerComponent.h"
 #include "AbilitySystem/Attributes/ITHealthSet.h"
 #include "AbilitySystem/Attributes/ITAttributeTableRow.h"
 #include "AbilitySystem/ITAbilitySystemComponent.h"
@@ -13,6 +14,9 @@ AITPlayerState::AITPlayerState(const FObjectInitializer& ObjectInitializer)
 	AbilitySystemComponent = ObjectInitializer.CreateDefaultSubobject<UITAbilitySystemComponent>(this, TEXT("AbilitySystemComponent"));
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
+
+	WeaponManagerComponent = CreateDefaultSubobject<UITWeaponManagerComponent>(TEXT("WeaponManagerComponent"));
+	WeaponManagerComponent->SetIsReplicated(true);
 
 	// AbilitySystem 네트워크 관련: needs to be updated at a high frequency.
 	SetNetUpdateFrequency(100.0f);

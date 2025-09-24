@@ -16,7 +16,12 @@ void AITBattlePlayerController::BeginPlay()
 	// StandAlone 상태라면 OnRep_PlayerState가 호출되지 않으므로, 직접 호출해야 한다.
 	if (GetNetMode() == NM_Standalone)
 	{
-		OnRep_PlayerState();
+		CreatePlayerWidgets();
+		if (IsValid(HUDWidget))
+		{
+			HUDWidget->AddToViewport();
+			InitHUD();
+		}
 	}
 }
 
@@ -38,16 +43,57 @@ void AITBattlePlayerController::OnRep_PlayerState()
 	Super::OnRep_PlayerState();
 
 	// 클라이언트에 PlayerState가 준비 되어야 HUD를 초기화할 수 있다.
+	CreatePlayerWidgets();
+	if (IsValid(HUDWidget))
+	{
+		HUDWidget->AddToViewport();
+		InitHUD();
+	}
+}
+
+void AITBattlePlayerController::ToggleMapWidget()
+{
+	if (IsValid(MapWidget))
+	{
+		if (MapWidget->IsInViewport())
+		{
+			MapWidget->RemoveFromParent();
+		}
+		else
+		{
+			MapWidget->AddToViewport();
+		}
+	}
+}
+
+void AITBattlePlayerController::ShowMapWidget()
+{
+	if (IsValid(MapWidget) && !MapWidget->IsInViewport())
+	{
+		MapWidget->AddToViewport();
+	}
+}
+
+void AITBattlePlayerController::HideMapWidget()
+{
+	if (IsValid(MapWidget) && MapWidget->IsInViewport())
+	{
+		MapWidget->RemoveFromParent();
+	}
+}
+
+void AITBattlePlayerController::CreatePlayerWidgets()
+{
 	if (IsLocalController())
 	{
 		if (IsValid(HUDWidgetClass) && HUDWidget == nullptr)
 		{
 			HUDWidget = CreateWidget<UHUDWidget>(this, HUDWidgetClass);
-			if (IsValid(HUDWidget))
-			{
-				HUDWidget->AddToViewport();
-				InitHUD();
-			}
+		}
+
+		if (IsValid(MapWidgetClass) && MapWidget == nullptr)
+		{
+			MapWidget = CreateWidget<UUserWidget>(this, MapWidgetClass);
 		}
 	}
 }

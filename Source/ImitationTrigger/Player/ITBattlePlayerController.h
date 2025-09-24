@@ -7,6 +7,7 @@
 #include "ITBattlePlayerController.generated.h"
 
 class UHUDWidget;
+class UUserWidget;
 class UAbilitySystemComponent;
 
 
@@ -22,6 +23,15 @@ public:
 
 	virtual void OnRep_PlayerState() override;
 
+	UFUNCTION(BlueprintCallable)
+	void ToggleMapWidget();
+
+	UFUNCTION(BlueprintCallable)
+	void ShowMapWidget();
+
+	UFUNCTION(BlueprintCallable)
+	void HideMapWidget();
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
 	TSubclassOf<UHUDWidget> HUDWidgetClass;
@@ -29,8 +39,15 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UHUDWidget> HUDWidget;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
+	TSubclassOf<UUserWidget> MapWidgetClass;
+
+	UPROPERTY()
+	TObjectPtr<UUserWidget> MapWidget;
+
 
 private:
+	void CreatePlayerWidgets();
 	void InitHUD();
 
 	template<class UClass, typename FuncType>

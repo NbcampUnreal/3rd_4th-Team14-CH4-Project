@@ -71,6 +71,8 @@ void UITWeaponFireAbility::ApplyCooldown(const FGameplayAbilitySpecHandle Handle
                                          const FGameplayAbilityActorInfo* ActorInfo,
                                          const FGameplayAbilityActivationInfo ActivationInfo) const
 {
+	// 쿨다운 적용 로직을 커스터마이징 하기 위해 (Cooldown Effect에 Set By Caller를 사용하기 위함)
+	// ApplyCooldown()를 override하고, 의도적으로 Super::ApplyCooldown() 호출을 하지 않음
 	return;
 }
 

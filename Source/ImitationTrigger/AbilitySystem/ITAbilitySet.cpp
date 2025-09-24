@@ -134,6 +134,7 @@ void UITAbilitySet::GrantAbilities(UITAbilitySystemComponent* ITASC, FITAbilityS
 	}
 }
 
+
 void UITAbilitySet::GrantGameplayEffects(UITAbilitySystemComponent* ITASC, FITAbilitySet_GrantedHandles* OutGrantedHandles) const
 {
 	for (int32 EffectIndex = 0; EffectIndex < GrantedGameplayEffects.Num(); ++EffectIndex)

@@ -1,8 +1,11 @@
 #pragma once
 
+#include "GameplayEffectTypes.h"
+#include "AbilitySystemComponent.h"
 #include "AbilitySystemInterface.h"
 #include "AbilitySystem/ITAbilitySet.h"
 #include "GameFramework/PlayerState.h"
+#include "AttributeSet.h"
 #include "ITPlayerState.generated.h"
 
 class AITPlayerController;
@@ -10,6 +13,7 @@ class AITCharacter;
 class UITAbilitySystemComponent;
 class UITWeaponManagerComponent;
 class UITHealthSet;
+struct FOnAttributeChangeData;
 
 UCLASS()
 class IMITATIONTRIGGER_API AITPlayerState : public APlayerState, public IAbilitySystemInterface
@@ -48,6 +52,9 @@ private:
 	void OnReadyPawnData(APlayerState* Player, APawn* NewPawn, APawn* OldPawn);
 
 	void InitAttributeSet(UDataTable* InitDataTable);
+	void BindAttributeDelegate();
+
+	void OnHealthChanged(const FOnAttributeChangeData& Data);
 
 	FITAbilitySet_GrantedHandles GrantedHandles;
 };

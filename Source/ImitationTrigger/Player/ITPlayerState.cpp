@@ -62,6 +62,11 @@ void AITPlayerState::OnReadyPawnData(APlayerState* Player, APawn* NewPawn, APawn
 			InitAttributeSet(PawnData->InitDataTable);
 		}
 
+		if (HasAuthority())
+		{
+			BindAttributeDelegate();
+		}
+
 		ITCharacter->SetBodyMeshes();
 		ITCharacter->SetAnimLayerRules();
 	}
@@ -86,6 +91,30 @@ void AITPlayerState::InitAttributeSet(UDataTable* InitDataTable)
 					AbilitySystemComponent->SetNumericAttributeBase(Row->CurrentAttribute, Row->InitValue);
 				}
 			}
+		}
+	}
+}
+
+void AITPlayerState::BindAttributeDelegate()
+{
+	UITAbilitySystemComponent* ITASC = GetITAbilitySystemComponent();
+	if (IsValid(ITASC))
+	{
+		FGameplayAttribute Attribute = UITHealthSet::GetHealthAttribute();
+		ITASC->GetGameplayAttributeValueChangeDelegate(Attribute).AddUObject(this, &AITPlayerState::OnHealthChanged);
+	}
+}
+
+void AITPlayerState::OnHealthChanged(const FOnAttributeChangeData& Data)
+{
+	const float Health = Data.NewValue;
+	if (Health <= 0)
+	{
+		// TEMPORAL: 임시 사망 코드
+		// TODO: 기절(down) 등 구현
+		if (IsValid(GetPawn()))
+		{
+			GetPawn()->Destroy();
 		}
 	}
 }

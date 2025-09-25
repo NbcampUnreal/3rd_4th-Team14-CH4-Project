@@ -59,4 +59,5 @@ private:
 
 	void AddInitCharacterPartsAtServer();
 	void SetBodyMeshes();
+	void SetAnimLayerRules();
 };

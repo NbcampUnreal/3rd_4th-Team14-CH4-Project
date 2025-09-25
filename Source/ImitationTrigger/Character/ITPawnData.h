@@ -3,6 +3,7 @@
 #include "Engine/DataAsset.h"
 #include "AbilitySystem/Attributes/ITAttributeTableRow.h"
 #include "Cosmetics/ITCharacterPartType.h"
+#include "Cosmetics/ITCharacterAnimComponent.h"
 #include "Camera/ITCameraMode.h"
 #include "ITPawnData.generated.h"
 
@@ -37,6 +38,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "PawnData|Cosmetics")
 	FITAnimBodyStyleSelectionSet InitBodyMeshes;
+
+	UPROPERTY(EditDefaultsOnly, Category = "PawnData|Cosmetics")
+	TArray<FITAnimLayerEntry> AnimLayerRules;
 
 	// Character에 적용할 기본 카메라 모드
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "PawnData|Camera")

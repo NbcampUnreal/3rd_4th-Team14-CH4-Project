@@ -43,6 +43,10 @@ public:
 
 	FGameplayTagContainer GetASCGameplayTags() const;
 
+	void AddInitCharacterPartsAtServer();
+	void SetBodyMeshes();
+	void SetAnimLayerRules();
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Replicated, Category = "PawnData")
 	TObjectPtr<const UITPawnData> PawnData;
@@ -58,8 +62,4 @@ protected:
 
 private:
 	TArray<FITCharacterPartHandle> CharacterPartHandles;
-
-	void AddInitCharacterPartsAtServer();
-	void SetBodyMeshes();
-	void SetAnimLayerRules();
 };

@@ -61,6 +61,9 @@ void AITPlayerState::OnReadyPawnData(APlayerState* Player, APawn* NewPawn, APawn
 
 			InitAttributeSet(PawnData->InitDataTable);
 		}
+
+		ITCharacter->SetBodyMeshes();
+		ITCharacter->SetAnimLayerRules();
 	}
 }
 

@@ -49,8 +49,11 @@ UAbilitySystemComponent* AITCharacter::GetAbilitySystemComponent() const
 void AITCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	SetBodyMeshes();
-	SetAnimLayerRules();
+
+	if (!HasAuthority())
+	{
+		SetBodyMeshes();
+	}
 }
 
 void AITCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -75,6 +78,7 @@ void AITCharacter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	SetBodyMeshes();
+	SetAnimLayerRules();
 	AddInitCharacterPartsAtServer();
 }
 

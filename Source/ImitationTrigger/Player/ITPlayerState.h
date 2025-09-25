@@ -59,5 +59,9 @@ private:
 
 	void OnHealthChanged(const FOnAttributeChangeData& Data);
 
+	void InitAbilitySystemComponent();
+	void BindWeaponChanged();
+	void UnbindWeaponChanged();
+
 	FITAbilitySet_GrantedHandles GrantedHandles;
 };

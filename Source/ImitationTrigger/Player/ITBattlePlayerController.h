@@ -47,6 +47,9 @@ protected:
 
 
 private:
+	void InitWidgets();
+	void ReleaseWidgets();
+
 	void CreatePlayerWidgets();
 	void InitHUD();
 

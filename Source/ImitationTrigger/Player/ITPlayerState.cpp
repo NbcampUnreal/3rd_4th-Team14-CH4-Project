@@ -70,37 +70,12 @@ void AITPlayerState::OnReadyPawnData(APlayerState* Player, APawn* NewPawn, APawn
 	AITCharacter* ITCharacter = GetITCharacter();
 	if (IsValid(ITCharacter))
 	{
-		AActor* ComponentOwner = this;
-		AActor* Avatar = ITCharacter;
-		AbilitySystemComponent->InitAbilityActorInfo(ComponentOwner, Avatar);
-
-		const UITPawnData* PawnData = ITCharacter->GetPawnData();
-		if (IsValid(PawnData))
-		{
-			for (const UITAbilitySet* AbilitySet : PawnData->AbilitySets)
-			{
-				AbilitySet->GiveToAbilitySystem(AbilitySystemComponent, &GrantedHandles);
-			}
-
-			InitAttributeSet(PawnData->InitDataTable);
-		}
-
-		if (HasAuthority())
-		{
-			BindAttributeDelegate();
-		}
+		InitAbilitySystemComponent();
 
 		ITCharacter->SetBodyMeshes();
 		ITCharacter->SetAnimLayerRules();
 
-		if (IsValid(WeaponManagerComponent))
-		{
-			UITCharacterAnimComponent* AnimComponent = ITCharacter->GetITCharacterAnimComponent();
-			if (IsValid(AnimComponent))
-			{
-				WeaponManagerComponent->OnCurrentWeaponTypeChanged.AddDynamic(AnimComponent, &UITCharacterAnimComponent::OnUpdateCurrentWeapon);
-			}
-		}
+		BindWeaponChanged();
 	}
 }
 
@@ -149,4 +124,52 @@ void AITPlayerState::OnHealthChanged(const FOnAttributeChangeData& Data)
 			GetPawn()->Destroy();
 		}
 	}
+}
+
+void AITPlayerState::InitAbilitySystemComponent()
+{
+	AITCharacter* ITCharacter = GetITCharacter();
+	if (IsValid(ITCharacter))
+	{
+		InitAbilitySystemComponent();
+		AActor* ComponentOwner = this;
+		AActor* Avatar = ITCharacter;
+		AbilitySystemComponent->InitAbilityActorInfo(ComponentOwner, Avatar);
+
+		const UITPawnData* PawnData = ITCharacter->GetPawnData();
+		if (IsValid(PawnData))
+		{
+			for (const UITAbilitySet* AbilitySet : PawnData->AbilitySets)
+			{
+				AbilitySet->GiveToAbilitySystem(AbilitySystemComponent, &GrantedHandles);
+			}
+
+			InitAttributeSet(PawnData->InitDataTable);
+		}
+
+		if (HasAuthority())
+		{
+			BindAttributeDelegate();
+		}
+	}
+}
+
+void AITPlayerState::BindWeaponChanged()
+{
+	AITCharacter* ITCharacter = GetITCharacter();
+	if (IsValid(ITCharacter))
+	{
+		if (IsValid(WeaponManagerComponent))
+		{
+			UITCharacterAnimComponent* AnimComponent = ITCharacter->GetITCharacterAnimComponent();
+			if (IsValid(AnimComponent))
+			{
+				WeaponManagerComponent->OnCurrentWeaponTypeChanged.AddDynamic(AnimComponent, &UITCharacterAnimComponent::OnUpdateCurrentWeapon);
+			}
+		}
+	}
+}
+
+void AITPlayerState::UnbindWeaponChanged()
+{
 }

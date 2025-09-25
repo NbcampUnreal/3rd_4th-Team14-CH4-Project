@@ -30,19 +30,6 @@ AITPlayerState::AITPlayerState(const FObjectInitializer& ObjectInitializer)
 void AITPlayerState::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (IsValid(WeaponManagerComponent))
-	{
-		AITCharacter* ITCharacter = GetITCharacter();
-		if (IsValid(ITCharacter))
-		{
-			UITCharacterAnimComponent* AnimComponent = ITCharacter->GetITCharacterAnimComponent();
-			if (IsValid(AnimComponent))
-			{
-				WeaponManagerComponent->OnCurrentWeaponTypeChanged.AddDynamic(AnimComponent, &UITCharacterAnimComponent::OnUpdateCurrentWeapon);
-			}
-		}
-	}
 }
 
 void AITPlayerState::EndPlay(EEndPlayReason::Type EndPlayReason)
@@ -105,6 +92,15 @@ void AITPlayerState::OnReadyPawnData(APlayerState* Player, APawn* NewPawn, APawn
 
 		ITCharacter->SetBodyMeshes();
 		ITCharacter->SetAnimLayerRules();
+
+		if (IsValid(WeaponManagerComponent))
+		{
+			UITCharacterAnimComponent* AnimComponent = ITCharacter->GetITCharacterAnimComponent();
+			if (IsValid(AnimComponent))
+			{
+				WeaponManagerComponent->OnCurrentWeaponTypeChanged.AddDynamic(AnimComponent, &UITCharacterAnimComponent::OnUpdateCurrentWeapon);
+			}
+		}
 	}
 }
 

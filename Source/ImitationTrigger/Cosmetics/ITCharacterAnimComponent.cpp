@@ -62,6 +62,11 @@ void UITCharacterAnimComponent::UpdateAnimLayer()
 	}
 }
 
+void UITCharacterAnimComponent::OnUpdateCurrentWeapon(ECurrentWeaponSlot CurrentWeaponType)
+{
+	UpdateAnimLayer();
+}
+
 USkeletalMeshComponent* UITCharacterAnimComponent::GetParentMeshComponent() const
 {
 	ACharacter* OwnerCharacter = GetOwner<ACharacter>();

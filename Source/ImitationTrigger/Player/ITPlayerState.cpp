@@ -27,6 +27,42 @@ AITPlayerState::AITPlayerState(const FObjectInitializer& ObjectInitializer)
 	OnPawnSet.AddDynamic(this, &ThisClass::OnReadyPawnData);
 }
 
+void AITPlayerState::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (IsValid(WeaponManagerComponent))
+	{
+		AITCharacter* ITCharacter = GetITCharacter();
+		if (IsValid(ITCharacter))
+		{
+			UITCharacterAnimComponent* AnimComponent = ITCharacter->GetITCharacterAnimComponent();
+			if (IsValid(AnimComponent))
+			{
+				WeaponManagerComponent->OnCurrentWeaponTypeChanged.AddDynamic(AnimComponent, &UITCharacterAnimComponent::OnUpdateCurrentWeapon);
+			}
+		}
+	}
+}
+
+void AITPlayerState::EndPlay(EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	if (IsValid(WeaponManagerComponent))
+	{
+		AITCharacter* ITCharacter = GetITCharacter();
+		if (IsValid(ITCharacter))
+		{
+			UITCharacterAnimComponent* AnimComponent = ITCharacter->GetITCharacterAnimComponent();
+			if (IsValid(AnimComponent))
+			{
+				WeaponManagerComponent->OnCurrentWeaponTypeChanged.RemoveDynamic(AnimComponent, &UITCharacterAnimComponent::OnUpdateCurrentWeapon);
+			}
+		}
+	}
+}
+
 AITPlayerController* AITPlayerState::GetITPlayerController() const
 {
 	return Cast<AITPlayerController>(GetOwner());

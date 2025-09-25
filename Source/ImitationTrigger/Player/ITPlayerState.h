@@ -22,6 +22,9 @@ class IMITATIONTRIGGER_API AITPlayerState : public APlayerState, public IAbility
 
 public:
 	AITPlayerState(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	virtual void BeginPlay() override;
+	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
+
 
 	UFUNCTION(BlueprintCallable, Category = "ITPlayerState")
 	AITPlayerController* GetITPlayerController() const;

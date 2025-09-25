@@ -3,6 +3,7 @@
 #include "Components/ActorComponent.h"
 #include "GameplayTagContainer.h"
 #include "NativeGameplayTags.h"
+#include "Item/Weapon/ITWeaponManagerComponent.h"
 #include "ITCharacterAnimComponent.generated.h"
 
 namespace ITCameraModeTags
@@ -39,6 +40,9 @@ public:
 	void SetAnimLayerRules(TArray<FITAnimLayerEntry> Rules);
 	TSubclassOf<UAnimInstance> FindBestMatchAnimLayer();
 	void UpdateAnimLayer();
+
+	UFUNCTION()
+	void OnUpdateCurrentWeapon(ECurrentWeaponSlot CurrentWeaponType);
 
 protected:
 	USkeletalMeshComponent* GetParentMeshComponent() const;

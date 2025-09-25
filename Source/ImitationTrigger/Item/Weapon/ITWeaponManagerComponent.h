@@ -71,6 +71,10 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "IT|Weapon")
 	FOnSubWeaponChanged OnSubWeaponChanged;
 
+	void SetCurrentWeaponType(ECurrentWeaponSlot InType);
+	void SetMainWeaponInstance(TObjectPtr<UITItemInstance> WeaponInstance);
+	void SetSubWeaponInstance(TObjectPtr<UITItemInstance> WeaponInstance);
+
 protected:
 	UPROPERTY(ReplicatedUsing = OnRep_CurrentWeaponTypeChanged)
 	ECurrentWeaponSlot CurrentWeaponType = ECurrentWeaponSlot::None;

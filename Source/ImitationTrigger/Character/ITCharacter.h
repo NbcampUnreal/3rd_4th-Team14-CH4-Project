@@ -47,6 +47,9 @@ public:
 	void SetBodyMeshes();
 	void SetAnimLayerRules();
 
+	UITCharacterPartComponent* GetITCharacterPartComponent();
+	UITCharacterAnimComponent* GetITCharacterAnimComponent();
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Replicated, Category = "PawnData")
 	TObjectPtr<const UITPawnData> PawnData;
@@ -56,9 +59,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "IT|Character")
 	TObjectPtr<UITHeroComponent> HeroComponent;
-
-	UITCharacterPartComponent* GetITCharacterPartComponent();
-	UITCharacterAnimComponent* GetITCharacterAnimComponent();
 
 private:
 	TArray<FITCharacterPartHandle> CharacterPartHandles;

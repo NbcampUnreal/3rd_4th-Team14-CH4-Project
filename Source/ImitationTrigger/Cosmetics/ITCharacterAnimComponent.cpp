@@ -16,10 +16,14 @@ UITCharacterAnimComponent::UITCharacterAnimComponent(const FObjectInitializer& O
 {
 }
 
-void UITCharacterAnimComponent::SetAnimLayerRules(TSubclassOf<UAnimInstance> InDefaultAnimLayer, TArray<FITAnimLayerEntry> Rules)
+void UITCharacterAnimComponent::SetAnimLayerRules(TArray<FITAnimLayerEntry> Rules)
 {
-	DefaultAnimLayer = InDefaultAnimLayer;
 	AnimLayerRules = Rules;
+	if (AnimLayerRules.Num() > 0)
+	{
+		DefaultAnimLayer = AnimLayerRules[0].AnimLayerClass;
+	}
+	UpdateAnimLayer();
 }
 
 TSubclassOf<UAnimInstance> UITCharacterAnimComponent::FindBestMatchAnimLayer()

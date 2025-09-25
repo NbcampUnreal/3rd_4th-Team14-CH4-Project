@@ -12,6 +12,7 @@ class UITPawnData;
 class UITCameraComponent;
 class UITHeroComponent;
 class UITCharacterPartComponent;
+class UITCharacterAnimComponent;
 
 UCLASS()
 class IMITATIONTRIGGER_API AITCharacter : public ACharacter, public IAbilitySystemInterface
@@ -53,6 +54,7 @@ protected:
 	TObjectPtr<UITHeroComponent> HeroComponent;
 
 	UITCharacterPartComponent* GetITCharacterPartComponent();
+	UITCharacterAnimComponent* GetITCharacterAnimComponent();
 
 private:
 	TArray<FITCharacterPartHandle> CharacterPartHandles;

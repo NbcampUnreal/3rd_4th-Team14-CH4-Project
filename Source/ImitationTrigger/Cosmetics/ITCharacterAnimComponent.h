@@ -36,7 +36,7 @@ class IMITATIONTRIGGER_API UITCharacterAnimComponent : public UActorComponent
 
 public:
 	UITCharacterAnimComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
-	void SetAnimLayerRules(TSubclassOf<UAnimInstance> InDefaultAnimLayer, TArray<FITAnimLayerEntry> Rules);
+	void SetAnimLayerRules(TArray<FITAnimLayerEntry> Rules);
 	TSubclassOf<UAnimInstance> FindBestMatchAnimLayer();
 	void UpdateAnimLayer();
 

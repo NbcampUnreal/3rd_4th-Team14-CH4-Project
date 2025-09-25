@@ -5,6 +5,7 @@
 #include "Player/ITPlayerController.h"
 #include "Camera/ITCameraComponent.h"
 #include "Cosmetics/ITCharacterPartComponent.h"
+#include "Cosmetics/ITCharacterAnimComponent.h"
 #include "AbilitySystem/ITAbilitySystemComponent.h"
 #include "Net/UnrealNetwork.h"
 
@@ -49,6 +50,7 @@ void AITCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	SetBodyMeshes();
+	SetAnimLayerRules();
 }
 
 void AITCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -96,6 +98,13 @@ UITCharacterPartComponent* AITCharacter::GetITCharacterPartComponent()
 	return PartComponent;
 }
 
+UITCharacterAnimComponent* AITCharacter::GetITCharacterAnimComponent()
+{
+	UActorComponent* FindComponent = GetComponentByClass(UITCharacterAnimComponent::StaticClass());
+	UITCharacterAnimComponent* AnimComponent = Cast<UITCharacterAnimComponent>(FindComponent);
+	return AnimComponent;
+}
+
 void AITCharacter::AddInitCharacterPartsAtServer()
 {
 	UITCharacterPartComponent* PartComponent = GetITCharacterPartComponent();
@@ -116,6 +125,18 @@ void AITCharacter::SetBodyMeshes()
 		if (IsValid(PawnData))
 		{
 			PartComponent->SetBodyMeshes(PawnData->InitBodyMeshes);
+		}
+	}
+}
+
+void AITCharacter::SetAnimLayerRules()
+{
+	UITCharacterAnimComponent* PartComponent = GetITCharacterAnimComponent();
+	if (IsValid(PartComponent))
+	{
+		if (IsValid(PawnData))
+		{
+			PartComponent->SetAnimLayerRules(PawnData->AnimLayerRules);
 		}
 	}
 }

@@ -9,6 +9,7 @@
 class UHUDWidget;
 class UUserWidget;
 class UAbilitySystemComponent;
+class UITItemInstance;
 
 
 UCLASS()
@@ -63,6 +64,12 @@ private:
 	void OnShieldChanged(const FOnAttributeChangeData& Data);
 	void OnMaxShieldChanged(const FOnAttributeChangeData& Data);
 	void UpdateShield();
+
+	UFUNCTION()
+	void OnMainWeaponUpdate(UITItemInstance* ItemInstance);
+
+	UFUNCTION()
+	void OnSubWeaponUpdate(UITItemInstance* ItemInstance);
 };
 
 template<class UClass, typename FuncType>

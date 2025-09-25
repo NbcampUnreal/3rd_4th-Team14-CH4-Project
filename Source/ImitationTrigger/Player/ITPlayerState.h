@@ -61,7 +61,6 @@ private:
 
 	void InitAbilitySystemComponent();
 	void BindWeaponChanged();
-	void UnbindWeaponChanged();
 
 	FITAbilitySet_GrantedHandles GrantedHandles;
 };

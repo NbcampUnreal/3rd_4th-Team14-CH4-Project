@@ -1,8 +1,12 @@
 #include "Player/ITBattlePlayerController.h"
+#include "Player/ITPlayerState.h"
 #include "AbilitySystem/ITAbilitySystemComponent.h"
 #include "AbilitySystem/Attributes/ITHealthSet.h"
 #include "System/ITLogChannel.h"
 #include "UI/HUDWidget.h"
+#include "Item/ITItemInstance.h"
+#include "Item/Weapon/ITItemDefinition_Weapon.h"
+#include "Item/Weapon/ITWeaponManagerComponent.h"
 
 
 AITBattlePlayerController::AITBattlePlayerController()
@@ -118,9 +122,19 @@ void AITBattlePlayerController::InitHUD()
 				BindAttributeChangeDelegate(ITASC, UITHealthSet::GetMaxShieldAttribute(), this, &ThisClass::OnMaxShieldChanged);
 			}
 		}
-
 		UpdateHealth();
 		UpdateShield();
+
+		AITPlayerState* ITPlayerState = GetITPlayerState();
+		if (IsValid(ITPlayerState))
+		{
+			UITWeaponManagerComponent* WeaponComponent = ITPlayerState->GetITWeaponManagerComponent();
+			if (IsValid(WeaponComponent))
+			{
+				WeaponComponent->OnMainWeaponChanged.AddDynamic(this, &ThisClass::OnMainWeaponUpdate);
+				WeaponComponent->OnSubWeaponChanged.AddDynamic(this, &ThisClass::OnSubWeaponUpdate);
+			}
+		}
 	}
 }
 
@@ -168,6 +182,32 @@ void AITBattlePlayerController::UpdateShield()
 			const float Shield = ITASC->GetNumericAttribute(UITHealthSet::GetShieldAttribute());
 			const float MaxShield = ITASC->GetNumericAttribute(UITHealthSet::GetMaxShieldAttribute());
 			HUDWidget->UpdateShield(Shield, MaxShield);
+		}
+	}
+}
+
+void AITBattlePlayerController::OnMainWeaponUpdate(UITItemInstance* ItemInstance)
+{
+	UITItemDefinition_Weapon* WeaponDefinition = ItemInstance->GetItemDefinition<UITItemDefinition_Weapon>();
+	if (IsValid(WeaponDefinition))
+	{
+		if (IsValid(HUDWidget))
+		{
+			HUDWidget->UpdateWeaponSlotOne(WeaponDefinition->ItemIcon);
+			HUDWidget->SetWeaponOneInfo(WeaponDefinition->ItemName);
+		}
+	}
+}
+
+void AITBattlePlayerController::OnSubWeaponUpdate(UITItemInstance* ItemInstance)
+{
+	UITItemDefinition_Weapon* WeaponDefinition = ItemInstance->GetItemDefinition<UITItemDefinition_Weapon>();
+	if (IsValid(WeaponDefinition))
+	{
+		if (IsValid(HUDWidget))
+		{
+			HUDWidget->UpdateWeaponSlotTwo(WeaponDefinition->ItemIcon);
+			HUDWidget->SetWeaponTwoInfo(WeaponDefinition->ItemName);
 		}
 	}
 }

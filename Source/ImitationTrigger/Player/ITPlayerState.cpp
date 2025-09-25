@@ -131,7 +131,6 @@ void AITPlayerState::InitAbilitySystemComponent()
 	AITCharacter* ITCharacter = GetITCharacter();
 	if (IsValid(ITCharacter))
 	{
-		InitAbilitySystemComponent();
 		AActor* ComponentOwner = this;
 		AActor* Avatar = ITCharacter;
 		AbilitySystemComponent->InitAbilityActorInfo(ComponentOwner, Avatar);
@@ -168,8 +167,4 @@ void AITPlayerState::BindWeaponChanged()
 			}
 		}
 	}
-}
-
-void AITPlayerState::UnbindWeaponChanged()
-{
 }

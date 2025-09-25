@@ -19,9 +19,9 @@ void UITWeaponManagerComponent::GetLifetimeReplicatedProps(TArray<FLifetimePrope
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UITWeaponManagerComponent, CurrentWeaponType);
-	DOREPLIFETIME(UITWeaponManagerComponent, MainWeaponInstance);
-	DOREPLIFETIME(UITWeaponManagerComponent, SubWeaponInstance);
+	DOREPLIFETIME(ThisClass, CurrentWeaponType);
+	DOREPLIFETIME(ThisClass, MainWeaponInstance);
+	DOREPLIFETIME(ThisClass, SubWeaponInstance);
 }
 
 void UITWeaponManagerComponent::OnRep_CurrentWeaponTypeChanged()
@@ -31,6 +31,7 @@ void UITWeaponManagerComponent::OnRep_CurrentWeaponTypeChanged()
 
 void UITWeaponManagerComponent::OnRep_MainWeaponChanged()
 {
+	// TODO: 여기서부터, 이 Instance들은 Replicated가 안된다.
 	OnMainWeaponChanged.Broadcast(MainWeaponInstance);
 }
 

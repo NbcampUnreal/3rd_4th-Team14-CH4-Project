@@ -124,6 +124,7 @@ void UITHeroComponent::InitializePlayerInput(UInputComponent* PlayerInputCompone
 			TArray<uint32> OutBindHandles;
 			InputComponent->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, OutBindHandles);
 
+
 			const FITGameplayTags& ITGameplayTag = FITGameplayTags::Get();
 			InputComponent->BindNativeAction(InputConfig, ITGameplayTag.InputTag_Move, ETriggerEvent::Triggered, this, &ThisClass::Input_Move);
 			InputComponent->BindNativeAction(InputConfig, ITGameplayTag.InputTag_Look_Mouse, ETriggerEvent::Triggered, this, &ThisClass::Input_LookMouse);

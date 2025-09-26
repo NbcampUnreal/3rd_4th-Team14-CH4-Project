@@ -23,6 +23,9 @@ struct FITGameplayTags
 	/* Ability 태그 */
 	FGameplayTag Ability_InputBlocked;
 
+	// 쿨타임 태그
+	FGameplayTag Cooldown_Obstacle;
+
 private:
 	static FITGameplayTags GameplayTags;
 };

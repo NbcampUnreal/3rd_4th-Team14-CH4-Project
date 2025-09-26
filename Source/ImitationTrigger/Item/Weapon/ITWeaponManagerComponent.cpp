@@ -8,7 +8,9 @@
 #include "AbilitySystem/ITAbilitySystemComponent.h"
 #include "Cosmetics/ITCharacterPartComponent.h"
 #include "Item/ITItemActor.h"
+#include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
+
 
 UITWeaponManagerComponent::UITWeaponManagerComponent()
 {
@@ -24,6 +26,20 @@ void UITWeaponManagerComponent::GetLifetimeReplicatedProps(TArray<FLifetimePrope
 	DOREPLIFETIME(ThisClass, SubWeaponInstance);
 }
 
+bool UITWeaponManagerComponent::ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags)
+{
+	bool bWroteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
+	if (IsValid(MainWeaponInstance))
+	{
+		bWroteSomething |= Channel->ReplicateSubobject(MainWeaponInstance, *Bunch, *RepFlags);
+	}
+	if (IsValid(SubWeaponInstance))
+	{
+		bWroteSomething |= Channel->ReplicateSubobject(SubWeaponInstance, *Bunch, *RepFlags);
+	}
+	return bWroteSomething;
+}
+
 void UITWeaponManagerComponent::OnRep_CurrentWeaponTypeChanged()
 {
 	OnCurrentWeaponTypeChanged.Broadcast(CurrentWeaponType);
@@ -31,7 +47,6 @@ void UITWeaponManagerComponent::OnRep_CurrentWeaponTypeChanged()
 
 void UITWeaponManagerComponent::OnRep_MainWeaponChanged()
 {
-	// TODO: 여기서부터, 이 Instance들은 Replicated가 안된다.
 	OnMainWeaponChanged.Broadcast(MainWeaponInstance);
 }
 

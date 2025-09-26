@@ -1,480 +1,302 @@
-#include "Network/ITLobbyGameMode.h"
-#include "Network/ITLobbyGameState.h"
+#include "ITLobbyGameMode.h"
 #include "Engine/World.h"
-#include "TimerManager.h"
 #include "Engine/Engine.h"
-#include "HAL/PlatformProcess.h"
+#include "Misc/CommandLine.h"
 #include "Misc/Paths.h"
-#include "Sockets.h"
-#include "SocketSubsystem.h"
+#include "HAL/PlatformProcess.h"
+#include "Kismet/GameplayStatics.h"
 
 AITLobbyGameMode::AITLobbyGameMode()
 {
-	GameStateClass = AITLobbyGameState::StaticClass();
-	bUseSeamlessTravel = false;
+	bUseSeamlessTravel = false; // 간단화
 }
 
 void AITLobbyGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-	GetWorld()->GetTimerManager().SetTimer(MainTimerHandle, this, &AITLobbyGameMode::OnMainTick, 1.f, true);
-	GetWorld()->GetTimerManager().SetTimer(SessionCleanupTimerHandle, this, &AITLobbyGameMode::OnSessionCleanupTick, 5.f, true);
+
+	// 명령행으로 ExternalHost 오버라이드: -ExternalHost=127.0.0.1
+	// 1. ExternalHost 설정 (IP 주소)
+	FString CmdHost;
+	if (FParse::Value(FCommandLine::Get(), TEXT("ExternalHost="), CmdHost))
+	{
+		ExternalHost = CmdHost;
+		UE_LOG(LogTemp, Warning, TEXT("ExternalHost set from command line: %s"), *ExternalHost);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Using default ExternalHost: %s"), *ExternalHost);
+	}
+
+	// 2. MinPlayersToStart 설정 (최소 시작 인원)
+	FString CmdMinPlayers;
+	if (FParse::Value(FCommandLine::Get(), TEXT("MinPlayers="), CmdMinPlayers))
+	{
+		int32 ParsedMinPlayers = FCString::Atoi(*CmdMinPlayers);
+		if (ParsedMinPlayers > 0 && ParsedMinPlayers <= 100) // 유효성 검증
+		{
+			MinPlayersToStart = ParsedMinPlayers;
+			UE_LOG(LogTemp, Warning, TEXT("MinPlayersToStart set from command line: %d"), MinPlayersToStart);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Invalid MinPlayers value: %s (using default: %d)"), *CmdMinPlayers, MinPlayersToStart);
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Using default MinPlayersToStart: %d"), MinPlayersToStart);
+	}
+
+	// 3. ServerExePath 설정 (서버 실행 파일 경로)
+	FString CmdServerPath;
+	if (FParse::Value(FCommandLine::Get(), TEXT("ServerExePath="), CmdServerPath))
+	{
+		if (FPaths::FileExists(CmdServerPath))
+		{
+			OverrideEditorServerExe = CmdServerPath;
+			UE_LOG(LogTemp, Warning, TEXT("ServerExePath set from command line: %s"), *OverrideEditorServerExe);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("ServerExePath file not found: %s (using default)"), *CmdServerPath);
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Using default ServerExePath: %s"), *OverrideEditorServerExe);
+	}
+
+	// 4. BaseServerPort 설정 (선택사항) 타이틀에서 7777포트 입력해서 로비 진입
+	FString CmdBasePort;
+	if (FParse::Value(FCommandLine::Get(), TEXT("BasePort="), CmdBasePort))
+	{
+		int32 ParsedPort = FCString::Atoi(*CmdBasePort);
+		if (ParsedPort >= 1024 && ParsedPort <= 65535) // 유효성 검증
+		{
+			BaseServerPort = ParsedPort;
+			UE_LOG(LogTemp, Warning, TEXT("BaseServerPort set from command line: %d"), BaseServerPort);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Invalid BasePort value: %s (using default: %d)"), *CmdBasePort, BaseServerPort);
+		}
+	}
+
+	NextPort = BaseServerPort; // 7778부터 사용
+
+	// ⭐ 환경별 설정 요약 출력
+#if WITH_EDITOR
+	UE_LOG(LogTemp, Warning, TEXT("=== EDITOR MODE DETECTED ==="));
+	UE_LOG(LogTemp, Warning, TEXT("Editor mode: Matchmaking will directly travel to game map"));
+	UE_LOG(LogTemp, Warning, TEXT("No dedicated server process will be launched"));
+	UE_LOG(LogTemp, Warning, TEXT("ExternalHost: %s (ignored in editor)"), *ExternalHost);
+	UE_LOG(LogTemp, Warning, TEXT("MinPlayersToStart: %d (ignored in editor)"), MinPlayersToStart);
+	UE_LOG(LogTemp, Warning, TEXT("============================"));
+#else
+	UE_LOG(LogTemp, Warning, TEXT("=== SERVER CONFIGURATION ==="));
+	UE_LOG(LogTemp, Warning, TEXT("ExternalHost: %s"), *ExternalHost);
+	UE_LOG(LogTemp, Warning, TEXT("MinPlayersToStart: %d"), MinPlayersToStart);
+	UE_LOG(LogTemp, Warning, TEXT("BaseServerPort: %d"), BaseServerPort);
+	UE_LOG(LogTemp, Warning, TEXT("ServerExePath: %s"), *OverrideEditorServerExe);
+	UE_LOG(LogTemp, Warning, TEXT("============================"));
+#endif
 }
 
 void AITLobbyGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
+}
 
-	if (UWorld* World = GetWorld())
+void AITLobbyGameMode::JoinMatchmakingQueue(APlayerController* PC)
+{
+	if (!PC) return;
+
+#if WITH_EDITOR
+	// ⭐ 에디터 환경: 즉시 게임 맵으로 이동 (매칭 없음)
+	UE_LOG(LogTemp, Warning, TEXT("EDITOR MODE: Directly traveling to %s"), *MatchMap);
+	// PC->ClientTravel(MatchMap, TRAVEL_Absolute); // 바로 ThirdPersonMap으로 이동
+	GetWorld()->ServerTravel(MatchMap); //에디터 테스트 시에는 서버 트래블로 로컬에 join한 모든 클라 한번에 이동.
+	return;
+#else
+	// ⭐ 패키징 환경: 기존 매칭 로직 실행
+	MatchmakingQueue.AddUnique(PC);
+
+	UE_LOG(LogTemp, Warning, TEXT("Player joined queue: %s (%d/%d)"),
+		*PC->GetName(), MatchmakingQueue.Num(), MinPlayersToStart);
+
+	// 자동 매칭 체크 추가
+	if (MatchmakingQueue.Num() >= MinPlayersToStart)
 	{
-		World->GetTimerManager().ClearTimer(MainTimerHandle);
-		World->GetTimerManager().ClearTimer(SessionCleanupTimerHandle);
+		UE_LOG(LogTemp, Warning, TEXT("Starting matchmaking automatically"));
+		StartMatchmaking();
 	}
-	ShutdownAllProcesses();
+#endif
 }
 
-void AITLobbyGameMode::PostLogin(APlayerController* NewPlayer)
+void AITLobbyGameMode::LeaveMatchmakingQueue(APlayerController* PC)
 {
-	Super::PostLogin(NewPlayer);
-	AliveControllers.Add(NewPlayer);
-	UpdateAliveCount();
+	if (!PC) return;
+
+#if !WITH_EDITOR
+	// 패키징 환경에서만 실행
+	MatchmakingQueue.Remove(PC);
+#endif
 }
 
-void AITLobbyGameMode::Logout(AController* Existing)
+int32 AITLobbyGameMode::GetNextPort()
 {
-	Super::Logout(Existing);
-	for (int32 i = AliveControllers.Num() - 1; i >= 0; --i)
-	{
-		if (!AliveControllers[i].IsValid() || AliveControllers[i].Get() == Existing)
-		{
-			AliveControllers.RemoveAt(i);
-		}
-	}
-	UpdateAliveCount();
+	return NextPort++; // 매우 단순한 증가형
 }
 
-void AITLobbyGameMode::UpdateAliveCount()
-{
-	if (AITLobbyGameState* GS = GetLobbyGS())
-	{
-		AliveControllers.RemoveAll([](const TWeakObjectPtr<APlayerController>& It) { return !It.IsValid(); });
-		GS->AlivePlayerControllerCount = AliveControllers.Num();
-	}
-}
-
-AITLobbyGameState* AITLobbyGameMode::GetLobbyGS() const
-{
-	return GetGameState<AITLobbyGameState>();
-}
-
-bool AITLobbyGameMode::ShouldUseDedicatedPath() const
+FString AITLobbyGameMode::BuildServerURLArgs(const FString& SessionID, int32 ExpectedPlayers) const
 {
 #if WITH_EDITOR
-	return bForceDedicatedInEditor;
+	// 에디터에서는 호출되지 않아야 하지만 안전장치
+	return TEXT("");
 #else
+	// ThirdPersonMap?SessionID=abcd&MatchPlayers=4
+	return FString::Printf(TEXT("%s?SessionID=%s&MatchPlayers=%d"), *MatchMap, *SessionID, ExpectedPlayers);
+#endif
+}
+
+bool AITLobbyGameMode::ResolveServerExecutable(FString& OutServerExe) const
+{
+#if WITH_EDITOR
+	// 에디터에서는 호출되지 않아야 하지만 안전장치
+	UE_LOG(LogTemp, Warning, TEXT("ResolveServerExecutable should not be called in editor mode"));
+	return false;
+#else
+	// 1) 에디터/로컬 전용 오버라이드 경로가 지정되어 있으면 최우선
+	if (!OverrideEditorServerExe.IsEmpty() && FPaths::FileExists(OverrideEditorServerExe))
+	{
+		OutServerExe = OverrideEditorServerExe;
+		return true;
+	}
+
+	// 2) 패키징된 서버 기본 경로(플랫폼별)
+#if PLATFORM_WINDOWS
+	const FString Packaged = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir() / DefaultPackagedServerExeWin64);
+#else
+	const FString Packaged = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir() / DefaultPackagedServerExeLinux);
+#endif
+	if (FPaths::FileExists(Packaged))
+	{
+		OutServerExe = Packaged;
+		return true;
+	}
+
+	// 3) 실패
+	return false;
+#endif
+}
+
+bool AITLobbyGameMode::LaunchDedicatedServer(const FString& SessionID, int32 ExpectedPlayers, int32& OutPort, FString& OutConnectURL)
+{
+#if WITH_EDITOR
+	// 에디터 모드에서는 호출되지 않아야 함
+	UE_LOG(LogTemp, Error, TEXT("LaunchDedicatedServer should not be called in editor mode"));
+	return false;
+#else
+	OutPort = GetNextPort();
+
+	FString ServerExe;
+	if (!ResolveServerExecutable(ServerExe))
+	{
+		UE_LOG(LogTemp, Error, TEXT("Server exe not found. Check OverrideEditorServerExe or packaged path."));
+		return false;
+	}
+
+	const FString URLArgs = BuildServerURLArgs(SessionID, ExpectedPlayers);
+	// -server -log -Port=NNNN 만 사용(파이프/로그 파싱 제거)
+	const FString ProcArgs = FString::Printf(TEXT("%s -server -log -Port=%d -unattended -nopause"), *URLArgs, OutPort);
+
+	UE_LOG(LogTemp, Warning, TEXT("Launching dedicated server: %s %s"), *ServerExe, *ProcArgs);
+
+	FProcHandle Handle = FPlatformProcess::CreateProc(
+		*ServerExe,
+		*ProcArgs,
+		true,   // detached
+		false,
+		false,
+		nullptr,
+		0,
+		*FPaths::ProjectDir(),
+		nullptr
+	);
+
+	if (!Handle.IsValid())
+	{
+		UE_LOG(LogTemp, Error, TEXT("CreateProc failed: %s %s"), *ServerExe, *ProcArgs);
+		return false;
+	}
+
+	// 외부 접속 주소 구성: 로비는 7777, 매치 DS는 7778+
+	OutConnectURL = FString::Printf(TEXT("%s:%d"), *ExternalHost, OutPort); // 절대 주소
 	return true;
 #endif
 }
 
-void AITLobbyGameMode::JoinMatchmakingQueue(APlayerController* Player)
-{
-	if (!IsValid(Player)) 
-	{ 
-		return; 
-	}
-
-	const bool bExists = MatchmakingQueue.ContainsByPredicate(
-		[Player](const FMatchmakingPlayerInfo& It) { return It.PlayerController == Player; });
-	if (bExists) 
-	{
-		return;
-	}
-
-	FMatchmakingPlayerInfo Info;
-	Info.PlayerController = Player;
-	Info.PlayerName = Player->GetName();
-	Info.JoinTime = GetWorld()->GetTimeSeconds();
-	MatchmakingQueue.Add(Info);
-
-	if (AITLobbyGameState* GS = GetLobbyGS())
-	{
-		GS->MatchmakingPlayerCount = MatchmakingQueue.Num();
-	}
-}
-
-void AITLobbyGameMode::LeaveMatchmakingQueue(APlayerController* Player)
-{
-	if (!IsValid(Player))
-	{
-		return;
-	}
-
-	MatchmakingQueue.RemoveAll([Player](const FMatchmakingPlayerInfo& It) { return It.PlayerController == Player; });
-
-	if (AITLobbyGameState* GS = GetLobbyGS())
-	{
-		GS->MatchmakingPlayerCount = MatchmakingQueue.Num();
-	}
-}
-
-void AITLobbyGameMode::OnMainTick()
-{
-	const int32 MinPlayersToStart = 3;
-
-	for (int32 i = MatchmakingQueue.Num() - 1; i >= 0; --i)
-	{
-		if (!MatchmakingQueue[i].PlayerController.IsValid())
-		{
-			MatchmakingQueue.RemoveAt(i);
-		}
-	}
-
-	if (MatchmakingQueue.Num() >= MinPlayersToStart)
-	{
-		TArray<FMatchmakingPlayerInfo> PlayersToMove;
-		PlayersToMove.Reserve(MinPlayersToStart);
-		for (int32 i = 0; i < MinPlayersToStart; ++i)
-		{
-			PlayersToMove.Add(MatchmakingQueue[i]);
-		}
-		MatchmakingQueue.RemoveAt(0, MinPlayersToStart, false);
-
-		const FString SessionID = FString::Printf(TEXT("S_%lld"), FDateTime::UtcNow().GetTicks());
-		StartGame(PlayersToMove, SessionID);
-	}
-}
-
-void AITLobbyGameMode::OnSessionCleanupTick()
-{
-	const float Now = GetWorld()->GetTimeSeconds();
-
-	for (int32 i = ActiveMatchProcesses.Num() - 1; i >= 0; --i)
-	{
-		FLaunchedMatchProcess& P = ActiveMatchProcesses[i];
-		if (!P.bActive || !FPlatformProcess::IsProcRunning(P.ProcHandle))
-		{
-			SessionIdToConnectURL.Remove(P.SessionID);
-			ShutdownProcess(P);
-			ActiveMatchProcesses.RemoveAt(i);
-			continue;
-		}
-		// 만약 세션 만료 로직이 있다면 여기에서 SessionIdToConnectURL.Remove(P.SessionID)도 같이 처리
-	}
-}
-
-FString AITLobbyGameMode::BuildServerURL(const FString& MapName, const FString& SessionID, int32 ExpectedPlayers, int32 Port) const
-{
-	const FString Result = FString::Printf(TEXT("%s?SessionID=%s?MatchPlayers=%d -port=%d -server -log"),
-		*MapName, *SessionID, ExpectedPlayers, Port);
-
-	// 디버그 로그: 포트가 올바르게 전달되는지 확인
-	UE_LOG(LogTemp, Warning, TEXT("BuildServerURL: Port=%d, Result=%s"), Port, *Result);
-
-	return Result;
-}
-
-bool AITLobbyGameMode::CanConnectToPort(int32 Port, const FString& Host) const
-{
-	ISocketSubsystem* Subsystem = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM);
-	if (!Subsystem)
-	{
-		return false;
-	}
-
-	TSharedRef<FInternetAddr> Addr = Subsystem->CreateInternetAddr();
-	bool b = false;
-	Addr->SetIp(*Host, b);
-	Addr->SetPort(Port);
-
-	FSocket* S = Subsystem->CreateSocket(NAME_Stream, TEXT("ConnectCheck"), false);
-	if (!S) 
-	{ 
-		return false; 
-	}
-	S->SetNonBlocking(true);
-	const bool bConn = S->Connect(*Addr);
-	S->Close();
-	Subsystem->DestroySocket(S);
-	return bConn;
-}
-
-bool AITLobbyGameMode::GetAvailablePort(int32& OutPort)
-{
-	FScopeLock Lock(&PortAllocationMutex); // 동시 실행 방지
-
-	// 현재 활성 프로세스들이 사용하는 포트 목록
-	TSet<int32> UsedPorts;
-	for (FLaunchedMatchProcess& Proc : ActiveMatchProcesses)
-	{
-		if (Proc.Port > 0)
-		{
-			UsedPorts.Add(Proc.Port);
-		}
-	}
-
-	// 포트 카운터 방식으로 할당
-	const int32 MaxTries = 100;
-	for (int32 i = 0; i < MaxTries; ++i)
-	{
-		int32 CandidatePort = NextAvailablePort++;
-
-		// 포트 범위 리셋 (너무 높아지면)
-		if (NextAvailablePort > BaseServerPort + 1000)
-		{
-			NextAvailablePort = BaseServerPort;
-		}
-
-		// 이미 사용 중인 포트 스킵
-		if (UsedPorts.Contains(CandidatePort))
-		{
-			continue;
-		}
-
-		OutPort = CandidatePort;
-		UE_LOG(LogTemp, Warning, TEXT("Assigned port: %d"), OutPort);
-		return true;
-	}
-
-	UE_LOG(LogTemp, Error, TEXT("Failed to find available port after %d tries"), MaxTries);
-	return false;
-}
-
-bool AITLobbyGameMode::LaunchDedicatedServerProcess(const FString& SessionID, int32 ExpectedPlayers, int32& OutPort, FString& OutConnectURL, FLaunchedMatchProcess& OutProcess)
-{
-	OutPort = 0;
-	OutConnectURL.Empty();
-
-	if (!GetAvailablePort(OutPort))
-	{
-		UE_LOG(LogTemp, Error, TEXT("No available port from %d"), BaseServerPort);
-		return false;
-	}
-
-	FLaunchedMatchProcess ReservedProcess(SessionID, OutPort, GetWorld()->GetTimeSeconds(), FProcHandle(), nullptr, nullptr);
-	ReservedProcess.bActive = false; // 예약 상태
-	ActiveMatchProcesses.Add(ReservedProcess);
-
-	UE_LOG(LogTemp, Warning, TEXT("Reserved port %d for session %s"), OutPort, *SessionID);
-
-
-	FString ServerExe = OverrideEditorServerExe;
-	if (!FPaths::FileExists(ServerExe))
-	{
-		UE_LOG(LogTemp, Error, TEXT("Server exe not found: %s"), *ServerExe);
-		// 예약 취소
-		ActiveMatchProcesses.RemoveAll([&](const FLaunchedMatchProcess& P) { return P.SessionID == SessionID && !P.bActive; });
-		return false;
-	}
-
-	const FString URLArgs = BuildServerURL(MatchMapName.ToString(), SessionID, ExpectedPlayers, OutPort);
-	UE_LOG(LogTemp, Warning, TEXT("GetAvailablePort returned: %d"), OutPort);
-	UE_LOG(LogTemp, Warning, TEXT("BuildServerURL: Port=%d, Result=%s"), OutPort, *URLArgs);
-	UE_LOG(LogTemp, Warning, TEXT("CreateProc Args: %s %s"), *ServerExe, *URLArgs);
-
-	void* ReadPipe = nullptr;
-	void* WritePipe = nullptr;
-	FPlatformProcess::CreatePipe(ReadPipe, WritePipe);
-
-	const bool bLaunchDetached = true;
-	const bool bLaunchHidden = false;
-	const bool bLaunchReallyHidden = false;
-
-	FProcHandle Handle = FPlatformProcess::CreateProc(*ServerExe, *URLArgs, bLaunchDetached, bLaunchHidden, bLaunchReallyHidden, nullptr, 0, nullptr, WritePipe);
-
-	if (!Handle.IsValid())
-	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to launch DS: %s %s"), *ServerExe, *URLArgs);
-		FPlatformProcess::ClosePipe(ReadPipe, WritePipe);
-		// 예약 취소
-		ActiveMatchProcesses.RemoveAll([&](const FLaunchedMatchProcess& P) { return P.SessionID == SessionID && !P.bActive; });
-		return false;
-	}
-
-	// 예약을 실제 프로세스로 승격
-	for (FLaunchedMatchProcess& P : ActiveMatchProcesses)
-	{
-		if (P.SessionID == SessionID && !P.bActive)
-		{
-			P.bActive = true;
-			P.ProcHandle = Handle;
-			P.ReadPipe = ReadPipe;
-			P.WritePipe = WritePipe;
-			OutProcess = P;
-			break;
-		}
-	}
-
-	const float StartTime = GetWorld()->GetTimeSeconds();
-	//OutProcess = FLaunchedMatchProcess(SessionID, OutPort, StartTime, Handle, ReadPipe, WritePipe);
-	//ActiveMatchProcesses.Add(OutProcess);
-
-	bool bReady = false;
-	int32 ActualPort = OutPort; // 실제 바인드된 포트를 찾기 위한 변수
-	FString AccLog;
-
-	while ((GetWorld()->GetTimeSeconds() - StartTime) < ServerBootTimeout)
-	{
-		FPlatformProcess::Sleep(0.1f);
-
-		if (ReadPipe)
-		{
-			const FString Chunk = FPlatformProcess::ReadPipe(ReadPipe);
-			if (!Chunk.IsEmpty())
-			{
-				AccLog += Chunk;
-
-				// 실제 바인드된 포트를 로그에서 찾기
-				FString ListenLog;
-				if (AccLog.Contains(TEXT("IpNetDriver listening on port")))
-				{
-					int32 ListenStart = AccLog.Find(TEXT("IpNetDriver listening on port"));
-					if (ListenStart != INDEX_NONE)
-					{
-						FString PortStr = AccLog.RightChop(ListenStart + 30); // "IpNetDriver listening on port " 길이
-						int32 LineEnd = PortStr.Find(TEXT("\n"));
-						if (LineEnd != INDEX_NONE)
-						{
-							PortStr = PortStr.Left(LineEnd);
-						}
-						ActualPort = FCString::Atoi(*PortStr.TrimStartAndEnd());
-						if (ActualPort > 0)
-						{
-							UE_LOG(LogTemp, Warning, TEXT("DS actually listening on port: %d"), ActualPort);
-							bReady = true;
-							break;
-						}
-					}
-				}
-
-				if (AccLog.Contains(TEXT("Bringing World up for play")) || AccLog.Contains(TEXT("Game Engine Initialized")))
-				{
-					bReady = true;
-					break;
-				}
-			}
-		}
-
-		if (!FPlatformProcess::IsProcRunning(Handle))
-		{
-			UE_LOG(LogTemp, Error, TEXT("DS exited prematurely: %s"), *SessionID);
-			break;
-		}
-	}
-
-	if (!bReady)
-	{
-		UE_LOG(LogTemp, Error, TEXT("Dedicated server not ready in time. Session %s Port %d"), *SessionID, OutPort);
-		ShutdownProcessBySession(SessionID);
-		return false;
-	}
-
-	// 실제 바인드된 포트를 사용
-	OutPort = ActualPort;
-	OutConnectURL = FString::Printf(TEXT("127.0.0.1:%d"), ActualPort);
-	SessionIdToConnectURL.Add(SessionID, OutConnectURL);
-
-	UE_LOG(LogTemp, Warning, TEXT("Dedicated server ready: %s @ %s"), *SessionID, *OutConnectURL);
-	return true;
-}
-
 void AITLobbyGameMode::StartMatchmaking()
 {
-	OnMainTick();
-}
-
-void AITLobbyGameMode::StartGame(const TArray<FMatchmakingPlayerInfo>& PlayersToMove, const FString& NewSessionID)
-{
-	if (!ShouldUseDedicatedPath()) return;
-
-	TArray<APlayerController*> Controllers;
-	for (const auto& Info : PlayersToMove)
+#if WITH_EDITOR
+	// 에디터 모드에서는 이 함수가 호출되지 않아야 함
+	UE_LOG(LogTemp, Warning, TEXT("EDITOR MODE: StartMatchmaking should not be called"));
+	return;
+#else
+	// 최소 인원 미달 시 대기
+	if (MatchmakingQueue.Num() < MinPlayersToStart)
 	{
-		if (APlayerController* PC = Info.PlayerController.Get())
-		{
-			Controllers.Add(PC);
-		}
-	}
-	if (Controllers.Num() == 0)
-	{
+		UE_LOG(LogTemp, Log, TEXT("Waiting for players: %d/%d"), MatchmakingQueue.Num(), MinPlayersToStart);
 		return;
 	}
 
+	UE_LOG(LogTemp, Warning, TEXT("Starting matchmaking with %d players"), MatchmakingQueue.Num());
+
+	// 큐에서 참가자 확정(전원 매칭)
+	TArray<APlayerController*> MatchedControllers;
+	for (const TWeakObjectPtr<APlayerController>& WeakPC : MatchmakingQueue)
+	{
+		if (APlayerController* PC = WeakPC.Get())
+		{
+			MatchedControllers.Add(PC);
+		}
+	}
+	MatchmakingQueue.Reset(); // 큐 비우기
+
+	if (MatchedControllers.Num() == 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No valid players in queue"));
+		return;
+	}
+
+	// 세션 ID 생성
+	const FString SessionID = FGuid::NewGuid().ToString(EGuidFormats::Short);
+	const int32 ExpectedPlayers = MatchedControllers.Num();
+
+	// 전용 서버 실행
 	int32 Port = 0;
 	FString ConnectURL;
-	FLaunchedMatchProcess Proc;
-
-	const int32 ExpectedPlayers = Controllers.Num();
-	// 중요: 항상 새 DS를 생성해 ConnectURL을 확보
-	if (!LaunchDedicatedServerProcess(NewSessionID, ExpectedPlayers, Port, ConnectURL, Proc))
+	if (!LaunchDedicatedServer(SessionID, ExpectedPlayers, Port, ConnectURL))
 	{
-		// 실패 시 큐 롤백
-		for (APlayerController* PC : Controllers)
+		UE_LOG(LogTemp, Error, TEXT("Failed to launch DS for session %s"), *SessionID);
+		// 실패 시 참가자들을 큐에 복귀
+		for (APlayerController* PC : MatchedControllers)
 		{
-			if (PC)
-			{
-				FMatchmakingPlayerInfo Back;
-				Back.PlayerController = PC;
-				Back.PlayerName = PC->GetName();
-				Back.JoinTime = GetWorld()->GetTimeSeconds();
-				MatchmakingQueue.Insert(Back, 0);
-			}
+			MatchmakingQueue.Add(PC);
 		}
 		return;
 	}
 
-	// 세션별 URL을 다시 확인(안전)
-	if (const FString* CachedURL = SessionIdToConnectURL.Find(NewSessionID))
-	{
-		ConnectURL = *CachedURL;
-	}
-
-	for (APlayerController* PC : Controllers)
+	// 모든 참가자를 전용 서버로 이동
+	for (APlayerController* PC : MatchedControllers)
 	{
 		if (PC)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Travel Session=%s URL=%s PC=%s"), *NewSessionID, *ConnectURL, *PC->GetName());
-			PC->ClientTravel(ConnectURL, TRAVEL_Absolute);
+			PC->ClientTravel(ConnectURL, TRAVEL_Absolute); // 예: "127.0.0.1:7778"
 		}
 	}
-}
 
-void AITLobbyGameMode::ShutdownProcess(FLaunchedMatchProcess& Proc)
-{
-	if (Proc.bActive)
-	{
-		if (FPlatformProcess::IsProcRunning(Proc.ProcHandle))
-		{
-			FPlatformProcess::TerminateProc(Proc.ProcHandle, true);
-		}
-		FPlatformProcess::CloseProc(Proc.ProcHandle);
-		Proc.bActive = false;
-	}
-	if (Proc.ReadPipe || Proc.WritePipe)
-	{
-		FPlatformProcess::ClosePipe(Proc.ReadPipe, Proc.WritePipe);
-		Proc.ReadPipe = Proc.WritePipe = nullptr;
-	}
-}
-
-void AITLobbyGameMode::ShutdownProcessBySession(const FString& SessionID)
-{
-	for (int32 i = 0; i < ActiveMatchProcesses.Num(); ++i)
-	{
-		if (ActiveMatchProcesses[i].SessionID == SessionID)
-		{
-			ShutdownProcess(ActiveMatchProcesses[i]);
-			ActiveMatchProcesses.RemoveAt(i);
-			break;
-		}
-	}
-	SessionIdToConnectURL.Remove(SessionID); // 캐시 제거
-}
-
-void AITLobbyGameMode::ShutdownAllProcesses()
-{
-	for (FLaunchedMatchProcess& P : ActiveMatchProcesses)
-	{
-		ShutdownProcess(P);
-	}
-	ActiveMatchProcesses.Empty();
+	UE_LOG(LogTemp, Log, TEXT("Launched DS %s at %s for %d players"), *SessionID, *ConnectURL, ExpectedPlayers);
+#endif
 }

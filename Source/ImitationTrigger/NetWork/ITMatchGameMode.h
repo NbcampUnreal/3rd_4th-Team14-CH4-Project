@@ -1,34 +1,32 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameModeBase.h"
-#include "Network/ITMatchTypes.h"
+#include "GameFramework/GameMode.h"
+#include "ITMatchTypes.h"
 #include "ITMatchGameMode.generated.h"
 
-
 UCLASS()
-class IMITATIONTRIGGER_API AITMatchGameMode : public AGameModeBase
+class IMITATIONTRIGGER_API AITMatchGameMode : public AGameMode
 {
 	GENERATED_BODY()
-	
+
 public:
 	AITMatchGameMode();
 
-	virtual void PostLogin(APlayerController* NewPlayer) override;
 	virtual void BeginPlay() override;
+	virtual void PostLogin(APlayerController* NewPlayer) override;
 
 protected:
-	UPROPERTY()
+	// 로비에서 URL로 넘겨주는 값
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Match")
 	FString CurrentSessionID;
 
-	UPROPERTY()
-	int32 ExpectedPlayerCount;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Match")
+	int32 ExpectedPlayerCount = 0;
 
-	UPROPERTY()
-	TArray<APlayerController*> MatchPlayers;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Match")
+	TArray<TObjectPtr<APlayerController>> MatchPlayers;
 
-	void ExtractSessionInfoFromURL();
+	void ExtractSessionInfoFromURL(); // ThirdPersonMap?SessionID=...&MatchPlayers=...
 	void StartMatchWhenReady();
-	
-	
 };

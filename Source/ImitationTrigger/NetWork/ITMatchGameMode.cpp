@@ -1,77 +1,78 @@
-#include "Network/ITMatchGameMode.h"
+#include "ITMatchGameMode.h"
 #include "Engine/World.h"
 #include "Engine/Engine.h"
-#include "GameFramework/GameModeBase.h"
 
 AITMatchGameMode::AITMatchGameMode()
 {
-	bUseSeamlessTravel = false;
+	bUseSeamlessTravel = false; // 간단화 [file:20]
 }
 
 void AITMatchGameMode::BeginPlay()
 {
 	Super::BeginPlay();
+
 	ExtractSessionInfoFromURL();
 
-	UE_LOG(LogTemp, Warning, TEXT("Match started for Session: %s, expecting %d players"),
-		*CurrentSessionID, ExpectedPlayerCount);
+	UE_LOG(LogTemp, Log, TEXT("Match up. Session=%s Expect=%d"), *CurrentSessionID, ExpectedPlayerCount);
 }
 
 void AITMatchGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
-	MatchPlayers.Add(NewPlayer);
 
-	UE_LOG(LogTemp, Warning, TEXT("Player joined match: %s (%d/%d)"),
-		*NewPlayer->GetName(), MatchPlayers.Num(), ExpectedPlayerCount);
+	MatchPlayers.AddUnique(NewPlayer);
+	UE_LOG(LogTemp, Log, TEXT("Joined. %d/%d"), MatchPlayers.Num(), ExpectedPlayerCount);
 
-	// 모든 예상 플레이어가 도착했는지 확인
-	if (MatchPlayers.Num() >= ExpectedPlayerCount)
-	{
-		StartMatchWhenReady();
-	}
+	StartMatchWhenReady();
 }
 
 void AITMatchGameMode::ExtractSessionInfoFromURL()
 {
-	FString URL = GetWorld()->URL.ToString();
+	const FString URL = GetWorld() ? GetWorld()->URL.ToString() : FString(); // [file:20]
 
-	// SessionID 추출
-	FString SessionIDParam = TEXT("SessionID=");
-	int32 SessionIDIndex = URL.Find(SessionIDParam);
-	if (SessionIDIndex != INDEX_NONE)
+	// SessionID
 	{
-		int32 StartIndex = SessionIDIndex + SessionIDParam.Len();
-		int32 EndIndex = URL.Find(TEXT("&"), StartIndex);
-		if (EndIndex == INDEX_NONE)
+		const FString Key = TEXT("SessionID=");
+		int32 Index = URL.Find(Key, ESearchCase::IgnoreCase, ESearchDir::FromStart);
+		if (Index != INDEX_NONE)
 		{
-			EndIndex = URL.Len();
+			const int32 Start = Index + Key.Len();
+			int32 End = URL.Find(TEXT("&"), ESearchCase::IgnoreCase, ESearchDir::FromStart, Start);
+			if (End == INDEX_NONE) End = URL.Len();
+			CurrentSessionID = URL.Mid(Start, End - Start);
 		}
-		CurrentSessionID = URL.Mid(StartIndex, EndIndex - StartIndex);
 	}
 
-	// MatchPlayers 추출
-	FString PlayersParam = TEXT("MatchPlayers=");
-	int32 PlayersIndex = URL.Find(PlayersParam);
-	if (PlayersIndex != INDEX_NONE)
+	// MatchPlayers
 	{
-		int32 StartIndex = PlayersIndex + PlayersParam.Len();
-		int32 EndIndex = URL.Find(TEXT("&"), StartIndex);
-		if (EndIndex == INDEX_NONE)
+		const FString Key = TEXT("MatchPlayers=");
+		int32 Index = URL.Find(Key, ESearchCase::IgnoreCase, ESearchDir::FromStart);
+		if (Index != INDEX_NONE)
 		{
-			EndIndex = URL.Len();
+			const int32 Start = Index + Key.Len();
+			int32 End = URL.Find(TEXT("&"), ESearchCase::IgnoreCase, ESearchDir::FromStart, Start);
+			if (End == INDEX_NONE) End = URL.Len();
+			const FString Value = URL.Mid(Start, End - Start);
+			ExpectedPlayerCount = FCString::Atoi(*Value);
 		}
-		FString PlayersStr = URL.Mid(StartIndex, EndIndex - StartIndex);
-		ExpectedPlayerCount = FCString::Atoi(*PlayersStr);
+	}
+
+	if (ExpectedPlayerCount <= 0)
+	{
+		ExpectedPlayerCount = 2; // 기본 안전값 [file:2]
 	}
 }
 
 void AITMatchGameMode::StartMatchWhenReady()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Match Session %s is ready! %d players connected"),
-		*CurrentSessionID, MatchPlayers.Num());
+	if (ExpectedPlayerCount <= 0) return;
 
-	// 여기서 실제 게임 로직 시작
-	// 예: 스폰 포인트 배정, 게임 타이머 시작 등
+	if (MatchPlayers.Num() >= ExpectedPlayerCount)
+	{
+		if (!HasMatchStarted())
+		{
+			StartMatch();
+			UE_LOG(LogTemp, Log, TEXT("Match started. Session=%s Players=%d"), *CurrentSessionID, MatchPlayers.Num());
+		}
+	}
 }
-

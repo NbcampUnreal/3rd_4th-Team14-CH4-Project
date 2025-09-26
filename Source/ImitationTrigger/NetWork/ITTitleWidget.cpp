@@ -21,7 +21,7 @@ void UITTitleWidget::OnPlayClicked()
 	// 서버 접속 버튼
 	if (AITTitlePlayerController* PC = GetOwningPlayer<AITTitlePlayerController>())
 	{
-		const FString Address = ServerIPEdit ? ServerIPEdit->GetText().ToString() : TEXT("127.0.0.1:7777");
+		const FString Address = ServerIPEdit ? ServerIPEdit->GetText().ToString() : TEXT("1.224.158.94:7777");
 		UE_LOG(LogTemp, Warning, TEXT("Trying to connect to: %s"), *Address);
 		PC->JoinServer(Address);
 	}

@@ -32,6 +32,7 @@ namespace ITItemGameplayTags
 
 	/* Weapon Ability Input Config Tag */
 	IMITATIONTRIGGER_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Weapon_Fire);
+	IMITATIONTRIGGER_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Weapon_Reload);
 
 	/* Weapon Ability Tag */
 	IMITATIONTRIGGER_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Weapon_Cooldown);

@@ -4,6 +4,7 @@
 #include "Character/ITPawnData.h"
 #include "Item/Weapon/ITWeaponManagerComponent.h"
 #include "AbilitySystem/Attributes/ITHealthSet.h"
+#include "AbilitySystem/Attributes/ITAmmoSet.h"
 #include "AbilitySystem/Attributes/ITAttributeTableRow.h"
 #include "AbilitySystem/ITAbilitySystemComponent.h"
 
@@ -22,6 +23,7 @@ AITPlayerState::AITPlayerState(const FObjectInitializer& ObjectInitializer)
 	SetNetUpdateFrequency(100.0f);
 
 	HealthSet = CreateDefaultSubobject<UITHealthSet>(TEXT("HealthSet"));
+	AmmoSet = CreateDefaultSubobject<UITAmmoSet>(TEXT("AmmoSet"));
 
 	// PlayerState와 Pawn(Chracter)가 모두 준비되었을 때 호출되는 Delegate
 	OnPawnSet.AddDynamic(this, &ThisClass::OnReadyPawnData);

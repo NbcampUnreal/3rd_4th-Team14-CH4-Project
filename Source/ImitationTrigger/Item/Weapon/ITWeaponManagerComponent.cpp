@@ -6,9 +6,9 @@
 #include "Item/ITItemInstance.h"
 #include "Player/ITPlayerState.h"
 #include "AbilitySystem/ITAbilitySystemComponent.h"
+#include "AbilitySystem/Attributes/ITAmmoSet.h"
 #include "Cosmetics/ITCharacterPartComponent.h"
 #include "Item/ITItemActor.h"
-#include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
 
 
@@ -24,6 +24,7 @@ void UITWeaponManagerComponent::GetLifetimeReplicatedProps(TArray<FLifetimePrope
 	DOREPLIFETIME(ThisClass, CurrentWeaponType);
 	DOREPLIFETIME(ThisClass, MainWeaponInstance);
 	DOREPLIFETIME(ThisClass, SubWeaponInstance);
+	DOREPLIFETIME(ThisClass, ReserveAmmo);
 }
 
 void UITWeaponManagerComponent::OnRep_CurrentWeaponTypeChanged()
@@ -76,7 +77,7 @@ void UITWeaponManagerComponent::ServerRPC_PickupWeapon_Implementation(UITItemIns
 	{
 		ServerRPC_ChangeWeapon(ECurrentWeaponSlot::MainWeapon);
 	}
-	
+
 	ServerRPC_DropCurrentWeapon();
 	if (MainWeaponInstance == nullptr)
 	{
@@ -208,6 +209,26 @@ void UITWeaponManagerComponent::ServerRPC_ReEquipWeapon_Implementation()
 	OnCurrentWeaponTypeChanged.Broadcast(CurrentWeaponType);
 }
 
+void UITWeaponManagerComponent::ServerRPC_AddAmmo_Implementation(int32 Quantity)
+{
+	if (!GetOwner()->HasAuthority())
+	{
+		return;
+	}
+
+	ReserveAmmo += Quantity;
+}
+
+void UITWeaponManagerComponent::ServerRPC_ConsumeAmmo_Implementation(int32 Quantity)
+{
+	if (!GetOwner()->HasAuthority())
+	{
+		return;
+	}
+
+	ReserveAmmo -= Quantity;
+}
+
 void UITWeaponManagerComponent::EquipWeapon()
 {
 	UITItemInstance* WeaponToEquip = GetCurrentWeapon();
@@ -241,6 +262,11 @@ void UITWeaponManagerComponent::EquipWeapon()
 	{
 		return;
 	}
+
+	FGameplayAttribute MaxAmmoAttribute = UITAmmoSet::GetMaxAmmoAttribute();
+	FGameplayAttribute AmmoAttribute = UITAmmoSet::GetAmmoAttribute();
+	AbilitySystemComponent->SetNumericAttributeBase(MaxAmmoAttribute, WeaponDefinition->MaxAmmo);
+	AbilitySystemComponent->SetNumericAttributeBase(AmmoAttribute, WeaponToEquip->CurrentAmmo);
 
 	WeaponPartHandle = CharacterPartComponent->AddCharacterPart(WeaponDefinition->WeaponPart);
 
@@ -277,6 +303,15 @@ void UITWeaponManagerComponent::UnequipWeapon()
 		return;
 	}
 
+	FGameplayAttribute AmmoAttribute = UITAmmoSet::GetAmmoAttribute();
+	FGameplayAttribute MaxAmmoAttribute = UITAmmoSet::GetMaxAmmoAttribute();
+	if (GetCurrentWeapon() != nullptr)
+	{
+		GetCurrentWeapon()->CurrentAmmo = AbilitySystemComponent->GetNumericAttributeBase(AmmoAttribute);
+	}
+	AbilitySystemComponent->SetNumericAttributeBase(AmmoAttribute, 0);
+	AbilitySystemComponent->SetNumericAttributeBase(MaxAmmoAttribute, 0);
+
 	if (WeaponPartHandle.IsValid())
 	{
 		CharacterPartComponent->RemoveCharacterPart(WeaponPartHandle);
@@ -301,6 +336,11 @@ UITItemInstance* UITWeaponManagerComponent::GetCurrentWeapon() const
 	}
 
 	return nullptr;
+}
+
+int32 UITWeaponManagerComponent::GetReserveAmmo() const
+{
+	return ReserveAmmo;
 }
 
 void UITWeaponManagerComponent::SetCurrentWeaponType(ECurrentWeaponSlot InType)

@@ -35,6 +35,7 @@ public:
 	UITWeaponManagerComponent();
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual bool ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
 
 	UFUNCTION(BlueprintCallable, Category = "IT|Weapon")
 	UITItemInstance* GetCurrentWeapon() const;
@@ -70,6 +71,10 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "IT|Weapon")
 	FOnSubWeaponChanged OnSubWeaponChanged;
+
+	void SetCurrentWeaponType(ECurrentWeaponSlot InType);
+	void SetMainWeaponInstance(TObjectPtr<UITItemInstance> WeaponInstance);
+	void SetSubWeaponInstance(TObjectPtr<UITItemInstance> WeaponInstance);
 
 protected:
 	UPROPERTY(ReplicatedUsing = OnRep_CurrentWeaponTypeChanged)

@@ -8,7 +8,9 @@
 #include "AbilitySystem/ITAbilitySystemComponent.h"
 #include "Cosmetics/ITCharacterPartComponent.h"
 #include "Item/ITItemActor.h"
+#include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
+
 
 UITWeaponManagerComponent::UITWeaponManagerComponent()
 {
@@ -19,9 +21,25 @@ void UITWeaponManagerComponent::GetLifetimeReplicatedProps(TArray<FLifetimePrope
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UITWeaponManagerComponent, CurrentWeaponType);
-	DOREPLIFETIME(UITWeaponManagerComponent, MainWeaponInstance);
-	DOREPLIFETIME(UITWeaponManagerComponent, SubWeaponInstance);
+	DOREPLIFETIME(ThisClass, CurrentWeaponType);
+	DOREPLIFETIME(ThisClass, MainWeaponInstance);
+	DOREPLIFETIME(ThisClass, SubWeaponInstance);
+}
+
+bool UITWeaponManagerComponent::ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags)
+{
+	bool bWroteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
+	// TODO: MainWeaponInstance, SubWeaponInstance의 Replication 문제 해결
+	// 아래 방식으로 하면, Replicated는 되는데, 아이템을 버릴 때 문제가 발생함 (아이템이 막 복사됨...)
+	//if (IsValid(MainWeaponInstance))
+	//{
+	//	bWroteSomething |= Channel->ReplicateSubobject(MainWeaponInstance, *Bunch, *RepFlags);
+	//}
+	//if (IsValid(SubWeaponInstance))
+	//{
+	//	bWroteSomething |= Channel->ReplicateSubobject(SubWeaponInstance, *Bunch, *RepFlags);
+	//}
+	return bWroteSomething;
 }
 
 void UITWeaponManagerComponent::OnRep_CurrentWeaponTypeChanged()
@@ -48,22 +66,24 @@ void UITWeaponManagerComponent::ServerRPC_PickupWeapon_Implementation(UITItemIns
 
 	if (MainWeaponInstance == nullptr)
 	{
-		MainWeaponInstance = NewWeaponInstance;
+		SetMainWeaponInstance(NewWeaponInstance);
 		if (CurrentWeaponType == ECurrentWeaponSlot::None)
 		{
-			CurrentWeaponType = ECurrentWeaponSlot::MainWeapon;
+			SetCurrentWeaponType(ECurrentWeaponSlot::MainWeapon);
 			EquipWeapon();
+			OnCurrentWeaponTypeChanged.Broadcast(CurrentWeaponType);
 		}
 		return;
 	}
 
 	if (SubWeaponInstance == nullptr)
 	{
-		SubWeaponInstance = NewWeaponInstance;
+		SetSubWeaponInstance(NewWeaponInstance);
 		if (CurrentWeaponType == ECurrentWeaponSlot::None)
 		{
-			CurrentWeaponType = ECurrentWeaponSlot::SubWeapon;
+			SetCurrentWeaponType(ECurrentWeaponSlot::SubWeapon);
 			EquipWeapon();
+			OnCurrentWeaponTypeChanged.Broadcast(CurrentWeaponType);
 		}
 		return;
 	}
@@ -76,13 +96,15 @@ void UITWeaponManagerComponent::ServerRPC_PickupWeapon_Implementation(UITItemIns
 	ServerRPC_DropCurrentWeapon();
 	if (MainWeaponInstance == nullptr)
 	{
-		MainWeaponInstance = NewWeaponInstance;
-		CurrentWeaponType = ECurrentWeaponSlot::MainWeapon;
+		SetMainWeaponInstance(NewWeaponInstance);
+		SetCurrentWeaponType(ECurrentWeaponSlot::MainWeapon);
+		OnCurrentWeaponTypeChanged.Broadcast(CurrentWeaponType);
 	}
 	else if (SubWeaponInstance == nullptr)
 	{
-		SubWeaponInstance = NewWeaponInstance;
-		CurrentWeaponType = ECurrentWeaponSlot::SubWeapon;
+		SetSubWeaponInstance(NewWeaponInstance);
+		SetCurrentWeaponType(ECurrentWeaponSlot::SubWeapon);
+		OnCurrentWeaponTypeChanged.Broadcast(CurrentWeaponType);
 	}
 	EquipWeapon();
 }
@@ -113,8 +135,9 @@ void UITWeaponManagerComponent::ServerRPC_SwapWeapon_Implementation()
 	}
 
 	UnequipWeapon();
-	CurrentWeaponType = TargetSlot;
+	SetCurrentWeaponType(TargetSlot);
 	EquipWeapon();
+	OnCurrentWeaponTypeChanged.Broadcast(CurrentWeaponType);
 }
 
 void UITWeaponManagerComponent::ServerRPC_ChangeWeapon_Implementation(ECurrentWeaponSlot WeaponToChange)
@@ -125,8 +148,9 @@ void UITWeaponManagerComponent::ServerRPC_ChangeWeapon_Implementation(ECurrentWe
 	}
 
 	UnequipWeapon();
-	CurrentWeaponType = WeaponToChange;
+	SetCurrentWeaponType(WeaponToChange);
 	EquipWeapon();
+	OnCurrentWeaponTypeChanged.Broadcast(CurrentWeaponType);
 }
 
 void UITWeaponManagerComponent::ServerRPC_DropCurrentWeapon_Implementation()
@@ -162,11 +186,11 @@ void UITWeaponManagerComponent::ServerRPC_DropCurrentWeapon_Implementation()
 
 	if (CurrentWeaponType == ECurrentWeaponSlot::MainWeapon)
 	{
-		MainWeaponInstance = nullptr;
+		SetMainWeaponInstance(nullptr);
 	}
 	else if (CurrentWeaponType == ECurrentWeaponSlot::SubWeapon)
 	{
-		SubWeaponInstance = nullptr;
+		SetSubWeaponInstance(nullptr);
 	}
 
 	UnequipWeapon();
@@ -190,9 +214,10 @@ void UITWeaponManagerComponent::ServerRPC_ReEquipWeapon_Implementation()
 		return;
 	}
 
-	CurrentWeaponType = PreviousWeaponType;
+	SetCurrentWeaponType(PreviousWeaponType);
 	PreviousWeaponType = ECurrentWeaponSlot::None;
 	EquipWeapon();
+	OnCurrentWeaponTypeChanged.Broadcast(CurrentWeaponType);
 }
 
 void UITWeaponManagerComponent::EquipWeapon()
@@ -271,7 +296,8 @@ void UITWeaponManagerComponent::UnequipWeapon()
 	}
 
 	GrantedHandles.TakeFromAbilitySystem(AbilitySystemComponent);
-	CurrentWeaponType = ECurrentWeaponSlot::None;
+	SetCurrentWeaponType(ECurrentWeaponSlot::None);
+	OnCurrentWeaponTypeChanged.Broadcast(CurrentWeaponType);
 }
 
 UITItemInstance* UITWeaponManagerComponent::GetCurrentWeapon() const
@@ -287,4 +313,21 @@ UITItemInstance* UITWeaponManagerComponent::GetCurrentWeapon() const
 	}
 
 	return nullptr;
+}
+
+void UITWeaponManagerComponent::SetCurrentWeaponType(ECurrentWeaponSlot InType)
+{
+	CurrentWeaponType = InType;
+}
+
+void UITWeaponManagerComponent::SetMainWeaponInstance(TObjectPtr<UITItemInstance> WeaponInstance)
+{
+	MainWeaponInstance = WeaponInstance;
+	OnMainWeaponChanged.Broadcast(MainWeaponInstance);
+}
+
+void UITWeaponManagerComponent::SetSubWeaponInstance(TObjectPtr<UITItemInstance> WeaponInstance)
+{
+	SubWeaponInstance = WeaponInstance;
+	OnSubWeaponChanged.Broadcast(SubWeaponInstance);
 }

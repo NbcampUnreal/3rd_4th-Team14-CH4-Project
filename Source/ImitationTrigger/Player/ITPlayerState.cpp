@@ -27,6 +27,29 @@ AITPlayerState::AITPlayerState(const FObjectInitializer& ObjectInitializer)
 	OnPawnSet.AddDynamic(this, &ThisClass::OnReadyPawnData);
 }
 
+void AITPlayerState::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+void AITPlayerState::EndPlay(EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	if (IsValid(WeaponManagerComponent))
+	{
+		AITCharacter* ITCharacter = GetITCharacter();
+		if (IsValid(ITCharacter))
+		{
+			UITCharacterAnimComponent* AnimComponent = ITCharacter->GetITCharacterAnimComponent();
+			if (IsValid(AnimComponent))
+			{
+				WeaponManagerComponent->OnCurrentWeaponTypeChanged.RemoveDynamic(AnimComponent, &UITCharacterAnimComponent::OnUpdateCurrentWeapon);
+			}
+		}
+	}
+}
+
 AITPlayerController* AITPlayerState::GetITPlayerController() const
 {
 	return Cast<AITPlayerController>(GetOwner());
@@ -47,20 +70,12 @@ void AITPlayerState::OnReadyPawnData(APlayerState* Player, APawn* NewPawn, APawn
 	AITCharacter* ITCharacter = GetITCharacter();
 	if (IsValid(ITCharacter))
 	{
-		AActor* ComponentOwner = this;
-		AActor* Avatar = ITCharacter;
-		AbilitySystemComponent->InitAbilityActorInfo(ComponentOwner, Avatar);
+		InitAbilitySystemComponent();
 
-		const UITPawnData* PawnData = ITCharacter->GetPawnData();
-		if (IsValid(PawnData))
-		{
-			for (const UITAbilitySet* AbilitySet : PawnData->AbilitySets)
-			{
-				AbilitySet->GiveToAbilitySystem(AbilitySystemComponent, &GrantedHandles);
-			}
+		ITCharacter->SetBodyMeshes();
+		ITCharacter->SetAnimLayerRules();
 
-			InitAttributeSet(PawnData->InitDataTable);
-		}
+		BindWeaponChanged();
 	}
 }
 
@@ -82,6 +97,73 @@ void AITPlayerState::InitAttributeSet(UDataTable* InitDataTable)
 				{
 					AbilitySystemComponent->SetNumericAttributeBase(Row->CurrentAttribute, Row->InitValue);
 				}
+			}
+		}
+	}
+}
+
+void AITPlayerState::BindAttributeDelegate()
+{
+	UITAbilitySystemComponent* ITASC = GetITAbilitySystemComponent();
+	if (IsValid(ITASC))
+	{
+		FGameplayAttribute Attribute = UITHealthSet::GetHealthAttribute();
+		ITASC->GetGameplayAttributeValueChangeDelegate(Attribute).AddUObject(this, &AITPlayerState::OnHealthChanged);
+	}
+}
+
+void AITPlayerState::OnHealthChanged(const FOnAttributeChangeData& Data)
+{
+	const float Health = Data.NewValue;
+	if (Health <= 0)
+	{
+		// TEMPORAL: 임시 사망 코드
+		// TODO: 기절(down) 등 구현
+		if (IsValid(GetPawn()))
+		{
+			GetPawn()->Destroy();
+		}
+	}
+}
+
+void AITPlayerState::InitAbilitySystemComponent()
+{
+	AITCharacter* ITCharacter = GetITCharacter();
+	if (IsValid(ITCharacter))
+	{
+		AActor* ComponentOwner = this;
+		AActor* Avatar = ITCharacter;
+		AbilitySystemComponent->InitAbilityActorInfo(ComponentOwner, Avatar);
+
+		const UITPawnData* PawnData = ITCharacter->GetPawnData();
+		if (IsValid(PawnData))
+		{
+			for (const UITAbilitySet* AbilitySet : PawnData->AbilitySets)
+			{
+				AbilitySet->GiveToAbilitySystem(AbilitySystemComponent, &GrantedHandles);
+			}
+
+			InitAttributeSet(PawnData->InitDataTable);
+		}
+
+		if (HasAuthority())
+		{
+			BindAttributeDelegate();
+		}
+	}
+}
+
+void AITPlayerState::BindWeaponChanged()
+{
+	AITCharacter* ITCharacter = GetITCharacter();
+	if (IsValid(ITCharacter))
+	{
+		if (IsValid(WeaponManagerComponent))
+		{
+			UITCharacterAnimComponent* AnimComponent = ITCharacter->GetITCharacterAnimComponent();
+			if (IsValid(AnimComponent))
+			{
+				WeaponManagerComponent->OnCurrentWeaponTypeChanged.AddDynamic(AnimComponent, &UITCharacterAnimComponent::OnUpdateCurrentWeapon);
 			}
 		}
 	}

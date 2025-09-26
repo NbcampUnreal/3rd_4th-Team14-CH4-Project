@@ -5,6 +5,7 @@
 #include "Player/ITPlayerController.h"
 #include "Camera/ITCameraComponent.h"
 #include "Cosmetics/ITCharacterPartComponent.h"
+#include "Cosmetics/ITCharacterAnimComponent.h"
 #include "AbilitySystem/ITAbilitySystemComponent.h"
 #include "Net/UnrealNetwork.h"
 
@@ -48,7 +49,11 @@ UAbilitySystemComponent* AITCharacter::GetAbilitySystemComponent() const
 void AITCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	SetBodyMeshes();
+
+	if (!HasAuthority())
+	{
+		SetBodyMeshes();
+	}
 }
 
 void AITCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -73,7 +78,21 @@ void AITCharacter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	SetBodyMeshes();
+	SetAnimLayerRules();
 	AddInitCharacterPartsAtServer();
+}
+
+FGameplayTagContainer AITCharacter::GetASCGameplayTags() const
+{
+	UAbilitySystemComponent* ASC = this->GetAbilitySystemComponent();
+	if (IsValid(ASC))
+	{
+		return ASC->GetOwnedGameplayTags();
+	}
+	else
+	{
+		return FGameplayTagContainer();
+	}
 }
 
 UITCharacterPartComponent* AITCharacter::GetITCharacterPartComponent()
@@ -81,6 +100,13 @@ UITCharacterPartComponent* AITCharacter::GetITCharacterPartComponent()
 	UActorComponent* FindComponent = GetComponentByClass(UITCharacterPartComponent::StaticClass());
 	UITCharacterPartComponent* PartComponent = Cast<UITCharacterPartComponent>(FindComponent);
 	return PartComponent;
+}
+
+UITCharacterAnimComponent* AITCharacter::GetITCharacterAnimComponent()
+{
+	UActorComponent* FindComponent = GetComponentByClass(UITCharacterAnimComponent::StaticClass());
+	UITCharacterAnimComponent* AnimComponent = Cast<UITCharacterAnimComponent>(FindComponent);
+	return AnimComponent;
 }
 
 void AITCharacter::AddInitCharacterPartsAtServer()
@@ -103,6 +129,18 @@ void AITCharacter::SetBodyMeshes()
 		if (IsValid(PawnData))
 		{
 			PartComponent->SetBodyMeshes(PawnData->InitBodyMeshes);
+		}
+	}
+}
+
+void AITCharacter::SetAnimLayerRules()
+{
+	UITCharacterAnimComponent* PartComponent = GetITCharacterAnimComponent();
+	if (IsValid(PartComponent))
+	{
+		if (IsValid(PawnData))
+		{
+			PartComponent->SetAnimLayerRules(PawnData->AnimLayerRules);
 		}
 	}
 }

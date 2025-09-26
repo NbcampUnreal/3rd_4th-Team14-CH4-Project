@@ -2,9 +2,30 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "GameplayTagContainer.h"
+#include "NativeGameplayTags.h"
 #include "ITCameraMode.generated.h"
 
+namespace ITCameraModeTags
+{
+	IMITATIONTRIGGER_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(CameraMode);
+	IMITATIONTRIGGER_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(CameraMode_ADS);
+}
+
+class UITCameraMode;
 class UITCameraComponent;
+
+USTRUCT(BlueprintType)
+struct FCameraModeWithTag
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UITCameraMode> CameraModeClass = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (Categories = "CameraMode"))
+	FGameplayTag CameraModeTag;
+};
 
 struct FITCameraModeView
 {

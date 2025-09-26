@@ -37,18 +37,6 @@ protected:
 	void Input_Move(const FInputActionValue& InputActionValue);
 	void Input_LookMouse(const FInputActionValue& InputActionValue);
 	void Input_Crouch(const FInputActionValue& InputActionValue);
-	void Input_Aim(const FInputActionValue& InputActionValue);
-
-public:
-	void OnAimStart(const FInputActionValue& Value);
-	void OnAimEnd(const FInputActionValue& Value);
-
-public:
-	UPROPERTY(Transient)
-	bool bIsAiming = false;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Camera")
-	TSubclassOf<UITCameraMode> AimCameraModeClass;
 
 private:
 	FORCEINLINE AITCharacter* GetOwnerCharacter();

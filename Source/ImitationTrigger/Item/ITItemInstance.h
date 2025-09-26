@@ -20,6 +20,13 @@ public:
 
 	UITItemDefinition* GetItemDefinition() const;
 
+	template<typename T>
+	T* GetItemDefinition() const
+	{
+		return Cast<T>(GetItemDefinition());
+	}
+
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "Item")
 	TObjectPtr<UITItemDefinition> ItemDefinition;
 

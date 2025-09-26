@@ -3,6 +3,7 @@
 #include "AbilitySystemInterface.h"
 #include "Cosmetics/ITCharacterPartType.h"
 #include "GameFramework/Character.h"
+#include "GameplayTagContainer.h"
 #include "ITCharacter.generated.h"
 
 class AITPlayerController;
@@ -11,6 +12,7 @@ class UITPawnData;
 class UITCameraComponent;
 class UITHeroComponent;
 class UITCharacterPartComponent;
+class UITCharacterAnimComponent;
 
 UCLASS()
 class IMITATIONTRIGGER_API AITCharacter : public ACharacter, public IAbilitySystemInterface
@@ -39,6 +41,15 @@ public:
 	const UITPawnData* GetPawnData() const { return PawnData; }
 	TArray<FITCharacterPartHandle>& GetCharacterPartHandles() { return CharacterPartHandles; }
 
+	FGameplayTagContainer GetASCGameplayTags() const;
+
+	void AddInitCharacterPartsAtServer();
+	void SetBodyMeshes();
+	void SetAnimLayerRules();
+
+	UITCharacterPartComponent* GetITCharacterPartComponent();
+	UITCharacterAnimComponent* GetITCharacterAnimComponent();
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Replicated, Category = "PawnData")
 	TObjectPtr<const UITPawnData> PawnData;
@@ -49,11 +60,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "IT|Character")
 	TObjectPtr<UITHeroComponent> HeroComponent;
 
-	UITCharacterPartComponent* GetITCharacterPartComponent();
-
 private:
 	TArray<FITCharacterPartHandle> CharacterPartHandles;
-
-	void AddInitCharacterPartsAtServer();
-	void SetBodyMeshes();
 };

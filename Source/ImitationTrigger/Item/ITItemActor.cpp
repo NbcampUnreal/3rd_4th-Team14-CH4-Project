@@ -4,8 +4,11 @@
 #include "ITItemActor.h"
 #include "ITItemDefinition.h"
 #include "ITItemInstance.h"
+#include "Character/ITCharacter.h"
 #include "Components/SphereComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "Player/ITPlayerState.h"
+#include "Weapon/ITWeaponManagerComponent.h"
 
 AITItemActor::AITItemActor()
 {
@@ -16,12 +19,14 @@ AITItemActor::AITItemActor()
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
 	SetRootComponent(StaticMeshComponent);
 	StaticMeshComponent->SetIsReplicated(true);
+	StaticMeshComponent->SetSimulatePhysics(true);
+	StaticMeshComponent->SetCollisionProfileName(TEXT("PhysicsActor"));
 
 	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
 	SphereComponent->SetupAttachment(RootComponent);
 	SphereComponent->SetSphereRadius(100.0f);
-	SphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	SphereComponent->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
+	SphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void AITItemActor::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
@@ -35,8 +40,13 @@ void AITItemActor::BeginPlay()
 {
 	Super::BeginPlay();
 
+	GetWorld()->GetTimerManager().SetTimer(
+		EnablePickupTimerHandle, this, &AITItemActor::EnablePickup, 0.1f, false);
+
 	if (HasAuthority())
 	{
+		SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &AITItemActor::OnSphereOverlap);
+
 		if (ItemInstance == nullptr && PlacedItemDefinition != nullptr)
 		{
 			UITItemInstance* NewItemInstance = NewObject<UITItemInstance>(this);
@@ -44,9 +54,29 @@ void AITItemActor::BeginPlay()
 			InitItemActor(NewItemInstance);
 		}
 	}
+}
 
-	StaticMeshComponent->SetSimulatePhysics(true);
-	StaticMeshComponent->SetCollisionProfileName(TEXT("PhysicsActor"));
+void AITItemActor::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                   UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+                                   const FHitResult& SweepResult)
+{
+	if (HasAuthority() && ItemInstance)
+	{
+		if (AITCharacter* Player = Cast<AITCharacter>(OtherActor))
+		{
+			if (AITPlayerState* PlayerState = Player->GetITPlayerState())
+			{
+				if (UITWeaponManagerComponent* WeaponManagerComponent = PlayerState->GetITWeaponManagerComponent())
+				{
+					ItemInstance->Rename(nullptr, PlayerState);
+
+					// TODO: 상호작용, 자동획득 분기 추가
+					WeaponManagerComponent->ServerRPC_PickupWeapon(ItemInstance);
+					Destroy();
+				}
+			}
+		}
+	}
 }
 
 UITItemInstance* AITItemActor::GetItemInstance() const
@@ -82,6 +112,11 @@ void AITItemActor::UpdateAppearance()
 			StaticMeshComponent->SetMaterial(i, ItemDefinition->ItemMaterial[i]);
 		}
 	}
+}
+
+void AITItemActor::EnablePickup()
+{
+	SphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
 void AITItemActor::OnRep_ItemInstance()

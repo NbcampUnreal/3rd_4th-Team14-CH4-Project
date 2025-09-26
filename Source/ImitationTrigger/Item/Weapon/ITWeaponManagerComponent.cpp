@@ -26,22 +26,6 @@ void UITWeaponManagerComponent::GetLifetimeReplicatedProps(TArray<FLifetimePrope
 	DOREPLIFETIME(ThisClass, SubWeaponInstance);
 }
 
-bool UITWeaponManagerComponent::ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags)
-{
-	bool bWroteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
-	// TODO: MainWeaponInstance, SubWeaponInstance의 Replication 문제 해결
-	// 아래 방식으로 하면, Replicated는 되는데, 아이템을 버릴 때 문제가 발생함 (아이템이 막 복사됨...)
-	//if (IsValid(MainWeaponInstance))
-	//{
-	//	bWroteSomething |= Channel->ReplicateSubobject(MainWeaponInstance, *Bunch, *RepFlags);
-	//}
-	//if (IsValid(SubWeaponInstance))
-	//{
-	//	bWroteSomething |= Channel->ReplicateSubobject(SubWeaponInstance, *Bunch, *RepFlags);
-	//}
-	return bWroteSomething;
-}
-
 void UITWeaponManagerComponent::OnRep_CurrentWeaponTypeChanged()
 {
 	OnCurrentWeaponTypeChanged.Broadcast(CurrentWeaponType);
@@ -149,6 +133,10 @@ void UITWeaponManagerComponent::ServerRPC_ChangeWeapon_Implementation(ECurrentWe
 
 	UnequipWeapon();
 	SetCurrentWeaponType(WeaponToChange);
+	if (GetCurrentWeapon() == nullptr)
+	{
+		CurrentWeaponType = ECurrentWeaponSlot::None;
+	}
 	EquipWeapon();
 	OnCurrentWeaponTypeChanged.Broadcast(CurrentWeaponType);
 }
@@ -184,16 +172,16 @@ void UITWeaponManagerComponent::ServerRPC_DropCurrentWeapon_Implementation()
 		}
 	}
 
-	if (CurrentWeaponType == ECurrentWeaponSlot::MainWeapon)
+	ECurrentWeaponSlot WeaponTypeToDrop = CurrentWeaponType;
+	UnequipWeapon();
+	if (WeaponTypeToDrop == ECurrentWeaponSlot::MainWeapon)
 	{
 		SetMainWeaponInstance(nullptr);
 	}
-	else if (CurrentWeaponType == ECurrentWeaponSlot::SubWeapon)
+	else if (WeaponTypeToDrop == ECurrentWeaponSlot::SubWeapon)
 	{
 		SetSubWeaponInstance(nullptr);
 	}
-
-	UnequipWeapon();
 }
 
 void UITWeaponManagerComponent::ServerRPC_HolsterWeapon_Implementation()

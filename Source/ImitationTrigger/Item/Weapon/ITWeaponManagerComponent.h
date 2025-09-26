@@ -35,12 +35,11 @@ public:
 	UITWeaponManagerComponent();
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	virtual bool ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
 
 	UFUNCTION(BlueprintCallable, Category = "IT|Weapon")
 	UITItemInstance* GetCurrentWeapon() const;
 
-	// 빈슬롯에 자동 장착, 가득 찬 경우 현재 무기와 교체
+	// 무기 획득, 슬롯이 비어 있을 경우에만 작동
 	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "IT|Weapon")
 	void ServerRPC_PickupWeapon(UITItemInstance* NewWeaponInstance);
 

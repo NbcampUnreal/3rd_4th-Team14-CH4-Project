@@ -28,6 +28,14 @@ protected:
 	virtual void BeginPlay() override;
 
 	UFUNCTION()
+	void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent,
+	                     AActor* OtherActor,
+	                     UPrimitiveComponent* OtherComp,
+	                     int32 OtherBodyIndex,
+	                     bool bFromSweep,
+	                     const FHitResult& SweepResult);
+
+	UFUNCTION()
 	void OnRep_ItemInstance();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "IT|Component")
@@ -48,4 +56,7 @@ protected:
 
 private:
 	void UpdateAppearance();
+	
+	void EnablePickup();
+	FTimerHandle EnablePickupTimerHandle;
 };

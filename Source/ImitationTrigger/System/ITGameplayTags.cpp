@@ -26,4 +26,7 @@ void FITGameplayTags::AddAllTags(UGameplayTagsManager& TagsManager)
 
 
 	AddTag(Ability_InputBlocked, "Ability.InputBlocked", "Blocks Input");
+
+	AddTag(Cooldown_Obstacle, "Cooldown.Obstacle", "Cooldown tag for obstacle spawn");
+
 }

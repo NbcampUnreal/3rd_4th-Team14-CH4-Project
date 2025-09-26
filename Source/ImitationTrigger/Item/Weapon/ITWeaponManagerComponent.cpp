@@ -29,14 +29,16 @@ void UITWeaponManagerComponent::GetLifetimeReplicatedProps(TArray<FLifetimePrope
 bool UITWeaponManagerComponent::ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags)
 {
 	bool bWroteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
-	if (IsValid(MainWeaponInstance))
-	{
-		bWroteSomething |= Channel->ReplicateSubobject(MainWeaponInstance, *Bunch, *RepFlags);
-	}
-	if (IsValid(SubWeaponInstance))
-	{
-		bWroteSomething |= Channel->ReplicateSubobject(SubWeaponInstance, *Bunch, *RepFlags);
-	}
+	// TODO: MainWeaponInstance, SubWeaponInstance의 Replication 문제 해결
+	// 아래 방식으로 하면, Replicated는 되는데, 아이템을 버릴 때 문제가 발생함 (아이템이 막 복사됨...)
+	//if (IsValid(MainWeaponInstance))
+	//{
+	//	bWroteSomething |= Channel->ReplicateSubobject(MainWeaponInstance, *Bunch, *RepFlags);
+	//}
+	//if (IsValid(SubWeaponInstance))
+	//{
+	//	bWroteSomething |= Channel->ReplicateSubobject(SubWeaponInstance, *Bunch, *RepFlags);
+	//}
 	return bWroteSomething;
 }
 

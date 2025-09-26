@@ -188,26 +188,32 @@ void AITBattlePlayerController::UpdateShield()
 
 void AITBattlePlayerController::OnMainWeaponUpdate(UITItemInstance* ItemInstance)
 {
-	UITItemDefinition_Weapon* WeaponDefinition = ItemInstance->GetItemDefinition<UITItemDefinition_Weapon>();
-	if (IsValid(WeaponDefinition))
+	if (IsValid(ItemInstance))
 	{
-		if (IsValid(HUDWidget))
+		UITItemDefinition_Weapon* WeaponDefinition = ItemInstance->GetItemDefinition<UITItemDefinition_Weapon>();
+		if (IsValid(WeaponDefinition))
 		{
-			HUDWidget->UpdateWeaponSlotOne(WeaponDefinition->ItemIcon);
-			HUDWidget->SetWeaponOneInfo(WeaponDefinition->ItemName);
+			if (IsValid(HUDWidget))
+			{
+				HUDWidget->UpdateWeaponSlotOne(WeaponDefinition->ItemIcon);
+				HUDWidget->SetWeaponOneInfo(WeaponDefinition->ItemName);
+			}
 		}
 	}
 }
 
 void AITBattlePlayerController::OnSubWeaponUpdate(UITItemInstance* ItemInstance)
 {
-	UITItemDefinition_Weapon* WeaponDefinition = ItemInstance->GetItemDefinition<UITItemDefinition_Weapon>();
-	if (IsValid(WeaponDefinition))
+	if (IsValid(ItemInstance))
 	{
-		if (IsValid(HUDWidget))
+		UITItemDefinition_Weapon* WeaponDefinition = ItemInstance->GetItemDefinition<UITItemDefinition_Weapon>();
+		if (IsValid(WeaponDefinition))
 		{
-			HUDWidget->UpdateWeaponSlotTwo(WeaponDefinition->ItemIcon);
-			HUDWidget->SetWeaponTwoInfo(WeaponDefinition->ItemName);
+			if (IsValid(HUDWidget))
+			{
+				HUDWidget->UpdateWeaponSlotTwo(WeaponDefinition->ItemIcon);
+				HUDWidget->SetWeaponTwoInfo(WeaponDefinition->ItemName);
+			}
 		}
 	}
 }

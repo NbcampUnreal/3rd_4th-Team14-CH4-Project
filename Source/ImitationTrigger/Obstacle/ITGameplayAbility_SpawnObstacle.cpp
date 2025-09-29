@@ -1,20 +1,20 @@
 
 
-#include "Obstacle/ITGameplayAbilitySpawnObstacle.h"
+#include "Obstacle/ITGameplayAbility_SpawnObstacle.h"
 #include "Obstacle/ITObstacleBase_ToyTower.h"
 #include "Character/ITCharacter.h"
 #include "AbilitySystem/ITAbilitySystemComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
 
-UITGameplayAbilitySpawnObstacle::UITGameplayAbilitySpawnObstacle()
+UITGameplayAbility_SpawnObstacle::UITGameplayAbility_SpawnObstacle()
 {
     // 기본값 : 앞으로 200, 바닥 위로 약간 띄워서 스폰
     SpawnOffset = FVector(200.0f, 0.f, 0.f);
 }
 
 // 1.
-//void UITGameplayAbilitySpawnObstacle::ActivateAbility(
+//void UITGameplayAbility_SpawnObstacle::ActivateAbility(
 //    const FGameplayAbilitySpecHandle Handle,
 //    const FGameplayAbilityActorInfo* ActorInfo,
 //    const FGameplayAbilityActivationInfo ActivationInfo,
@@ -35,7 +35,7 @@ UITGameplayAbilitySpawnObstacle::UITGameplayAbilitySpawnObstacle()
 //}
 
 // 2.
-//void UITGameplayAbilitySpawnObstacle::ActivateAbility(
+//void UITGameplayAbility_SpawnObstacle::ActivateAbility(
 //    const FGameplayAbilitySpecHandle Handle,
 //    const FGameplayAbilityActorInfo* ActorInfo,
 //    const FGameplayAbilityActivationInfo ActivationInfo,
@@ -76,7 +76,7 @@ UITGameplayAbilitySpawnObstacle::UITGameplayAbilitySpawnObstacle()
 //}
 
 // 2.
-//void UITGameplayAbilitySpawnObstacle::ActivateAbility(
+//void UITGameplayAbility_SpawnObstacle::ActivateAbility(
 //    const FGameplayAbilitySpecHandle Handle,
 //    const FGameplayAbilityActorInfo* ActorInfo,
 //    const FGameplayAbilityActivationInfo ActivationInfo,
@@ -119,7 +119,7 @@ UITGameplayAbilitySpawnObstacle::UITGameplayAbilitySpawnObstacle()
 //    EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 //}
 
-void UITGameplayAbilitySpawnObstacle::ActivateAbility(
+void UITGameplayAbility_SpawnObstacle::ActivateAbility(
     const FGameplayAbilitySpecHandle Handle,
     const FGameplayAbilityActorInfo* ActorInfo,
     const FGameplayAbilityActivationInfo ActivationInfo,
@@ -160,7 +160,7 @@ void UITGameplayAbilitySpawnObstacle::ActivateAbility(
 
 
 
-void UITGameplayAbilitySpawnObstacle::SpawnObstacleActor(const FGameplayAbilityActorInfo* ActorInfo)
+void UITGameplayAbility_SpawnObstacle::SpawnObstacleActor(const FGameplayAbilityActorInfo* ActorInfo)
 {
     if (!ObstacleClass || !ActorInfo || !ActorInfo->AvatarActor.IsValid())
     {

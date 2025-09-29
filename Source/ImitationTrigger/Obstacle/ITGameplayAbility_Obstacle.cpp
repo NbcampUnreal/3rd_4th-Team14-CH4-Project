@@ -1,8 +1,8 @@
-#include "Obstacle/ITGameplayAbilityObstacle.h"
+#include "Obstacle/ITGameplayAbility_Obstacle.h"
 #include "GameFramework/Character.h"
 #include "Engine/World.h"
 
-UITGameplayAbilityObstacle::UITGameplayAbilityObstacle()
+UITGameplayAbility_Obstacle::UITGameplayAbility_Obstacle()
 {
     NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::ServerOnly;
     InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
@@ -10,7 +10,7 @@ UITGameplayAbilityObstacle::UITGameplayAbilityObstacle()
     SpawnOffset = FVector(200.f, 0.f, 0.f);
 }
 
-AActor* UITGameplayAbilityObstacle::SpawnObstacleActor(const FGameplayAbilityActorInfo* ActorInfo)
+AActor* UITGameplayAbility_Obstacle::SpawnObstacleActor(const FGameplayAbilityActorInfo* ActorInfo)
 {
     if (!ActorInfo || !ObstacleClass) return nullptr;
 

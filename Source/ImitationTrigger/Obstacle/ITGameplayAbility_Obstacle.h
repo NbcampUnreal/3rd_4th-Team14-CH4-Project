@@ -19,6 +19,9 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Obstacle")
     TSubclassOf<AActor> ObstacleClass;
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Obstacle")
+    TArray<TSubclassOf<AActor>> ObstacleClasses;
+
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Spawn")
     FVector SpawnOffset;
 

@@ -28,48 +28,61 @@ void UITGameplayAbility_SpawnObstacle::ActivateAbility(
     }
 
     // 장애물 스폰
-    SpawnObstacleActor(ActorInfo);
+    SpawnObstacleActors(ActorInfo);
 
     // 쿨다운 적용 (Duration만 가진 GE)
-    if (CooldownEffectClass)
-    {
-        ApplyGameplayEffectToOwner(
-            Handle,
-            ActorInfo,
-            ActivationInfo,
-            CooldownEffectClass.GetDefaultObject(), // GE_ObstacleCooldown
-            1
-        );
-    }
+    //if (CooldownEffectClass)
+    //{
+    //    ApplyGameplayEffectToOwner(
+    //        Handle,
+    //        ActorInfo,
+    //        ActivationInfo,
+    //        CooldownEffectClass.GetDefaultObject(), // GE_ObstacleCooldown
+    //        1
+    //    );
+    //}
 
     EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }
 
 
 
-void UITGameplayAbility_SpawnObstacle::SpawnObstacleActor(const FGameplayAbilityActorInfo* ActorInfo)
+void UITGameplayAbility_SpawnObstacle::SpawnObstacleActors(const FGameplayAbilityActorInfo* ActorInfo)
 {
-    if (!ObstacleClass || !ActorInfo || !ActorInfo->AvatarActor.IsValid())
+    if (ObstacleClasses.Num() == 0 || !ActorInfo || !ActorInfo->AvatarActor.IsValid())
     {
         return;
     }
 
     AActor* Avatar = ActorInfo->AvatarActor.Get();
-    FVector SpawnLocation = 
-        Avatar->GetActorLocation() + 
-        Avatar->GetActorForwardVector() * 
-        SpawnOffset.X;
-    
-    SpawnLocation.Z += SpawnOffset.Z;
-
-    FActorSpawnParameters SpawnParams;
-    SpawnParams.Owner = Avatar;
-    SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-
     UWorld* World = Avatar->GetWorld();
-    if (World)
+    if (!World) return;
+
+    for (TSubclassOf<AActor> ObstacleClassItem : ObstacleClasses)
     {
-        AITObstacleBase_ToyTower* Obstacle = World->SpawnActor<AITObstacleBase_ToyTower>(ObstacleClass, SpawnLocation, Avatar->GetActorRotation(), SpawnParams);
+        if (!ObstacleClassItem) continue;
+
+        FVector SpawnLocation =
+            Avatar->GetActorLocation() +
+            Avatar->GetActorForwardVector() * SpawnOffset.X;
+
+        SpawnLocation.Z += SpawnOffset.Z;
+
+        FActorSpawnParameters SpawnParams;
+        SpawnParams.Owner = Avatar;
+        SpawnParams.Instigator = Cast<APawn>(Avatar);
+        SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+        if (AActor* Obstacle = World->SpawnActor<AActor>(ObstacleClassItem, SpawnLocation, Avatar->GetActorRotation(), SpawnParams))
+        {
+            if (LifeSpan > 0.f)
+            {
+                Obstacle->SetLifeSpan(LifeSpan);
+            }
+        }
+
+        // SpawnOffset 보정
+        SpawnOffset.Z += 50.f;
     }
 }
 

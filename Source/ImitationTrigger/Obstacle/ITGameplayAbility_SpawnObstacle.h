@@ -16,8 +16,8 @@ public:
     UITGameplayAbility_SpawnObstacle();
 
 protected:
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Cooldown")
-    TSubclassOf<UGameplayEffect> CooldownEffectClass;
+    //UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Cooldown")
+    //TSubclassOf<UGameplayEffect> CooldownEffectClass;
 
 protected:
     virtual void ActivateAbility(
@@ -28,6 +28,7 @@ protected:
     ) override;
 
 protected:
-    void SpawnObstacleActor(const FGameplayAbilityActorInfo* ActorInfo);
+    void SpawnObstacleActors(const FGameplayAbilityActorInfo* ActorInfo);
+
 
 };

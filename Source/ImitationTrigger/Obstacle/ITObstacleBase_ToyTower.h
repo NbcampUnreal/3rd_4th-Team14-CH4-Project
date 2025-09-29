@@ -59,7 +59,7 @@ protected:
 	float StartTime;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
-	float MoveDistance = 150.f;
+	float MoveDistance = 300.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float RiseDuration = 0.5f;

@@ -11,7 +11,7 @@ void UITGameplayAbility_SuperJump::ActivateAbility(
     if (AITCharacter* Character = GetITCharacter(ActorInfo))
     {
         // ½´ÆÛÁ¡ÇÁ
-        Character->LaunchCharacter(FVector(0.f, 0.f, 1200.f), false, true);
+        Character->LaunchCharacter(FVector(0.f, 0.f, 900.f), false, true);
     }
 
     EndAbility(Handle, ActorInfo, ActivationInfo, true, false);

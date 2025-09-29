@@ -26,6 +26,21 @@ protected:
 	                             const FGameplayAbilityActivationInfo ActivationInfo,
 	                             const FGameplayEventData* TriggerEventData) override;
 
+	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle,
+	                        const FGameplayAbilityActorInfo* ActorInfo,
+	                        const FGameplayAbilityActivationInfo ActivationInfo,
+	                        bool bReplicateEndAbility,
+	                        bool bWasCancelled) override;
+
+	UFUNCTION()
+	void OnMontageCompleted();
+
+	UFUNCTION()
+	void OnMontageCancelled();
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "IT|Reload")
 	TSubclassOf<UGameplayEffect> ReloadEffectClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "IT|Reload")
+	TObjectPtr<UAnimMontage> ReloadMontage;
 };

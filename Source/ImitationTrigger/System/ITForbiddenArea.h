@@ -5,6 +5,7 @@
 
 class UStaticMeshComponent;
 class UGameplayEffect;
+class UAbilitySystemComponent;
 
 USTRUCT(BlueprintType)
 struct FITForbiddenRoundInfo
@@ -31,8 +32,9 @@ public:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void Tick(float DeltaTime) override;
 
-	const FITForbiddenRoundInfo& GetCurrentRoundInfo() const { return RoundInfos[Round]; }
+	const FITForbiddenRoundInfo& GetCurrentRoundInfo() const;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UStaticMeshComponent> AreaMesh;
@@ -46,28 +48,38 @@ public:
 	UPROPERTY(ReplicatedUsing = OnRep_Round)
 	int32 Round;
 
-	UPROPERTY(ReplicatedUsing = OnRep_CenterPosition);
+	UPROPERTY(Replicated)
+	int8 bIsProgressing;
+
+	UPROPERTY(Replicated);
 	FVector CenterPosition = FVector::ZeroVector;
 
-	UPROPERTY(ReplicatedUsing = OnRep_RadiusScale);
+	UPROPERTY(Replicated);
 	float RadiusScale = 100.0f;
+
+	UPROPERTY(Replicated);
+	FVector NextCenterPosition = FVector::ZeroVector;
+
+	UPROPERTY(Replicated);
+	float NextRadiusScale = 100.0f;
 
 	float OriginRadiusScale;
 	
 	UFUNCTION()
 	void OnRep_Round();
 
-	UFUNCTION()
-	void OnRep_CenterPosition();
-
-	UFUNCTION()
-	void OnRep_RadiusScale();
 
 protected:
-	FTimerHandle AreaLogicTimer;
+	FTimerHandle AreaDamageTimer;
+	FTimerHandle AreaRoundWaitTimer;
+	FTimerHandle AreaProgressTimer;
 
 	UFUNCTION()
-	void OnLogicTimer();
+	void OnDamageTimer();
+
+	UFUNCTION()
+	void OnRoundTimer();
 
 	bool IsInSafeArea(const AActor* Actor);
+	void ApplyDamage(UAbilitySystemComponent* ASC);
 };

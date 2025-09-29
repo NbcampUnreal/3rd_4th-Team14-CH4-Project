@@ -8,11 +8,12 @@
 AITForbiddenArea::AITForbiddenArea()
 {
 	bReplicates = true;
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	AreaMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AreaMesh"));
 
 	Round = 0;
+	bIsProgressing = false;
 }
 
 void AITForbiddenArea::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -24,6 +25,15 @@ void AITForbiddenArea::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(ThisClass, RadiusScale);
 }
 
+void AITForbiddenArea::Tick(float DeltaTime)
+{
+}
+
+const FITForbiddenRoundInfo& AITForbiddenArea::GetCurrentRoundInfo() const
+{
+	return RoundInfos[Round];
+}
+
 void AITForbiddenArea::BeginPlay()
 {
 	Super::BeginPlay();
@@ -32,7 +42,10 @@ void AITForbiddenArea::BeginPlay()
 
 	if (HasAuthority())
 	{
-		GetWorldTimerManager().SetTimer(AreaLogicTimer, this, &ThisClass::OnLogicTimer, 1.0f, true);
+		GetWorldTimerManager().SetTimer(AreaDamageTimer, this, &ThisClass::OnDamageTimer, 1.0f, true);
+
+		const FITForbiddenRoundInfo& CurrentRoundInfo = GetCurrentRoundInfo();
+		GetWorldTimerManager().SetTimer(AreaRoundWaitTimer, this, &ThisClass::OnRoundTimer, CurrentRoundInfo.Duration, false);
 	}
 }
 
@@ -40,9 +53,9 @@ void AITForbiddenArea::EndPlay(EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
-	if (AreaLogicTimer.IsValid())
+	if (AreaDamageTimer.IsValid())
 	{
-		AreaLogicTimer.Invalidate();
+		AreaDamageTimer.Invalidate();
 	}
 }
 
@@ -51,15 +64,7 @@ void AITForbiddenArea::OnRep_Round()
 {
 }
 
-void AITForbiddenArea::OnRep_CenterPosition()
-{
-}
-
-void AITForbiddenArea::OnRep_RadiusScale()
-{
-}
-
-void AITForbiddenArea::OnLogicTimer()
+void AITForbiddenArea::OnDamageTimer()
 {
 	TArray<AActor*> Characters;
 	UGameplayStatics::GetAllActorsOfClass(this, AITCharacter::StaticClass(), Characters);
@@ -72,18 +77,14 @@ void AITForbiddenArea::OnLogicTimer()
 			if (!IsInSafeArea(ITCharacter))
 			{
 				UITAbilitySystemComponent* ITASC = ITCharacter->GetITAbilitySystemComponent();
-				if (IsValid(ITASC))
-				{
-					const FITForbiddenRoundInfo& Info = GetCurrentRoundInfo();
-					if (IsValid(Info.DamageEffect))
-					{
-						FGameplayEffectSpecHandle EffectSpecHandle = ITASC->MakeOutgoingSpec(Info.DamageEffect, 1, ITASC->MakeEffectContext());
-						ITASC->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
-					}
-				}
+				ApplyDamage(ITASC);
 			}
 		}
 	}
+}
+
+void AITForbiddenArea::OnRoundTimer()
+{
 }
 
 bool AITForbiddenArea::IsInSafeArea(const AActor* Actor)
@@ -98,4 +99,17 @@ bool AITForbiddenArea::IsInSafeArea(const AActor* Actor)
 		return Distance2DSqure <= RadiusSqure;
 	}
 	return false;
+}
+
+void AITForbiddenArea::ApplyDamage(UAbilitySystemComponent* ASC)
+{
+	if (IsValid(ASC))
+	{
+		const FITForbiddenRoundInfo& Info = GetCurrentRoundInfo();
+		if (IsValid(Info.DamageEffect))
+		{
+			FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(Info.DamageEffect, 1, ASC->MakeEffectContext());
+			ASC->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
+		}
+	}
 }

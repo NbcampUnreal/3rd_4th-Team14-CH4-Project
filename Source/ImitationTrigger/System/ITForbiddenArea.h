@@ -25,6 +25,30 @@ struct FITForbiddenRoundInfo
 	TSubclassOf<UGameplayEffect> DamageEffect;
 };
 
+USTRUCT()
+struct FITSyncInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY();
+	FVector CenterPosition;
+
+	UPROPERTY();
+	float RadiusScale;
+
+	UPROPERTY();
+	FVector NextCenterPosition;
+
+	UPROPERTY();
+	float NextRadiusScale;
+
+	UPROPERTY();
+	float TotalTime;
+
+	UPROPERTY();
+	float RemainTime;
+};
+
 UCLASS()
 class IMITATIONTRIGGER_API AITForbiddenArea : public AActor
 {
@@ -38,6 +62,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	const FITForbiddenRoundInfo& GetCurrentRoundInfo() const;
+	const FITForbiddenRoundInfo& GetNextRoundInfo() const;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UStaticMeshComponent> AreaMesh;
@@ -54,18 +79,11 @@ public:
 	UPROPERTY(Replicated)
 	int8 bIsProgressing;
 
-	UPROPERTY(Replicated);
 	FVector CenterPosition = FVector::ZeroVector;
-
-	UPROPERTY(Replicated);
-	float RadiusScale = 100.0f;
-
-	UPROPERTY(Replicated);
 	FVector NextCenterPosition = FVector::ZeroVector;
 
-	UPROPERTY(Replicated);
+	float RadiusScale = 100.0f;
 	float NextRadiusScale = 100.0f;
-
 	float OriginRadiusScale;
 	
 	UFUNCTION()
@@ -76,6 +94,9 @@ protected:
 	FTimerHandle AreaDamageTimer;
 	FTimerHandle AreaRoundWaitTimer;
 	FTimerHandle AreaProgressTimer;
+	FTimerHandle AreaSyncTimer;
+
+	float SyncInterval = 1.0f;
 
 	UFUNCTION()
 	void OnDamageTimer();
@@ -86,6 +107,16 @@ protected:
 	UFUNCTION()
 	void OnRoundStartTimer();
 
+	UFUNCTION()
+	void OnSyncTimer();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRPC_SyncArea(FITSyncInfo SyncInfo);
+
+	FITSyncInfo ClientSyncInfo;
+
+	void UpdateArea(const FVector& InCenterPosition, float InRadiusScale);
+	FVector GenerateRandomCenterPosition();
 	bool IsInSafeArea(const AActor* Actor);
 	void ApplyDamage(UAbilitySystemComponent* ASC);
 };

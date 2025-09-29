@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystem/Abilities/ITGameplayAbility.h"
-#include "ITGameplayAbilityObstacle.generated.h"
+#include "ITGameplayAbility_Obstacle.generated.h"
 
 
 UCLASS(Abstract)
-class IMITATIONTRIGGER_API UITGameplayAbilityObstacle : public UITGameplayAbility
+class IMITATIONTRIGGER_API UITGameplayAbility_Obstacle : public UITGameplayAbility
 {
     GENERATED_BODY()
 
 public:
-    UITGameplayAbilityObstacle();
+    UITGameplayAbility_Obstacle();
 
 protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Obstacle")

@@ -3,17 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Obstacle/ITGameplayAbilityObstacle.h"
-#include "ITGameplayAbilitySpawnObstacle.generated.h"
+#include "Obstacle/ITGameplayAbility_Obstacle.h"
+#include "ITGameplayAbility_SpawnObstacle.generated.h"
 
 
 UCLASS()
-class IMITATIONTRIGGER_API UITGameplayAbilitySpawnObstacle : public UITGameplayAbilityObstacle
+class IMITATIONTRIGGER_API UITGameplayAbility_SpawnObstacle : public UITGameplayAbility_Obstacle
 {
     GENERATED_BODY()
 
 public:
-    UITGameplayAbilitySpawnObstacle();
+    UITGameplayAbility_SpawnObstacle();
 
 protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Cooldown")

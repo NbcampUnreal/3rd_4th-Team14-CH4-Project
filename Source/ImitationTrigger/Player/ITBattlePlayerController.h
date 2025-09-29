@@ -24,6 +24,7 @@ public:
 
 	virtual void OnRep_PlayerState() override;
 
+
 	UFUNCTION(BlueprintCallable)
 	void ToggleMapWidget();
 
@@ -32,6 +33,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void HideMapWidget();
+
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (AllowPrivateAccess = true))

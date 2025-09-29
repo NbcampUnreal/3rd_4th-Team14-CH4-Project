@@ -38,7 +38,7 @@ protected:
 
 	// 매치용 맵 이름(기존 코드 흐름에 맞춤)
 	UPROPERTY(EditAnywhere, Category = "Dedicated")
-	FString MatchMap = TEXT("ThirdPersonMap");
+	FString MatchMap = TEXT("L_BattleMap");
 
 	// 최소 시작 인원
 	UPROPERTY(EditAnywhere, Category = "Matchmaking")
@@ -69,6 +69,9 @@ protected:
 
 	// 실행 파일 경로 결정(Override → 패키징 기본 경로 순)
 	bool ResolveServerExecutable(FString& OutServerExe) const;
+
+	// 큐 정리(끊어진 연결 제거)
+	void CleanupMatchmakingQueue();
 
 private:
 	int32 NextPort = 0;

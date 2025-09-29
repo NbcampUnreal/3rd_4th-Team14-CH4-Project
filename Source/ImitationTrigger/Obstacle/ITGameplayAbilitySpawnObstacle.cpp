@@ -126,11 +126,11 @@ void UITGameplayAbilitySpawnObstacle::ActivateAbility(
     const FGameplayEventData* TriggerEventData)
 {
     // 서버에서만 처리
-    if (!HasAuthority(ActivationInfo))
-    {
-        EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
-        return;
-    }
+    //if (!HasAuthority(ActivationInfo))
+    //{
+    //    EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+    //    return;
+    //}
 
     // 쿨다운 중인지 확인
     //if (CheckCooldown(Handle, ActorInfo))

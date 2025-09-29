@@ -6,21 +6,14 @@
 AITObstacleBase_ToyTower::AITObstacleBase_ToyTower()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
-
-	// 상속하고 있는 ITObstacleBase클래스에서 구현.
-	//bReplicates = true;
-	//SetReplicateMovement(true);
-	//PrimaryActorTick.bCanEverTick = true;
 }
 
 void AITObstacleBase_ToyTower::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// 스폰 위치는 지면보다 아래에서 시작함.
 	FVector CurrentLocation = GetActorLocation();
-	CurrentLocation.Z -= MoveDistance; // 지면 아래서 시작
+	CurrentLocation.Z -= MoveDistance;
 	SetActorLocation(CurrentLocation);
 
 	StartLocation = CurrentLocation;
@@ -34,8 +27,11 @@ void AITObstacleBase_ToyTower::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (!bIsMoving) return;
-
+	if (!bIsMoving)
+	{
+		return;
+	}
+		
 	float ElapsedTime = GetWorld()->GetTimeSeconds() - StartTime;
 	float Alpha = ElapsedTime / RiseDuration;
 
@@ -47,6 +43,6 @@ void AITObstacleBase_ToyTower::Tick(float DeltaTime)
 
 	if (Alpha >= 1.f)
 	{
-		bIsMoving = false; // 목표 지점 도달 후 멈춤..
+		bIsMoving = false; 
 	}
 }

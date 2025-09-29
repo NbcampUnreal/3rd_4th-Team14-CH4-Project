@@ -71,18 +71,18 @@ protected:
 	// 왕복 운동 함수 추가
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement|Components")
 	float Amplitude;
+
+	// 속도
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement|Components")
 	float Speed;
 
 	// 원형 회전 운동
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement|Components")
 	float Radius;
-	// float Speed : 위에 있는 멤버 Speed를 사용할 예정
 
 	// 지그재그 운동
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement|Components")
 	float Frequency;
-	// float Speed;
 
 
 	virtual void BeginPlay() override;

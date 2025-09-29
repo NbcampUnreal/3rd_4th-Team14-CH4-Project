@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 
 #include "AbilitySystem/Abilities/Movement/ITGameplayAbility_SuperJump.h"
 #include "Character/ITCharacter.h"

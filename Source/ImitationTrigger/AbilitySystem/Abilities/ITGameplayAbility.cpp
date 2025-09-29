@@ -15,8 +15,6 @@ void UITGameplayAbility::ActivateAbility(
     const FGameplayEventData* TriggerEventData
 )
 {
-    //LogAbilityActivated();
-
     Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
 
@@ -28,8 +26,6 @@ void UITGameplayAbility::EndAbility(
     bool bWasCancelled
 )
 {
-    //LogAbilityEnded(bWasCancelled);
-
     Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
@@ -47,14 +43,3 @@ bool UITGameplayAbility::HasAuthority(const FGameplayAbilityActivationInfo& Acti
 {
     return (GetCurrentActorInfo()->IsNetAuthority());
 }
-
-//void UITGameplayAbility::LogAbilityActivated() const
-//{
-//    UE_LOG(LogIT, Log, TEXT("Ability [%s] Activated"), *GetName());
-//}
-//
-//void UITGameplayAbility::LogAbilityEnded(bool bWasCancelled) const
-//{
-//    UE_LOG(LogIT, Log, TEXT("Ability [%s] Ended (Cancelled=%s)"),
-//        *GetName(), bWasCancelled ? TEXT("true") : TEXT("false"));
-//}

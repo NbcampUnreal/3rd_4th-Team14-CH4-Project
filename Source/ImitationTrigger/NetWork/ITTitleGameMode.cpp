@@ -1,5 +1,5 @@
-#include "NetworkTest/ITTitleGameMode.h"
-#include "NetworkTest/ITTitlePlayerController.h"
+#include "Network/ITTitleGameMode.h"
+#include "Network/ITTitlePlayerController.h"
 
 
 AITTitleGameMode::AITTitleGameMode()

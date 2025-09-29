@@ -1,8 +1,8 @@
-#include "NetworkTest/ITTitlePlayerController.h"
+#include "Network/ITTitlePlayerController.h"
 #include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
-#include "NetworkTest/ITLobbyGameMode.h"
-#include "NetworkTest/ITTitleGameMode.h"
+#include "Network/ITLobbyGameMode.h"
+#include "Network/ITTitleGameMode.h"
 
 void AITTitlePlayerController::BeginPlay()
 {
@@ -21,6 +21,10 @@ void AITTitlePlayerController::BeginPlay()
 				SetInputMode(Mode);
 				bShowMouseCursor = true;
 			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("TitleUIClass is null!"));
 		}
 	}
 }

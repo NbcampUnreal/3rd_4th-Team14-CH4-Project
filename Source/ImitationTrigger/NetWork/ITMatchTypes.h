@@ -36,3 +36,34 @@ struct FMatchmakingPlayerInfo
 		JoinTime = 0.0f;
 	}
 };
+
+// 활성화된 매치 정보 (Session 기반)
+USTRUCT(BlueprintType)
+struct FActiveMatchSession
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FString SessionID; // 고유 세션 ID
+
+	UPROPERTY()
+	TArray<FMatchmakingPlayerInfo> Players;  // 이 매치의 플레이어들
+
+	UPROPERTY()
+	float StartTime; // 매치 시작 시간
+
+	UPROPERTY()
+	EMatchState CurrentState; // 현재 매치 상태
+
+	UPROPERTY()
+	bool bIsActive; // 매치 활성화 여부
+
+	FActiveMatchSession()
+	{
+		SessionID = TEXT("");
+		Players.Empty();
+		StartTime = 0.0f;
+		CurrentState = EMatchState::Playing;
+		bIsActive = true;
+	}
+};

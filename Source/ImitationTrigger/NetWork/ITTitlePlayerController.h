@@ -6,7 +6,7 @@
 class UUserWidget;
 
 UCLASS()
-class ITTEST_API AITTitlePlayerController : public APlayerController
+class IMITATIONTRIGGER_API AITTitlePlayerController : public APlayerController
 {
 	GENERATED_BODY()
 

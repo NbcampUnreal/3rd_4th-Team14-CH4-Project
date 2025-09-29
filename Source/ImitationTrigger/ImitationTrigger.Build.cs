@@ -19,6 +19,7 @@ public class ImitationTrigger : ModuleRules
 			"Slate",
 			"SlateCore",
 			"OnlineSubsystem",
+			"OnlineSubsystemSteam",
 			"Networking",
 			"Sockets",
 

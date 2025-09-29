@@ -23,8 +23,6 @@ protected:
     FVector SpawnOffset;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Spawn")
-    float LifeSpan = 10.f;
+    float LifeSpan = 0.f;
 
-protected:
-    AActor* SpawnObstacleActor(const FGameplayAbilityActorInfo* ActorInfo);
 };

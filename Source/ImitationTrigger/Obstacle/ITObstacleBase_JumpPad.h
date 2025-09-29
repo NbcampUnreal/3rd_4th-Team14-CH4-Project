@@ -6,12 +6,26 @@
 #include "Obstacle/ITObstacleBase.h"
 #include "ITObstacleBase_JumpPad.generated.h"
 
-/**
- * 
- */
+class UBoxComponent;
+
 UCLASS()
 class IMITATIONTRIGGER_API AITObstacleBase_JumpPad : public AITObstacleBase
 {
 	GENERATED_BODY()
 	
+
+public:
+    AITObstacleBase_JumpPad();
+
+protected:
+    UPROPERTY(VisibleAnywhere)
+    UBoxComponent* Collision;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "JumpPad")
+    float LaunchStrength = 2000.f;
+
+    UFUNCTION()
+    void OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+        UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+        const FHitResult& SweepResult);
 };

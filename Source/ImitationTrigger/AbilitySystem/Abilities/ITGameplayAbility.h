@@ -35,18 +35,13 @@ protected:
 
 
 protected:
-	// Owner Character 가져오기 
 	AITCharacter* GetITCharacter(const FGameplayAbilityActorInfo* ActorInfo) const;
 
-	// AbilitySystemComponent 가져오기
 	UITAbilitySystemComponent* GetITASC(const FGameplayAbilityActorInfo* ActorInfo) const;
 
-	// 서버 권한이 있는지 확인
 	bool HasAuthority(const FGameplayAbilityActivationInfo& ActivationInfo) const;
 
-	// 디버그 로깅
-	//void LogAbilityActivated() const;
-	//void LogAbilityEnded(bool bWasCancelled) const;
+
 
 
 

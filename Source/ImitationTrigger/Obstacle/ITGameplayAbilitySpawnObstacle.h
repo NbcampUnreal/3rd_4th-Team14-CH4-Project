@@ -10,25 +10,22 @@
 UCLASS()
 class IMITATIONTRIGGER_API UITGameplayAbilitySpawnObstacle : public UITGameplayAbilityObstacle
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	UITGameplayAbilitySpawnObstacle();
-
-//protected:
-//	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Cooldown")
-//	TSubclassOf<UGameplayEffect> CooldownEffectClass;
+    UITGameplayAbilitySpawnObstacle();
 
 protected:
-	virtual void ActivateAbility(
-		const FGameplayAbilitySpecHandle Handle,
-		const FGameplayAbilityActorInfo* ActorInfo,
-		const FGameplayAbilityActivationInfo ActivationInfo,
-		const FGameplayEventData* TriggerEventData
-	) override;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Cooldown")
+    TSubclassOf<UGameplayEffect> CooldownEffectClass;
 
-private:
-	void SpawnObstacle(const FGameplayAbilityActorInfo* ActorInfo);
+protected:
+    virtual void ActivateAbility(
+        const FGameplayAbilitySpecHandle Handle,
+        const FGameplayAbilityActorInfo* ActorInfo,
+        const FGameplayAbilityActivationInfo ActivationInfo,
+        const FGameplayEventData* TriggerEventData
+    ) override;
 
-	
+    void SpawnObstacleActor(const FGameplayAbilityActorInfo* ActorInfo);
 };

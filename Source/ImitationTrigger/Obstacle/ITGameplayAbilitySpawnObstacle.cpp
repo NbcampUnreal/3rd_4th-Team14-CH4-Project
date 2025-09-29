@@ -15,49 +15,52 @@ UITGameplayAbilitySpawnObstacle::UITGameplayAbilitySpawnObstacle()
 
 // 1.
 //void UITGameplayAbilitySpawnObstacle::ActivateAbility(
-//	const FGameplayAbilitySpecHandle Handle,
-//	const FGameplayAbilityActorInfo* ActorInfo,
-//	const FGameplayAbilityActivationInfo ActivationInfo,
-//	const FGameplayEventData* TriggerEventData
+//    const FGameplayAbilitySpecHandle Handle,
+//    const FGameplayAbilityActorInfo* ActorInfo,
+//    const FGameplayAbilityActivationInfo ActivationInfo,
+//    const FGameplayEventData* TriggerEventData
 //)
 //{
-//    // 나중에 네트워크 생각해 놓은 코드 : UE5 GAS의 기본 원칙 : Actor 스폰은 서버 권한이 있는 쪽에서만 해야 함.
-//    //if (!HasAuthority(ActivationInfo))
-//    //{
-//    //    EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
-//    //    return;
-//    //}
+//    // 반드시 서버에서만 스폰 (멀티 대비 안전)
+//    if (!HasAuthority(ActivationInfo))
+//    {
+//        EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+//        return;
+//    }
 //
-//    SpawnObstacleActor(ActorInfo);
+//    SpawnObstacle(ActorInfo);
 //
+//    // 쿨다운 없음 → 바로 종료
 //    EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 //}
 
+// 2.
 //void UITGameplayAbilitySpawnObstacle::ActivateAbility(
 //    const FGameplayAbilitySpecHandle Handle,
 //    const FGameplayAbilityActorInfo* ActorInfo,
 //    const FGameplayAbilityActivationInfo ActivationInfo,
-//    const FGameplayEventData* TriggerEventData)
+//    const FGameplayEventData* TriggerEventData
+//)
 //{
-//    // 서버 권한에서만 실행
-//    //if (!HasAuthority(ActivationInfo))
-//    //{
-//    //    EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
-//    //    return;
-//    //}
+//    // 서버에서만 동작
+//    if (!HasAuthority(ActivationInfo))
+//    {
+//        EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+//        return;
+//    }
 //
-//    // 이미 쿨타임 중인지 확인
-//    //if (CheckCooldown(Handle, ActorInfo))
-//    //{
-//    //    UE_LOG(LogTemp, Warning, TEXT("ToyTower Ability on cooldown!"));
-//    //    EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
-//    //    return;
-//    //}
+//    // 쿨다운 중인지 확인
+//    if (CheckCooldown(Handle, ActorInfo))
+//    {
+//        UE_LOG(LogTemp, Warning, TEXT("ToyTower Ability is on Cooldown!"));
+//        EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+//        return;
+//    }
 //
 //    // 장애물 소환
 //    SpawnObstacleActor(ActorInfo);
 //
-//    // 쿨다운 GameplayEffect 적용
+//    // 쿨다운 부여
 //    if (CooldownEffectClass)
 //    {
 //        ApplyGameplayEffectToOwner(
@@ -72,65 +75,96 @@ UITGameplayAbilitySpawnObstacle::UITGameplayAbilitySpawnObstacle()
 //    EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 //}
 
-
-
+// 2.
 //void UITGameplayAbilitySpawnObstacle::ActivateAbility(
 //    const FGameplayAbilitySpecHandle Handle,
 //    const FGameplayAbilityActorInfo* ActorInfo,
 //    const FGameplayAbilityActivationInfo ActivationInfo,
 //    const FGameplayEventData* TriggerEventData)
 //{
-//    //if (!HasAuthority(ActivationInfo))
-//    //{
-//    //    EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
-//    //    return;
-//    //}
+//    UE_LOG(LogTemp, Warning, TEXT("ActivateAbility called!"));
 //
-//    // 이미 쿨타임 중인지 확인
-//    if (CheckCooldown(Handle, ActorInfo))
+//    // 서버에서만 처리
+//    if (!HasAuthority(ActivationInfo))
 //    {
 //        EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 //        return;
 //    }
 //
+//    //// 쿨다운 확인
+//    //if (CheckCooldown(Handle, ActorInfo))
+//    //{
+//    //    bool bOnCooldown = CheckCooldown(Handle, ActorInfo);
+//    //    UE_LOG(LogTemp, Warning, TEXT("Cooldown check: %s"), bOnCooldown ? TEXT("TRUE") : TEXT("FALSE"));
+//
+//    //    EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+//    //    return;
+//    //}
+//
+//    // 장애물 스폰
 //    SpawnObstacleActor(ActorInfo);
 //
-//    // 쿨다운 GameplayEffect를 적용함.
+//    // 쿨다운 적용
 //    if (CooldownEffectClass)
 //    {
-//        ApplyGameplayEffectToOwner(Handle, ActorInfo, ActivationInfo, CooldownEffectClass.GetDefaultObject(), 1);
+//        ApplyGameplayEffectToOwner(
+//            Handle,
+//            ActorInfo,
+//            ActivationInfo,
+//            CooldownEffectClass.GetDefaultObject(),
+//            1
+//        );
 //    }
 //
 //    EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 //}
 
-
 void UITGameplayAbilitySpawnObstacle::ActivateAbility(
     const FGameplayAbilitySpecHandle Handle,
     const FGameplayAbilityActorInfo* ActorInfo,
     const FGameplayAbilityActivationInfo ActivationInfo,
-    const FGameplayEventData* TriggerEventData
-)
+    const FGameplayEventData* TriggerEventData)
 {
-    // 반드시 서버에서만 스폰 (멀티 대비 안전)
+    // 서버에서만 처리
     if (!HasAuthority(ActivationInfo))
     {
         EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
         return;
     }
 
-    SpawnObstacle(ActorInfo);
+    // 쿨다운 중인지 확인
+    //if (CheckCooldown(Handle, ActorInfo))
+    //{
+    //    UE_LOG(LogTemp, Warning, TEXT("ToyTower Ability is on Cooldown!"));
+    //    EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+    //    return;
+    //}
 
-    // 쿨다운 없음 → 바로 종료
+    // 장애물 스폰
+    SpawnObstacleActor(ActorInfo);
+
+    // 쿨다운 적용 (Duration만 가진 GE)
+    if (CooldownEffectClass)
+    {
+        ApplyGameplayEffectToOwner(
+            Handle,
+            ActorInfo,
+            ActivationInfo,
+            CooldownEffectClass.GetDefaultObject(), // GE_ObstacleCooldown
+            1
+        );
+    }
+
     EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }
 
 
-void UITGameplayAbilitySpawnObstacle::SpawnObstacle(const FGameplayAbilityActorInfo* ActorInfo)
+
+void UITGameplayAbilitySpawnObstacle::SpawnObstacleActor(const FGameplayAbilityActorInfo* ActorInfo)
 {
     if (!ObstacleClass || !ActorInfo || !ActorInfo->AvatarActor.IsValid())
     {
-        UE_LOG(LogTemp, Warning, TEXT("ObstacleClass 또는 ActorInfo가 없음!"));
+        UE_LOG(LogTemp, Error, TEXT("ObstacleClass is NULL! Did you assign BP_ITObstacleBase_ToyTower in GA?"));
         return;
     }
 

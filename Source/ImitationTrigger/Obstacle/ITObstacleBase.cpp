@@ -37,7 +37,6 @@ AITObstacleBase::AITObstacleBase()
 	StaticMeshComp->SetupAttachment(SceneRoot);
 
 
-
 	PrimaryActorTick.bCanEverTick = true;
 
 	RotationSpeed = 20.0f;
@@ -56,10 +55,11 @@ AITObstacleBase::AITObstacleBase()
 	// 지그재그 운동
 	Frequency = 2.0f;
 
-
+	// 생성된 Actor클라이언트에 노출
 	bReplicates = true;
 	SetReplicates(true);
 	SetReplicateMovement(true);
+
 
 
 }

@@ -69,8 +69,6 @@ void AITItemActor::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AAc
 				if (UITWeaponManagerComponent* WeaponManagerComponent = PlayerState->GetITWeaponManagerComponent())
 				{
 					ItemInstance->Rename(nullptr, PlayerState);
-
-					// TODO: 상호작용, 자동획득 분기 추가
 					WeaponManagerComponent->ServerRPC_PickupWeapon(ItemInstance);
 					Destroy();
 				}
@@ -117,9 +115,4 @@ void AITItemActor::UpdateAppearance()
 void AITItemActor::EnablePickup()
 {
 	SphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-}
-
-void AITItemActor::OnRep_ItemInstance()
-{
-	UpdateAppearance();
 }

@@ -35,16 +35,13 @@ protected:
 	                     bool bFromSweep,
 	                     const FHitResult& SweepResult);
 
-	UFUNCTION()
-	void OnRep_ItemInstance();
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "IT|Component")
 	TObjectPtr<USphereComponent> SphereComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "IT|Component")
 	TObjectPtr<UStaticMeshComponent> StaticMeshComponent;
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ItemInstance, Category = "IT")
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = "IT")
 	TObjectPtr<UITItemInstance> ItemInstance;
 
 	// 레벨 배치 변수
@@ -56,7 +53,7 @@ protected:
 
 private:
 	void UpdateAppearance();
-	
+
 	void EnablePickup();
 	FTimerHandle EnablePickupTimerHandle;
 };

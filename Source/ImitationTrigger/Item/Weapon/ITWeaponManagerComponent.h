@@ -8,8 +8,7 @@
 #include "Cosmetics/ITCharacterPartType.h"
 #include "ITWeaponManagerComponent.generated.h"
 
-class AITCharacter;
-class AITPlayerState;
+class AITItemActor;
 class UITItemInstance;
 
 UENUM(BlueprintType)
@@ -40,29 +39,22 @@ public:
 	UITItemInstance* GetCurrentWeapon() const;
 
 	UFUNCTION(BlueprintCallable, Category = "IT|Weapon")
+	UITItemInstance* GetMainWeaponInstance() const { return MainWeaponInstance; }
+
+	UFUNCTION(BlueprintCallable, Category = "IT|Weapon")
+	UITItemInstance* GetSubWeaponInstance() const { return SubWeaponInstance; }
+
+	UFUNCTION(BlueprintCallable, Category = "IT|Weapon")
 	int32 GetReserveAmmo() const;
 
-	// 무기 획득, 슬롯이 비어 있을 경우에만 작동
 	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "IT|Weapon")
 	void ServerRPC_PickupWeapon(UITItemInstance* NewWeaponInstance);
 
-	// 탭 or 마우스 휠 등으로 주무기, 보조무기 스왑
-	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "IT|Weapon")
-	void ServerRPC_SwapWeapon();
-
-	// 특정 무기로 교체
 	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "IT|Weapon")
 	void ServerRPC_ChangeWeapon(ECurrentWeaponSlot WeaponToChange);
 
 	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "IT|Weapon")
 	void ServerRPC_DropCurrentWeapon();
-
-	// 어빌리티, 수류탄, 포션 등을 사용할 경우, 무기를 집어 넣는 함수
-	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "IT|Weapon")
-	void ServerRPC_HolsterWeapon();
-
-	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "IT|Weapon")
-	void ServerRPC_ReEquipWeapon();
 
 	// 탄약 관련 로직
 	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "IT|Weapon")

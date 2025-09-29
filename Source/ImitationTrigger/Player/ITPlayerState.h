@@ -42,6 +42,8 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 protected:
+	virtual bool ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
+
 	UPROPERTY()
 	TObjectPtr<const UITHealthSet> HealthSet;
 

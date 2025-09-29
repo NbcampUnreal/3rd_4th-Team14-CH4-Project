@@ -3,6 +3,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Kismet/GameplayStatics.h"
 #include "Character/ITCharacter.h"
+#include "System/ITLogChannel.h"
 #include "AbilitySystem/ITAbilitySystemComponent.h"
 
 AITForbiddenArea::AITForbiddenArea()
@@ -12,7 +13,7 @@ AITForbiddenArea::AITForbiddenArea()
 
 	AreaMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AreaMesh"));
 
-	Round = 0;
+	Round = -1;
 	bIsProgressing = false;
 }
 
@@ -27,6 +28,10 @@ void AITForbiddenArea::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
 void AITForbiddenArea::Tick(float DeltaTime)
 {
+	if (bIsProgressing)
+	{
+
+	}
 }
 
 const FITForbiddenRoundInfo& AITForbiddenArea::GetCurrentRoundInfo() const
@@ -44,8 +49,7 @@ void AITForbiddenArea::BeginPlay()
 	{
 		GetWorldTimerManager().SetTimer(AreaDamageTimer, this, &ThisClass::OnDamageTimer, 1.0f, true);
 
-		const FITForbiddenRoundInfo& CurrentRoundInfo = GetCurrentRoundInfo();
-		GetWorldTimerManager().SetTimer(AreaRoundWaitTimer, this, &ThisClass::OnRoundTimer, CurrentRoundInfo.Duration, false);
+		OnRoundStartTimer();
 	}
 }
 
@@ -83,8 +87,26 @@ void AITForbiddenArea::OnDamageTimer()
 	}
 }
 
-void AITForbiddenArea::OnRoundTimer()
+void AITForbiddenArea::OnRoundEndTimer()
 {
+	IT_LOG_ROLE(LogITNet, Log, TEXT("Round End..."));
+
+	const FITForbiddenRoundInfo& CurrentRoundInfo = GetCurrentRoundInfo();
+	GetWorldTimerManager().SetTimer(AreaProgressTimer, this, &ThisClass::OnRoundStartTimer, CurrentRoundInfo.ProgressDuration, false);
+
+	bIsProgressing = 1;
+}
+
+void AITForbiddenArea::OnRoundStartTimer()
+{
+	Round += 1;
+
+	const FITForbiddenRoundInfo& CurrentRoundInfo = GetCurrentRoundInfo();
+	GetWorldTimerManager().SetTimer(AreaRoundWaitTimer, this, &ThisClass::OnRoundEndTimer, CurrentRoundInfo.WaitDuration, false);
+
+	bIsProgressing = 0;
+
+	IT_LOG_ROLE(LogITNet, Log, TEXT("Round Start"));
 }
 
 bool AITForbiddenArea::IsInSafeArea(const AActor* Actor)

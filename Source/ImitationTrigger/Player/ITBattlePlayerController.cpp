@@ -3,7 +3,9 @@
 #include "AbilitySystem/ITAbilitySystemComponent.h"
 #include "AbilitySystem/Attributes/ITHealthSet.h"
 #include "System/ITLogChannel.h"
+#include "Kismet/GameplayStatics.h"
 #include "UI/HUDWidget.h"
+#include "UI/ITMinimapCapture.h"
 #include "Item/ITItemInstance.h"
 #include "Item/Weapon/ITItemDefinition_Weapon.h"
 #include "Item/Weapon/ITWeaponManagerComponent.h"
@@ -37,6 +39,14 @@ void AITBattlePlayerController::EndPlay(EEndPlayReason::Type EndPlayReason)
 void AITBattlePlayerController::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
+
+	// 미니맵 Caputer 한번 더 (멀티플레이어 환경에서, 한 번에 Capture가 안되는 경우가 있음)
+	AActor* Actor = UGameplayStatics::GetActorOfClass(this, AITMinimapCapture::StaticClass());
+	AITMinimapCapture* Capture = Cast<AITMinimapCapture>(Actor);
+	if (IsValid(Capture))
+	{
+		Capture->CaptureOnce();
+	}
 
 	// 클라이언트에 PlayerState가 준비 되어야 HUD를 초기화할 수 있다.
 	InitWidgets();

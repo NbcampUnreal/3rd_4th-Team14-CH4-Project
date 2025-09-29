@@ -13,7 +13,10 @@ struct FITForbiddenRoundInfo
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float Duration = 10.0f;
+	float WaitDuration = 10.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float ProgressDuration = 10.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float AreaPercentage = 100.0f;
@@ -78,7 +81,10 @@ protected:
 	void OnDamageTimer();
 
 	UFUNCTION()
-	void OnRoundTimer();
+	void OnRoundEndTimer();
+
+	UFUNCTION()
+	void OnRoundStartTimer();
 
 	bool IsInSafeArea(const AActor* Actor);
 	void ApplyDamage(UAbilitySystemComponent* ASC);

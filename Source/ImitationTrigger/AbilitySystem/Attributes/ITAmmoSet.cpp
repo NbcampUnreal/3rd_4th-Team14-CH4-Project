@@ -8,6 +8,7 @@ UITAmmoSet::UITAmmoSet()
 {
 	InitAmmo(0.0f);
 	InitMaxAmmo(0.0f);
+	InitReserveAmmo(0.0f);
 }
 
 void UITAmmoSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
@@ -16,16 +17,25 @@ void UITAmmoSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& Out
 
 	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, Ammo, COND_OwnerOnly, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, MaxAmmo, COND_OwnerOnly, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, ReserveAmmo, COND_OwnerOnly, REPNOTIFY_Always);
 }
 
-void UITAmmoSet::OnRep_Ammo()
+void UITAmmoSet::OnRep_Ammo(const FGameplayAttributeData& OldValue)
 {
+	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, Ammo, OldValue);
 	OnAmmoChanged.Broadcast(GetAmmo(), GetMaxAmmo());
 }
 
-void UITAmmoSet::OnRep_MaxAmmo()
+void UITAmmoSet::OnRep_MaxAmmo(const FGameplayAttributeData& OldValue)
 {
+	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, MaxAmmo, OldValue);
 	OnAmmoChanged.Broadcast(GetAmmo(), GetMaxAmmo());
+}
+
+void UITAmmoSet::OnRep_ReserveAmmo(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, ReserveAmmo, OldValue);
+	OnReserveAmmoChanged.Broadcast(GetReserveAmmo());
 }
 
 void UITAmmoSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)

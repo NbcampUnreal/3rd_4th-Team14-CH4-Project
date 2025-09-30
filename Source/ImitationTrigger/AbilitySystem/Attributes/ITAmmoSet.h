@@ -8,6 +8,8 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAmmoChanged, float, Ammo, float, MaxAmmo);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReserveAmmoChanged, float, ReserveAmmo);
+
 UCLASS()
 class IMITATIONTRIGGER_API UITAmmoSet : public UITAttributeSet
 {
@@ -20,22 +22,34 @@ public:
 
 	ATTRIBUTE_ACCESSORS(UITAmmoSet, Ammo);
 	ATTRIBUTE_ACCESSORS(UITAmmoSet, MaxAmmo);
+	ATTRIBUTE_ACCESSORS(UITAmmoSet, ReserveAmmo);
 
 	UFUNCTION()
-	void OnRep_Ammo();
+	void OnRep_Ammo(const FGameplayAttributeData& OldValue);
 
 	UFUNCTION()
-	void OnRep_MaxAmmo();
+	void OnRep_MaxAmmo(const FGameplayAttributeData& OldValue);
+
+	UFUNCTION()
+	void OnRep_ReserveAmmo(const FGameplayAttributeData& OldValue);
 
 	FOnAmmoChanged OnAmmoChanged;
+
+	FOnReserveAmmoChanged OnReserveAmmoChanged;
 
 protected:
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 
 private:
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Ammo, Category = "Attributes|Ammo", Meta = (AllowPrivateAccess = true))
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Ammo, Category = "Attributes|Ammo",
+		Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData Ammo;
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxAmmo, Category = "Attributes|Ammo", Meta = (AllowPrivateAccess = true))
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxAmmo, Category = "Attributes|Ammo",
+		Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData MaxAmmo;
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ReserveAmmo, Category = "Attributes|Ammo",
+		Meta = (AllowPrivateAccess = true))
+	FGameplayAttributeData ReserveAmmo;
 };

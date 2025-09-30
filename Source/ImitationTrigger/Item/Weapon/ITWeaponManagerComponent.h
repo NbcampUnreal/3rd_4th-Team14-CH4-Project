@@ -44,9 +44,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "IT|Weapon")
 	UITItemInstance* GetSubWeaponInstance() const { return SubWeaponInstance; }
 
-	UFUNCTION(BlueprintCallable, Category = "IT|Weapon")
-	int32 GetReserveAmmo() const;
-
 	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "IT|Weapon")
 	void ServerRPC_PickupWeapon(UITItemInstance* NewWeaponInstance);
 
@@ -55,13 +52,6 @@ public:
 
 	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "IT|Weapon")
 	void ServerRPC_DropCurrentWeapon();
-
-	// 탄약 관련 로직
-	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "IT|Weapon")
-	void ServerRPC_AddAmmo(int32 Quantity);
-
-	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "IT|Weapon")
-	void ServerRPC_ConsumeAmmo(int32 Quantity);
 
 	// UI 델리게이트 프로퍼티
 	UPROPERTY(BlueprintAssignable, Category = "IT|Weapon")
@@ -95,10 +85,6 @@ protected:
 
 	UPROPERTY()
 	FITCharacterPartHandle WeaponPartHandle;
-
-	// if (인벤토리 구현) { 인벤토리로 이전 + 탄약 종류 추가 }
-	UPROPERTY(Replicated)
-	int32 ReserveAmmo = 0;
 
 	UFUNCTION()
 	void OnRep_CurrentWeaponTypeChanged();

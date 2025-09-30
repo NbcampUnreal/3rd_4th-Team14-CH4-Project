@@ -24,7 +24,6 @@ void UITWeaponManagerComponent::GetLifetimeReplicatedProps(TArray<FLifetimePrope
 	DOREPLIFETIME(ThisClass, CurrentWeaponType);
 	DOREPLIFETIME(ThisClass, MainWeaponInstance);
 	DOREPLIFETIME(ThisClass, SubWeaponInstance);
-	DOREPLIFETIME(ThisClass, ReserveAmmo);
 }
 
 void UITWeaponManagerComponent::OnRep_CurrentWeaponTypeChanged()
@@ -154,26 +153,6 @@ void UITWeaponManagerComponent::ServerRPC_DropCurrentWeapon_Implementation()
 	}
 }
 
-void UITWeaponManagerComponent::ServerRPC_AddAmmo_Implementation(int32 Quantity)
-{
-	if (!GetOwner()->HasAuthority())
-	{
-		return;
-	}
-
-	ReserveAmmo += Quantity;
-}
-
-void UITWeaponManagerComponent::ServerRPC_ConsumeAmmo_Implementation(int32 Quantity)
-{
-	if (!GetOwner()->HasAuthority())
-	{
-		return;
-	}
-
-	ReserveAmmo -= Quantity;
-}
-
 void UITWeaponManagerComponent::EquipWeapon()
 {
 	UITItemInstance* WeaponToEquip = GetCurrentWeapon();
@@ -281,11 +260,6 @@ UITItemInstance* UITWeaponManagerComponent::GetCurrentWeapon() const
 	}
 
 	return nullptr;
-}
-
-int32 UITWeaponManagerComponent::GetReserveAmmo() const
-{
-	return ReserveAmmo;
 }
 
 void UITWeaponManagerComponent::SetCurrentWeaponType(ECurrentWeaponSlot InType)

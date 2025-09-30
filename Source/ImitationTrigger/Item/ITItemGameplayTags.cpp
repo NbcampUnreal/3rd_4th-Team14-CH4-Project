@@ -36,4 +36,8 @@ namespace ITItemGameplayTags
 	/* Weapon Ability Tag */
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Weapon_Cooldown, "Weapon.Cooldown", "총기 쿨타임");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Weapon_Damage, "Weapon.Damage", "총기 공격력");
+
+	/* Ammo GameplayEffect Tag */
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ammo_Reload, "Ammo.Reload", "재장전 이펙트");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ammo_Consume, "Ammo.Consume", "예비 탄약 소모");
 }

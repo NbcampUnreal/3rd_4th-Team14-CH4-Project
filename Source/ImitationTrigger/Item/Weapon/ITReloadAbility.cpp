@@ -32,14 +32,14 @@ bool UITReloadAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handl
 		return false;
 	}
 
-	UITWeaponManagerComponent* WeaponManagerComponent = PlayerState->GetITWeaponManagerComponent();
 	UITAbilitySystemComponent* AbilitySystemComponent = PlayerState->GetITAbilitySystemComponent();
-	if (!WeaponManagerComponent || !AbilitySystemComponent)
+	if (!AbilitySystemComponent)
 	{
 		return false;
 	}
 
-	if (WeaponManagerComponent->GetReserveAmmo() <= 0)
+	const float ReserveAmmo = AbilitySystemComponent->GetNumericAttribute(UITAmmoSet::GetReserveAmmoAttribute());
+	if (ReserveAmmo <= 0)
 	{
 		return false;
 	}
@@ -109,9 +109,8 @@ void UITReloadAbility::OnMontageCompleted()
 		return;
 	}
 
-	UITWeaponManagerComponent* WeaponManagerComponent = PlayerState->GetITWeaponManagerComponent();
 	UITAbilitySystemComponent* AbilitySystemComponent = PlayerState->GetITAbilitySystemComponent();
-	if (!WeaponManagerComponent || !AbilitySystemComponent)
+	if (!AbilitySystemComponent)
 	{
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 		return;
@@ -119,13 +118,23 @@ void UITReloadAbility::OnMontageCompleted()
 
 	const float Ammo = AbilitySystemComponent->GetNumericAttribute(UITAmmoSet::GetAmmoAttribute());
 	const float MaxAmmo = AbilitySystemComponent->GetNumericAttribute(UITAmmoSet::GetMaxAmmoAttribute());
+	const float ReserveAmmo = AbilitySystemComponent->GetNumericAttribute(UITAmmoSet::GetReserveAmmoAttribute());
 	const int32 NeededAmmo = FMath::FloorToInt(MaxAmmo - Ammo);
-	const int32 ReserveAmmo = WeaponManagerComponent->GetReserveAmmo();
-	const int32 AmmoToReload = FMath::Min(NeededAmmo, ReserveAmmo);
+	const int32 AmmoToReload = FMath::Min(NeededAmmo, FMath::FloorToInt(ReserveAmmo));
 
 	if (AmmoToReload > 0)
 	{
-		WeaponManagerComponent->ServerRPC_ConsumeAmmo(AmmoToReload);
+		if (ConsumeReserveAmmoEffectClass)
+		{
+			FGameplayEffectSpecHandle ConsumeSpecHandle = MakeOutgoingGameplayEffectSpec(ConsumeReserveAmmoEffectClass);
+			if (ConsumeSpecHandle.IsValid())
+			{
+				ConsumeSpecHandle.Data->SetSetByCallerMagnitude(
+					ITItemGameplayTags::Ammo_Consume,static_cast<float>(AmmoToReload) * -1.0f);
+				ApplyGameplayEffectSpecToOwner(
+					CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, ConsumeSpecHandle);
+			}
+		}
 
 		if (ReloadEffectClass)
 		{
@@ -133,7 +142,7 @@ void UITReloadAbility::OnMontageCompleted()
 			if (ReloadSpecHandle.IsValid())
 			{
 				ReloadSpecHandle.Data->SetSetByCallerMagnitude(
-					ITItemGameplayTags::Item_Ammo, static_cast<float>(AmmoToReload));
+					ITItemGameplayTags::Ammo_Reload, static_cast<float>(AmmoToReload));
 				ApplyGameplayEffectSpecToOwner(
 					CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, ReloadSpecHandle);
 			}

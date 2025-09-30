@@ -7,6 +7,8 @@
 #include "Item/ITItemInstance.h"
 #include "Item/Weapon/ITItemDefinition_Weapon.h"
 #include "Item/Weapon/ITWeaponManagerComponent.h"
+#include "Engine/Engine.h"
+#include "Engine/GameViewportClient.h"
 
 
 AITBattlePlayerController::AITBattlePlayerController()
@@ -40,6 +42,10 @@ void AITBattlePlayerController::OnRep_PlayerState()
 
 	// 클라이언트에 PlayerState가 준비 되어야 HUD를 초기화할 수 있다.
 	InitWidgets();
+	FInputModeGameOnly Mode; 
+	SetInputMode(Mode); 
+	bShowMouseCursor = false;
+	
 }
 
 void AITBattlePlayerController::ToggleMapWidget()
@@ -217,3 +223,4 @@ void AITBattlePlayerController::OnSubWeaponUpdate(UITItemInstance* ItemInstance)
 		}
 	}
 }
+

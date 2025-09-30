@@ -1,13 +1,13 @@
-#include "ITMatchGameMode.h"
+#include "GameModes/ITBattleGameMode.h"
 #include "Engine/World.h"
 #include "Engine/Engine.h"
 
-AITMatchGameMode::AITMatchGameMode()
+AITBattleGameMode::AITBattleGameMode()
 {
 	bUseSeamlessTravel = false;
 }
 
-void AITMatchGameMode::BeginPlay()
+void AITBattleGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -16,7 +16,7 @@ void AITMatchGameMode::BeginPlay()
 	UE_LOG(LogTemp, Log, TEXT("Match up. Session=%s Expect=%d"), *CurrentSessionID, ExpectedPlayerCount);
 }
 
-void AITMatchGameMode::PostLogin(APlayerController* NewPlayer)
+void AITBattleGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 
@@ -26,7 +26,7 @@ void AITMatchGameMode::PostLogin(APlayerController* NewPlayer)
 	StartMatchWhenReady();
 }
 
-void AITMatchGameMode::ExtractSessionInfoFromURL()
+void AITBattleGameMode::ExtractSessionInfoFromURL()
 {
 	const FString URL = GetWorld() ? GetWorld()->URL.ToString() : FString();
 
@@ -63,7 +63,7 @@ void AITMatchGameMode::ExtractSessionInfoFromURL()
 	}
 }
 
-void AITMatchGameMode::StartMatchWhenReady()
+void AITBattleGameMode::StartMatchWhenReady()
 {
 	if (ExpectedPlayerCount <= 0) return;
 

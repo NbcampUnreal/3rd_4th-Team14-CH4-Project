@@ -42,8 +42,5 @@ protected:
 	TSubclassOf<UGameplayEffect> ReloadEffectClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "IT|Reload")
-	TSubclassOf<UGameplayEffect> ConsumeReserveAmmoEffectClass;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "IT|Reload")
 	TObjectPtr<UAnimMontage> ReloadMontage;
 };

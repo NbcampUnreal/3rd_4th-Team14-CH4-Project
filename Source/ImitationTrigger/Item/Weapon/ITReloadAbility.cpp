@@ -2,11 +2,14 @@
 
 
 #include "ITReloadAbility.h"
+
+#include "ITItemDefinition_Weapon.h"
 #include "ITWeaponManagerComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "AbilitySystem/ITAbilitySystemComponent.h"
 #include "AbilitySystem/Attributes/ITAmmoSet.h"
 #include "Item/ITItemGameplayTags.h"
+#include "Item/ITItemInstance.h"
 #include "Player/ITPlayerState.h"
 
 UITReloadAbility::UITReloadAbility()
@@ -33,12 +36,34 @@ bool UITReloadAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handl
 	}
 
 	UITAbilitySystemComponent* AbilitySystemComponent = PlayerState->GetITAbilitySystemComponent();
-	if (!AbilitySystemComponent)
+	UITWeaponManagerComponent* WeaponManagerComponent = PlayerState->GetITWeaponManagerComponent();
+	if (!AbilitySystemComponent || !WeaponManagerComponent)
 	{
 		return false;
 	}
 
-	const float ReserveAmmo = AbilitySystemComponent->GetNumericAttribute(UITAmmoSet::GetReserveAmmoAttribute());
+	UITItemInstance* ItemInstance = WeaponManagerComponent->GetCurrentWeapon();
+	if (!ItemInstance)
+	{
+		return false;
+	}
+
+	UITItemDefinition* ItemDefinition = ItemInstance->GetItemDefinition();
+	if (!ItemDefinition)
+	{
+		return false;
+	}
+
+	float ReserveAmmo = 0.0f;
+	if (ItemDefinition->AmmoType == EAmmoType::NormalAmmo)
+	{
+		ReserveAmmo = AbilitySystemComponent->GetNumericAttribute(UITAmmoSet::GetNormalAmmoAttribute());
+	}
+	else if (ItemDefinition->AmmoType == EAmmoType::SpecialAmmo)
+	{
+		ReserveAmmo = AbilitySystemComponent->GetNumericAttribute(UITAmmoSet::GetSpecialAmmoAttribute());
+	}
+
 	if (ReserveAmmo <= 0)
 	{
 		return false;
@@ -110,30 +135,55 @@ void UITReloadAbility::OnMontageCompleted()
 	}
 
 	UITAbilitySystemComponent* AbilitySystemComponent = PlayerState->GetITAbilitySystemComponent();
-	if (!AbilitySystemComponent)
+	UITWeaponManagerComponent* WeaponManagerComponent = PlayerState->GetITWeaponManagerComponent();
+	if (!AbilitySystemComponent || !WeaponManagerComponent)
 	{
-		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 		return;
+	}
+
+
+	UITItemInstance* ItemInstance = WeaponManagerComponent->GetCurrentWeapon();
+	if (!ItemInstance)
+	{
+		return;
+	}
+
+	UITItemDefinition* ItemDefinition = ItemInstance->GetItemDefinition();
+	if (!ItemDefinition)
+	{
+		return;
+	}
+
+	float ReserveAmmo = 0.0f;
+	if (ItemDefinition->AmmoType == EAmmoType::NormalAmmo)
+	{
+		ReserveAmmo = AbilitySystemComponent->GetNumericAttribute(UITAmmoSet::GetNormalAmmoAttribute());
+	}
+	else if (ItemDefinition->AmmoType == EAmmoType::SpecialAmmo)
+	{
+		ReserveAmmo = AbilitySystemComponent->GetNumericAttribute(UITAmmoSet::GetSpecialAmmoAttribute());
 	}
 
 	const float Ammo = AbilitySystemComponent->GetNumericAttribute(UITAmmoSet::GetAmmoAttribute());
 	const float MaxAmmo = AbilitySystemComponent->GetNumericAttribute(UITAmmoSet::GetMaxAmmoAttribute());
-	const float ReserveAmmo = AbilitySystemComponent->GetNumericAttribute(UITAmmoSet::GetReserveAmmoAttribute());
 	const int32 NeededAmmo = FMath::FloorToInt(MaxAmmo - Ammo);
 	const int32 AmmoToReload = FMath::Min(NeededAmmo, FMath::FloorToInt(ReserveAmmo));
 
 	if (AmmoToReload > 0)
 	{
-		if (ConsumeReserveAmmoEffectClass)
+		if (ItemDefinition->AmmoType == EAmmoType::NormalAmmo)
 		{
-			FGameplayEffectSpecHandle ConsumeSpecHandle = MakeOutgoingGameplayEffectSpec(ConsumeReserveAmmoEffectClass);
-			if (ConsumeSpecHandle.IsValid())
-			{
-				ConsumeSpecHandle.Data->SetSetByCallerMagnitude(
-					ITItemGameplayTags::Ammo_Consume,static_cast<float>(AmmoToReload) * -1.0f);
-				ApplyGameplayEffectSpecToOwner(
-					CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, ConsumeSpecHandle);
-			}
+			const float CurrentNormalAmmo
+				= AbilitySystemComponent->GetNumericAttribute(UITAmmoSet::GetNormalAmmoAttribute());
+			AbilitySystemComponent->SetNumericAttributeBase(
+				UITAmmoSet::GetNormalAmmoAttribute(), CurrentNormalAmmo - AmmoToReload);
+		}
+		else if (ItemDefinition->AmmoType == EAmmoType::SpecialAmmo)
+		{
+			const float CurrentSpecialAmmo
+				= AbilitySystemComponent->GetNumericAttribute(UITAmmoSet::GetSpecialAmmoAttribute());
+			AbilitySystemComponent->SetNumericAttributeBase(
+				UITAmmoSet::GetSpecialAmmoAttribute(), CurrentSpecialAmmo - AmmoToReload);
 		}
 
 		if (ReloadEffectClass)

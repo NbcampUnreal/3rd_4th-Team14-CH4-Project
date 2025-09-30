@@ -3,7 +3,10 @@
 
 #include "ITItemActor.h"
 #include "ITItemDefinition.h"
+#include "ITItemGameplayTags.h"
 #include "ITItemInstance.h"
+#include "AbilitySystem/ITAbilitySystemComponent.h"
+#include "AbilitySystem/Attributes/ITAmmoSet.h"
 #include "Character/ITCharacter.h"
 #include "Components/SphereComponent.h"
 #include "Net/UnrealNetwork.h"
@@ -66,11 +69,43 @@ void AITItemActor::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AAc
 		{
 			if (AITPlayerState* PlayerState = Player->GetITPlayerState())
 			{
-				if (UITWeaponManagerComponent* WeaponManagerComponent = PlayerState->GetITWeaponManagerComponent())
+				if (ItemInstance->ItemDefinition->ItemTags.HasTag(ITItemGameplayTags::Item_Weapon))
 				{
-					ItemInstance->Rename(nullptr, PlayerState);
-					WeaponManagerComponent->ServerRPC_PickupWeapon(ItemInstance);
-					Destroy();
+					if (UITWeaponManagerComponent* WeaponManagerComponent = PlayerState->GetITWeaponManagerComponent())
+					{
+						if (WeaponManagerComponent->GetMainWeaponInstance()
+							&& WeaponManagerComponent->GetSubWeaponInstance())
+						{
+							return;
+						}
+						ItemInstance->Rename(nullptr, PlayerState);
+						WeaponManagerComponent->ServerRPC_PickupWeapon(ItemInstance);
+						Destroy();
+					}
+				}
+				else if (ItemInstance->ItemDefinition->ItemTags.HasTag(ITItemGameplayTags::Item_Ammo))
+				{
+					if (UITAbilitySystemComponent* ASC = PlayerState->GetITAbilitySystemComponent())
+					{
+						if (UITItemDefinition* ItemDefinition = ItemInstance->GetItemDefinition())
+						{
+							float CurrentReserveAmmo = 0.0f;
+							if (ItemDefinition->AmmoType == EAmmoType::NormalAmmo)
+							{
+								CurrentReserveAmmo = ASC->GetNumericAttribute(UITAmmoSet::GetNormalAmmoAttribute());
+								ASC->SetNumericAttributeBase(
+									UITAmmoSet::GetNormalAmmoAttribute(), CurrentReserveAmmo + PlacedItemQuantity);
+								Destroy();
+							}
+							else if (ItemDefinition->AmmoType == EAmmoType::SpecialAmmo)
+							{
+								CurrentReserveAmmo = ASC->GetNumericAttribute(UITAmmoSet::GetSpecialAmmoAttribute());
+								ASC->SetNumericAttributeBase(
+									UITAmmoSet::GetSpecialAmmoAttribute(), CurrentReserveAmmo + PlacedItemQuantity);
+								Destroy();
+							}
+						}
+					}
 				}
 			}
 		}

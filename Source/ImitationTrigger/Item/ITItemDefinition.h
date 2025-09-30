@@ -9,6 +9,13 @@
 
 class UITItemFragment;
 
+UENUM(BlueprintType)
+enum class EAmmoType : uint8
+{
+	NormalAmmo,
+	SpecialAmmo
+};
+
 UCLASS(Blueprintable, BlueprintType, Const)
 class IMITATIONTRIGGER_API UITItemDefinition : public UDataAsset
 {
@@ -32,6 +39,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item|Appearance")
 	TArray<TObjectPtr<UMaterialInterface>> ItemMaterial;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+	EAmmoType AmmoType = EAmmoType::NormalAmmo;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = "Item|Fragment")
 	TArray<TObjectPtr<UITItemFragment>> Fragments;

@@ -4,8 +4,11 @@
 #include "Character/ITPawnData.h"
 #include "Item/Weapon/ITWeaponManagerComponent.h"
 #include "AbilitySystem/Attributes/ITHealthSet.h"
+#include "AbilitySystem/Attributes/ITAmmoSet.h"
 #include "AbilitySystem/Attributes/ITAttributeTableRow.h"
 #include "AbilitySystem/ITAbilitySystemComponent.h"
+#include "Engine/ActorChannel.h"
+#include "Item/ITItemInstance.h"
 
 
 AITPlayerState::AITPlayerState(const FObjectInitializer& ObjectInitializer)
@@ -22,6 +25,7 @@ AITPlayerState::AITPlayerState(const FObjectInitializer& ObjectInitializer)
 	SetNetUpdateFrequency(100.0f);
 
 	HealthSet = CreateDefaultSubobject<UITHealthSet>(TEXT("HealthSet"));
+	AmmoSet = CreateDefaultSubobject<UITAmmoSet>(TEXT("AmmoSet"));
 
 	// PlayerState와 Pawn(Chracter)가 모두 준비되었을 때 호출되는 Delegate
 	OnPawnSet.AddDynamic(this, &ThisClass::OnReadyPawnData);
@@ -63,6 +67,29 @@ AITCharacter* AITPlayerState::GetITCharacter() const
 UAbilitySystemComponent* AITPlayerState::GetAbilitySystemComponent() const
 {
 	return GetITAbilitySystemComponent();
+}
+
+bool AITPlayerState::ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch,
+	FReplicationFlags* RepFlags)
+{
+	bool bWroteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
+
+	if (WeaponManagerComponent)
+	{
+		UITItemInstance* MainWeapon = WeaponManagerComponent->GetMainWeaponInstance();
+		if (IsValid(MainWeapon))
+		{
+			bWroteSomething |= Channel->ReplicateSubobject(MainWeapon, *Bunch, *RepFlags);
+		}
+
+		UITItemInstance* SubWeapon = WeaponManagerComponent->GetSubWeaponInstance();
+		if (IsValid(SubWeapon))
+		{
+			bWroteSomething |= Channel->ReplicateSubobject(SubWeapon, *Bunch, *RepFlags);
+		}
+	}
+
+	return bWroteSomething;
 }
 
 void AITPlayerState::OnReadyPawnData(APlayerState* Player, APawn* NewPawn, APawn* OldPawn)

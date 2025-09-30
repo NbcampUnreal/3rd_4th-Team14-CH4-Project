@@ -12,6 +12,7 @@ class UITItemFragment;
 UENUM(BlueprintType)
 enum class EAmmoType : uint8
 {
+	None,
 	NormalAmmo,
 	SpecialAmmo
 };
@@ -41,7 +42,7 @@ public:
 	TArray<TObjectPtr<UMaterialInterface>> ItemMaterial;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
-	EAmmoType AmmoType = EAmmoType::NormalAmmo;
+	EAmmoType AmmoType = EAmmoType::None;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = "Item|Fragment")
 	TArray<TObjectPtr<UITItemFragment>> Fragments;

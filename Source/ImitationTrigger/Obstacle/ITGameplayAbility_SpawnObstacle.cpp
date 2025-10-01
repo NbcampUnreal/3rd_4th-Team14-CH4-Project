@@ -81,8 +81,6 @@ void UITGameplayAbility_SpawnObstacle::SpawnObstacleActors(const FGameplayAbilit
             }
         }
 
-        // SpawnOffset º¸Á¤
-        SpawnOffset.Z += 50.f;
     }
 }
 

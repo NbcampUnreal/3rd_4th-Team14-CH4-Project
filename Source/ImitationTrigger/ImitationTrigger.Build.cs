@@ -23,7 +23,9 @@ public class ImitationTrigger : ModuleRules
 
 			// Network
 			"NetCore",
-		});
+			// Niagara
+            "Niagara",
+        });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

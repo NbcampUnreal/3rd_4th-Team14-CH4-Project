@@ -153,7 +153,7 @@ void AITPlayerState::OnHealthChanged(const FOnAttributeChangeData& Data)
 			{
 				if (IsValid(ITCharacter))
 				{
-					ITCharacter->OnDead();
+					ITCharacter->MulticastRPC_OnDead();
 				}
 			}
 		}

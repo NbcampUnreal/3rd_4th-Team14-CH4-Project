@@ -7,6 +7,7 @@
 #include "Cosmetics/ITCharacterPartComponent.h"
 #include "Cosmetics/ITCharacterAnimComponent.h"
 #include "AbilitySystem/ITAbilitySystemComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Net/UnrealNetwork.h"
 
 AITCharacter::AITCharacter()
@@ -141,15 +142,26 @@ UITCharacterAnimComponent* AITCharacter::GetITCharacterAnimComponent()
 	return AnimComponent;
 }
 
-void AITCharacter::OnDead()
+void AITCharacter::MulticastRPC_OnDead_Implementation()
 {
 	if (HasAuthority())
 	{
-		// TODO 여기서부터
-		// 랙돌 개체를 그냥 생성해버릴까
+		SetLifeSpan(3.0f);
 
-		SetLifeSpan(5.0f);
+		UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
+		if (IsValid(MovementComponent))
+		{
+			MovementComponent->DisableMovement();
+		}
 
+		APlayerController* PC = Cast<APlayerController>(GetController());
+		if (IsValid(PC))
+		{
+			DisableInput(PC);
+		}
+	}
+	else
+	{
 		TArray<UChildActorComponent*> ChildActorComponents;
 		GetComponents<UChildActorComponent>(ChildActorComponents);
 		for (UChildActorComponent* ChildActorComponent : ChildActorComponents)
@@ -165,11 +177,6 @@ void AITCharacter::OnDead()
 					MeshComponent->SetCollisionProfileName(FName(TEXT("Ragdoll")));
 				}
 			}
-		}
-		AITPlayerController* PlayerController = GetITPlayerController();
-		if (IsValid(PlayerController))
-		{
-			//PlayerController->UnPossess();
 		}
 	}
 }

@@ -56,7 +56,8 @@ public:
 	UITCharacterPartComponent* GetITCharacterPartComponent();
 	UITCharacterAnimComponent* GetITCharacterAnimComponent();
 
-	void OnDead();
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRPC_OnDead();
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Replicated, Category = "PawnData")

@@ -162,6 +162,13 @@ void AITCharacter::MulticastRPC_OnDead_Implementation()
 	}
 	else
 	{
+		USkeletalMeshComponent* RootMeshComponent = GetMesh();
+		if (IsValid(RootMeshComponent))
+		{
+			RootMeshComponent->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
+			RootMeshComponent->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+		}
+
 		TArray<UChildActorComponent*> ChildActorComponents;
 		GetComponents<UChildActorComponent>(ChildActorComponents);
 		for (UChildActorComponent* ChildActorComponent : ChildActorComponents)
@@ -173,8 +180,13 @@ void AITCharacter::MulticastRPC_OnDead_Implementation()
 				{
 					USkeletalMeshComponent* MeshComponent = ChildActor->FindComponentByClass<USkeletalMeshComponent>();
 
-					MeshComponent->SetSimulatePhysics(true);
-					MeshComponent->SetCollisionProfileName(FName(TEXT("Ragdoll")));
+					if (IsValid(MeshComponent))
+					{
+						MeshComponent->SetSimulatePhysics(true);
+						MeshComponent->SetCollisionProfileName(FName(TEXT("Ragdoll")));
+						MeshComponent->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
+						MeshComponent->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+					}
 				}
 			}
 		}

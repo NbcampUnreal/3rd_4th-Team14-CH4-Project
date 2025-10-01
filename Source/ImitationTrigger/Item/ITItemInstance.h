@@ -32,4 +32,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "Item")
 	int32 ItemQuantity = 0;
+
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = "Item")
+	int32 CurrentAmmo = 0;
 };

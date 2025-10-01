@@ -6,6 +6,7 @@
 
 class UEditableTextBox;
 class UButton;
+class UTextBlock;
 
 UCLASS()
 class IMITATIONTRIGGER_API UITTitleWidget : public UUserWidget
@@ -14,6 +15,11 @@ class IMITATIONTRIGGER_API UITTitleWidget : public UUserWidget
 
 public:
 	virtual void NativeConstruct() override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+
+	// 매칭 상태 업데이트 (PlayerController에서 호출)
+	UFUNCTION(BlueprintCallable)
+	void UpdateMatchmakingState(bool bIsInQueue);
 
 protected:
 	UPROPERTY(meta = (BindWidget), BlueprintReadWrite)
@@ -24,6 +30,9 @@ protected:
 	UButton* ExitButton;
 	UPROPERTY(meta = (BindWidget), BlueprintReadWrite)
 	UButton* StartButton;
+
+	UPROPERTY(meta = (BindWidget), BlueprintReadWrite)
+	UTextBlock* StartButtonText;
 
 
 
@@ -36,5 +45,11 @@ protected:
 	UFUNCTION()
 	void OnStartClicked();
 
+private:
+	// 현재 매칭 상태
+	bool bIsInMatchmakingQueue = false;
+
+	// UI 업데이트
+	void UpdateStartButtonAppearance();
 
 };

@@ -4,7 +4,7 @@
 
 AITMatchGameMode::AITMatchGameMode()
 {
-	bUseSeamlessTravel = false; // 간단화 [file:20]
+	bUseSeamlessTravel = false;
 }
 
 void AITMatchGameMode::BeginPlay()
@@ -28,7 +28,7 @@ void AITMatchGameMode::PostLogin(APlayerController* NewPlayer)
 
 void AITMatchGameMode::ExtractSessionInfoFromURL()
 {
-	const FString URL = GetWorld() ? GetWorld()->URL.ToString() : FString(); // [file:20]
+	const FString URL = GetWorld() ? GetWorld()->URL.ToString() : FString();
 
 	// SessionID
 	{
@@ -59,7 +59,7 @@ void AITMatchGameMode::ExtractSessionInfoFromURL()
 
 	if (ExpectedPlayerCount <= 0)
 	{
-		ExpectedPlayerCount = 2; // 기본 안전값 [file:2]
+		ExpectedPlayerCount = 2; // 기본 안전값
 	}
 }
 

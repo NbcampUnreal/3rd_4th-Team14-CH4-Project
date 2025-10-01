@@ -113,19 +113,30 @@ void AITLobbyGameMode::JoinMatchmakingQueue(APlayerController* PC)
 	if (!PC) return;
 
 #if WITH_EDITOR
-	// ⭐ 에디터 환경: 즉시 게임 맵으로 이동 (매칭 없음)
+	// 에디터 환경: 즉시 게임 맵으로 이동 (매칭 없음)
 	UE_LOG(LogTemp, Warning, TEXT("EDITOR MODE: Directly traveling to %s"), *MatchMap);
 	// PC->ClientTravel(MatchMap, TRAVEL_Absolute); // 바로 ThirdPersonMap으로 이동
 	GetWorld()->ServerTravel(MatchMap); //에디터 테스트 시에는 서버 트래블로 로컬에 join한 모든 클라 한번에 이동.
 	return;
 #else
-	// ⭐ 패키징 환경: 기존 매칭 로직 실행
+
+	// 큐 정리 (끊어진 연결 제거)
+	CleanupMatchmakingQueue();
+
+	// 이미 큐에 있는지 확인 (중복 방지)
+	if (MatchmakingQueue.Contains(PC))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Player %s is already in queue"), *PC->GetName());
+		return;
+	}
+
+	// 패키징 환경: 기존 매칭 로직 실행
 	MatchmakingQueue.AddUnique(PC);
 
 	UE_LOG(LogTemp, Warning, TEXT("Player joined queue: %s (%d/%d)"),
 		*PC->GetName(), MatchmakingQueue.Num(), MinPlayersToStart);
 
-	// 자동 매칭 체크 추가
+	// 자동 매칭 체크
 	if (MatchmakingQueue.Num() >= MinPlayersToStart)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Starting matchmaking automatically"));
@@ -140,7 +151,44 @@ void AITLobbyGameMode::LeaveMatchmakingQueue(APlayerController* PC)
 
 #if !WITH_EDITOR
 	// 패키징 환경에서만 실행
-	MatchmakingQueue.Remove(PC);
+	//MatchmakingQueue.Remove(PC);
+
+	// 큐에서 해당 플레이어 제거
+	int32 RemovedCount = MatchmakingQueue.RemoveAll([PC](const TWeakObjectPtr<APlayerController>& WeakPC)
+		{
+			return WeakPC.Get() == PC || !WeakPC.IsValid();
+		});
+
+	if (RemovedCount > 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Removed player from queue: %s (Remaining: %d/%d)"),
+			*PC->GetName(), MatchmakingQueue.Num(), MinPlayersToStart);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Player %s was not in queue"), *PC->GetName());
+	}
+#endif
+}
+
+// 새로운 함수: 큐 정리 (끊어진 연결 제거)
+void AITLobbyGameMode::CleanupMatchmakingQueue()
+{
+#if !WITH_EDITOR
+	int32 OriginalCount = MatchmakingQueue.Num();
+
+	// 유효하지 않은 플레이어 제거
+	MatchmakingQueue.RemoveAll([](const TWeakObjectPtr<APlayerController>& WeakPC)
+		{
+			return !WeakPC.IsValid();
+		});
+
+	int32 CleanedCount = OriginalCount - MatchmakingQueue.Num();
+	if (CleanedCount > 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Cleaned up %d invalid players from queue (Remaining: %d)"),
+			CleanedCount, MatchmakingQueue.Num());
+	}
 #endif
 }
 

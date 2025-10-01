@@ -14,6 +14,7 @@
 #include "KillNotify/KillNotifyWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "PlayerBar/PlayerBarWidget.h"
+#include "SkillSlot/SkillWidget.h"
 #include "UltimateGauge/UltimateGaugeWidget.h"
 #include "WeaponSlot/WeaponSlotNumberWidget.h"
 #include "WeaponSlot/WeaponSlotWidget.h"
@@ -146,6 +147,14 @@ void UHUDWidget::HasWeapon(bool bHasWeapon)
 	if (AmmoWidget)
 	{
 		AmmoWidget->HasWeapon(bHasWeapon);
+	}
+}
+
+void UHUDWidget::OnSkill(float CoolDown)
+{
+	if (SkillSlotWidget)
+	{
+		SkillSlotWidget->OnSkill(CoolDown);
 	}
 }
 

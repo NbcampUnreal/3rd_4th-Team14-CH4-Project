@@ -64,6 +64,12 @@ public:
 	const FITForbiddenRoundInfo& GetCurrentRoundInfo() const;
 	const FITForbiddenRoundInfo& GetNextRoundInfo() const;
 
+	UFUNCTION(BlueprintCallable)
+	const FVector GetNextCenterPosition() const { return NextCenterPosition; }
+
+	UFUNCTION(BlueprintCallable)
+	const float GetNextRadiusScale() const { return NextRadiusScale; }
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UStaticMeshComponent> AreaMesh;
 

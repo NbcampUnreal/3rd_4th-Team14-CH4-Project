@@ -23,6 +23,8 @@ void AITForbiddenArea::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
 	DOREPLIFETIME(ThisClass, Round);
 	DOREPLIFETIME(ThisClass, bIsProgressing);
+	DOREPLIFETIME(ThisClass, NextCenterPosition);
+	DOREPLIFETIME(ThisClass, NextRadiusScale);
 }
 
 void AITForbiddenArea::Tick(float DeltaTime)

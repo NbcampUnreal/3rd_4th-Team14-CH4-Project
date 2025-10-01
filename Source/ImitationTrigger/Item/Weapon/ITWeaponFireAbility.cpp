@@ -79,6 +79,10 @@ void UITWeaponFireAbility::ApplyCooldown(const FGameplayAbilitySpecHandle Handle
 
 void UITWeaponFireAbility::Fire(const FVector& StartLocation, const FVector& FireDirection)
 {
+	if (AITCharacter* Character = Cast<AITCharacter>(GetAvatarActorFromActorInfo()))
+	{
+		Character->Multicast_PlayFireEffects(ReboundAnimMontage, FireAnimMontage, MatchedSkeleton);
+	}
 }
 
 void UITWeaponFireAbility::ApplyWeaponDamage(AActor* TargetActor)

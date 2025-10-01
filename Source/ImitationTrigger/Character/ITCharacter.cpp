@@ -19,6 +19,38 @@ AITCharacter::AITCharacter()
 	CameraComponent->SetRelativeLocation(FVector(-300.0f, 0.0f, 75.0f));
 }
 
+void AITCharacter::Multicast_PlayFireEffects_Implementation(
+	UAnimMontage* ReboundAnimMontage, UAnimMontage* FireAnimMontage, USkeleton* MatchedSkeleton)
+{
+	if (!ReboundAnimMontage || !FireAnimMontage || !MatchedSkeleton)
+	{
+		return;
+	}
+
+	PlayAnimMontage(ReboundAnimMontage);
+
+	TArray<UChildActorComponent*> ChildActorComponents;
+	GetComponents<UChildActorComponent>(ChildActorComponents);
+	for (UChildActorComponent* ChildActorComponent : ChildActorComponents)
+	{
+		if (ChildActorComponent && ChildActorComponent->GetChildActor())
+		{
+			USkeletalMeshComponent* WeaponSkeletalMeshComponent
+				= ChildActorComponent->GetChildActor()->FindComponentByClass<USkeletalMeshComponent>();
+
+			if (WeaponSkeletalMeshComponent && WeaponSkeletalMeshComponent->GetSkeletalMeshAsset())
+			{
+				if (WeaponSkeletalMeshComponent->GetSkeletalMeshAsset()->GetSkeleton() == MatchedSkeleton)
+				{
+					// ABP 없이 바로 재생 가능, 하지만 기존의 몽타주를 그대로 사용
+					WeaponSkeletalMeshComponent->PlayAnimation(FireAnimMontage, false);
+					break;
+				}
+			}
+		}
+	}
+}
+
 
 AITPlayerController* AITCharacter::GetITPlayerController() const
 {

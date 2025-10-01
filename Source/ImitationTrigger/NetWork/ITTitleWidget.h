@@ -21,6 +21,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UpdateMatchmakingState(bool bIsInQueue);
 
+	// 현재 매칭 상태
+	UPROPERTY(BlueprintReadOnly)
+	bool bIsInMatchmakingQueue = false;
+
 protected:
 	UPROPERTY(meta = (BindWidget), BlueprintReadWrite)
 	UEditableTextBox* ServerIPEdit;
@@ -46,8 +50,6 @@ protected:
 	void OnStartClicked();
 
 private:
-	// 현재 매칭 상태
-	bool bIsInMatchmakingQueue = false;
 
 	// UI 업데이트
 	void UpdateStartButtonAppearance();

@@ -136,6 +136,9 @@ void AITTitlePlayerController::ServerRPC_JoinMatchmakingQueue_Implementation()
 		// LobbyGameMode인 경우 매칭 대기열에 추가
 		if (AITLobbyGameMode* GameMode = Cast<AITLobbyGameMode>(CurrentGameMode))
 		{
+			bIsInMatchmakingQueue = true;
+			ClientRPC_UpdateMatchmakingState(true);
+
 			GameMode->JoinMatchmakingQueue(this);
 			UE_LOG(LogTemp, Warning, TEXT("Successfully joined matchmaking queue"));
 		}
@@ -171,7 +174,7 @@ void AITTitlePlayerController::ServerRPC_LeaveMatchmakingQueue_Implementation()
 
 void AITTitlePlayerController::ClientRPC_UpdateMatchmakingState_Implementation(bool bIsInQueue)
 {
-	// ⭐ 클라이언트 상태 동기화
+	// 클라이언트 상태 동기화
 	bIsInMatchmakingQueue = bIsInQueue;
 
 	// UI에 상태 변경 알림

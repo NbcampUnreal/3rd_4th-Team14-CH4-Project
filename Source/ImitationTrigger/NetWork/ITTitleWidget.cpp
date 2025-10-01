@@ -22,7 +22,7 @@ void UITTitleWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
-	// 정기적으로 매칭 상태 확인 (1초마다)
+	// 1초마다 상태 동기화 확인
 	static float CheckTimer = 0.0f;
 	CheckTimer += InDeltaTime;
 
@@ -113,12 +113,13 @@ void UITTitleWidget::UpdateStartButtonAppearance()
 	{
 		if (bIsInMatchmakingQueue)
 		{
+			// 매칭 중: 빨간색 "Match Cancel"
 			StartButtonText->SetText(FText::FromString(TEXT("Match Cancel")));
-			// 버튼 색상도 변경(선택사항)
 			StartButton->SetBackgroundColor(FLinearColor::Red);
 		}
 		else
 		{
+			// 대기 중: 초록색 "Match Start"
 			StartButtonText->SetText(FText::FromString(TEXT("Match Start")));
 			StartButton->SetBackgroundColor(FLinearColor::Green);
 		}

@@ -6,9 +6,8 @@
 #include "Item/ITGameplayAbility_ItemBase.h"
 #include "ITGameplayAbility_SpawnMine.generated.h"
 
-/**
- * 
- */
+class UNiagaraSystem;
+
 UCLASS()
 class IMITATIONTRIGGER_API UITGameplayAbility_SpawnMine : public UITGameplayAbility_ItemBase
 {
@@ -16,6 +15,11 @@ class IMITATIONTRIGGER_API UITGameplayAbility_SpawnMine : public UITGameplayAbil
 	
 public:
     UITGameplayAbility_SpawnMine();
+
+protected:
+    //UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "VFX")
+    //UNiagaraSystem* 
+    
 
     virtual void ActivateAbility(
         const FGameplayAbilitySpecHandle Handle,

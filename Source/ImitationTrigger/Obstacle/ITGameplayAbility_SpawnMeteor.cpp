@@ -11,6 +11,9 @@ UITGameplayAbility_SpawnMeteor::UITGameplayAbility_SpawnMeteor()
 {
     InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
     NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted;
+
+    bHasPlayedMeteor = false;
+    bHasPlayedExplosion = false;
 }
 
 void UITGameplayAbility_SpawnMeteor::ActivateAbility(
@@ -56,3 +59,69 @@ void UITGameplayAbility_SpawnMeteor::ActivateAbility(
 
     EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }
+
+//void UITGameplayAbility_SpawnMeteor::ActivateAbility(
+//    const FGameplayAbilitySpecHandle Handle,
+//    const FGameplayAbilityActorInfo* ActorInfo,
+//    const FGameplayAbilityActivationInfo ActivationInfo,
+//    const FGameplayEventData* TriggerEventData)
+//{
+//    if (!ActorInfo || !ActorInfo->AvatarActor.IsValid())
+//    {
+//        EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+//        return;
+//    }
+//
+//    AActor* Avatar = ActorInfo->AvatarActor.Get();
+//    UWorld* World = Avatar->GetWorld();
+//    if (!World)
+//    {
+//        EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+//        return;
+//    }
+//
+//    FVector StartLoc = Avatar->GetActorLocation() + FVector(0, 0, SpawnHeight);
+//    FVector GroundLoc = Avatar->GetActorLocation();
+//
+//    // ===== Meteor 낙하 이펙트 (한 번만) =====
+//    if (!bHasPlayedMeteor && FallingMeteorVFX)
+//    {
+//        UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+//            World,
+//            FallingMeteorVFX,
+//            StartLoc,
+//            FRotator::ZeroRotator
+//        );
+//        bHasPlayedMeteor = true;
+//    }
+//
+//    // 착지 폭발 이펙트 (딜레이 후 한 번만) 
+//    if (!bHasPlayedExplosion && ImpactExplosionVFX)
+//    {
+//        // 안전하게 this, WeakObjectPtr 사용
+//        TWeakObjectPtr<UITGameplayAbility_SpawnMeteor> WeakThis(this);
+//
+//        FTimerHandle TimerHandle;
+//        World->GetTimerManager().SetTimer(
+//            TimerHandle,
+//            [World, GroundLoc, WeakThis]()
+//            {
+//                if (WeakThis.IsValid() && !WeakThis->bHasPlayedExplosion && WeakThis->ImpactExplosionVFX)
+//                {
+//                    UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+//                        World,
+//                        WeakThis->ImpactExplosionVFX,
+//                        GroundLoc,
+//                        FRotator::ZeroRotator
+//                    );
+//                    WeakThis->bHasPlayedExplosion = true;
+//                }
+//            },
+//            ImpactDelay,
+//            false
+//        );
+//    }
+//
+//  
+//    EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
+//}

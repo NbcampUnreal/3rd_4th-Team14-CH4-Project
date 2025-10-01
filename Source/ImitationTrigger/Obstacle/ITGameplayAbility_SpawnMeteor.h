@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -28,7 +26,10 @@ protected:
     float SpawnHeight = 800.f;          // 캐릭터 위 높이
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "VFX")
-    float ImpactDelay = 5.0f;           // 몇 초 뒤 폭발 FX 보여줄지 (Meteor 이동 시간)
+    float ImpactDelay = 5.0f;           // 몇 초 뒤 폭발 FX 보여줄지 : Meteor가 떨어지는 위치에서 마그마 생성 (Meteor 이동 시간)
+
+    bool bHasPlayedMeteor;
+    bool bHasPlayedExplosion;
 
 protected:
     virtual void ActivateAbility(

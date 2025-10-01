@@ -80,10 +80,14 @@ public:
 	int8 bIsProgressing;
 
 	FVector CenterPosition = FVector::ZeroVector;
+	float RadiusScale = 100.0f;
+
+	UPROPERTY(Replicated)
 	FVector NextCenterPosition = FVector::ZeroVector;
 
-	float RadiusScale = 100.0f;
+	UPROPERTY(Replicated)
 	float NextRadiusScale = 100.0f;
+
 	float OriginRadiusScale;
 	
 	UFUNCTION()

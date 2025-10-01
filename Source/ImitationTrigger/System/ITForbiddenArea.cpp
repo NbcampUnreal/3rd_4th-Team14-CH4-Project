@@ -148,9 +148,9 @@ void AITForbiddenArea::OnRoundEndTimer()
 	const FITForbiddenRoundInfo& CurrentRoundInfo = GetCurrentRoundInfo();
 	GetWorldTimerManager().SetTimer(AreaProgressTimer, this, &ThisClass::OnRoundStartTimer, CurrentRoundInfo.ProgressDuration, false);
 
-	const FITForbiddenRoundInfo& NextRoundInfo = GetNextRoundInfo();
-	NextCenterPosition = GenerateRandomCenterPosition();
-	NextRadiusScale = OriginRadiusScale * NextRoundInfo.AreaPercentage / 100.0f;
+	//const FITForbiddenRoundInfo& NextRoundInfo = GetNextRoundInfo();
+	//NextCenterPosition = GenerateRandomCenterPosition();
+	//NextRadiusScale = OriginRadiusScale * NextRoundInfo.AreaPercentage / 100.0f;
 
 	GetWorldTimerManager().SetTimer(AreaSyncTimer, this, &ThisClass::OnSyncTimer, SyncInterval, true);
 	OnSyncTimer();
@@ -174,6 +174,10 @@ void AITForbiddenArea::OnRoundStartTimer()
 	}
 	const FITForbiddenRoundInfo& CurrentRoundInfo = GetCurrentRoundInfo();
 	GetWorldTimerManager().SetTimer(AreaRoundWaitTimer, this, &ThisClass::OnRoundEndTimer, CurrentRoundInfo.WaitDuration, false);
+
+	const FITForbiddenRoundInfo& NextRoundInfo = GetNextRoundInfo();
+	NextCenterPosition = GenerateRandomCenterPosition();
+	NextRadiusScale = OriginRadiusScale * NextRoundInfo.AreaPercentage / 100.0f;
 
 	IT_LOG_ROLE(LogITNet, Log, TEXT("%d Round Start"), Round);
 }

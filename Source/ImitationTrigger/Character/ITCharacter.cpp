@@ -19,7 +19,7 @@ AITCharacter::AITCharacter()
 	CameraComponent->SetRelativeLocation(FVector(-300.0f, 0.0f, 75.0f));
 }
 
-void AITCharacter::Multicast_PlayFireEffects_Implementation(
+void AITCharacter::MulticastRPC_PlayFireEffects_Implementation(
 	UAnimMontage* ReboundAnimMontage, UAnimMontage* FireAnimMontage, USkeleton* MatchedSkeleton)
 {
 	if (!ReboundAnimMontage || !FireAnimMontage || !MatchedSkeleton)

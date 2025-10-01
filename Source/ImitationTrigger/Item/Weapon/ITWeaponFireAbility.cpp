@@ -81,7 +81,7 @@ void UITWeaponFireAbility::Fire(const FVector& StartLocation, const FVector& Fir
 {
 	if (AITCharacter* Character = Cast<AITCharacter>(GetAvatarActorFromActorInfo()))
 	{
-		Character->Multicast_PlayFireEffects(ReboundAnimMontage, FireAnimMontage, MatchedSkeleton);
+		Character->MulticastRPC_PlayFireEffects(ReboundAnimMontage, FireAnimMontage, MatchedSkeleton);
 	}
 }
 

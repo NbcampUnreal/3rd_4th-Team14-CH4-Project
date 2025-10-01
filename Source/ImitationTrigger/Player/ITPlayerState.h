@@ -14,6 +14,7 @@ class UITAbilitySystemComponent;
 class UITWeaponManagerComponent;
 class UITHealthSet;
 class UITAmmoSet;
+class UITCombatSet;
 struct FOnAttributeChangeData;
 
 UCLASS()
@@ -49,6 +50,9 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<const UITAmmoSet> AmmoSet;
+
+	UPROPERTY()
+	TObjectPtr<const UITCombatSet> CombatSet;
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "ITPlayerState|AbilitySystemComponent")

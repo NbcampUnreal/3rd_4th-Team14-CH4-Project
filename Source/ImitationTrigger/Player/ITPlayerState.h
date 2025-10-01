@@ -15,6 +15,7 @@ class UITWeaponManagerComponent;
 class UITHealthSet;
 class UITAmmoSet;
 class UITCombatSet;
+class UITPawnData;
 struct FOnAttributeChangeData;
 
 UCLASS()
@@ -42,6 +43,8 @@ public:
 	UITWeaponManagerComponent* GetITWeaponManagerComponent() const { return WeaponManagerComponent; }
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
+	const UITPawnData* GetPawnData() const;
 
 	UPROPERTY(Replicated)
 	bool bIsAlive;

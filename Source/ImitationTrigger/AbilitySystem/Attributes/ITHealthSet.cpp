@@ -1,8 +1,12 @@
 #include "AbilitySystem/Attributes/ITHealthSet.h"
 #include "AbilitySystem/Attributes/ITCombatSet.h"
 #include "Net/UnrealNetwork.h"
+#include "Character/ITPawnData.h"
 #include "Player/ITPlayerState.h"
 #include "Player/ITBattlePlayerController.h"
+#include "Item/Weapon/ITWeaponManagerComponent.h"
+#include "Item/ITItemInstance.h"
+#include "Item/Weapon/ITItemDefinition_Weapon.h"
 #include "GameModes/ITBattleGameMode.h"
 #include "AbilitySystem/ITAbilitySystemComponent.h"
 #include "GameplayEffectExtension.h"
@@ -209,22 +213,71 @@ void UITHealthSet::AccumulateDamageDealt(UAbilitySystemComponent* ASC, float Dam
 
 void UITHealthSet::NotifyKillToClients(AITBattlePlayerController* AttackerController, AITBattlePlayerController* TargetController)
 {
-	if (IsValid(AttackerController))
+	if (!IsValid(AttackerController))
 	{
-		// 각 Controller는 PlayerState에서 가져온 것이므로, ->PlayerState 는 항상 nullptr이 아님.
-		FText KillPlayerName = FText::FromString(AttackerController->PlayerState->GetPlayerName());
-		FText DiePlayerName = FText::FromString(TargetController->PlayerState->GetPlayerName());
-		AttackerController->ClientRPC_AddNotify(KillPlayerName, DiePlayerName);
+		return;
+	}
+	if (!IsValid(TargetController))
+	{
+		return;
+	}
 
-		if (AttackerController->GetWorld())
+	AITPlayerState* AttackerPlayerState = AttackerController->GetITPlayerState();;
+	AITPlayerState* TargetPlayerState = TargetController->GetITPlayerState();;
+
+	if (!IsValid(AttackerPlayerState))
+	{
+		return;
+	}
+	if (!IsValid(TargetPlayerState))
+	{
+		return;
+	}
+
+	FText KillPlayerName = FText::FromString(AttackerController->PlayerState->GetPlayerName());
+	FText DiePlayerName = FText::FromString(TargetController->PlayerState->GetPlayerName());
+
+	UTexture2D* KillCharacter = nullptr;
+	if (AttackerPlayerState->GetPawnData())
+	{
+		KillCharacter = AttackerPlayerState->GetPawnData()->Thumbnail;
+	}
+
+	UTexture2D* DieCharacter = nullptr;
+	if (TargetPlayerState->GetPawnData())
+	{
+		DieCharacter = TargetPlayerState->GetPawnData()->Thumbnail;
+	}
+
+	UTexture2D* KillWeapon = nullptr;
+	UITWeaponManagerComponent* WeaponManagerComponent = AttackerPlayerState->GetITWeaponManagerComponent();
+	if (IsValid(WeaponManagerComponent))
+	{
+		UITItemInstance* WeaponInstance = WeaponManagerComponent->GetCurrentWeapon();
+		if (IsValid(WeaponInstance))
 		{
-			AITBattleGameMode* BattleGameMode = AttackerController->GetWorld()->GetAuthGameMode<AITBattleGameMode>();
-			if (IsValid(BattleGameMode))
+			UITItemDefinition* WeaponDefinition = WeaponInstance->GetItemDefinition();
+			if (IsValid(WeaponDefinition))
 			{
-				const TArray<TObjectPtr<APlayerController>>& MatchPlayers = BattleGameMode->GetMatchPlayers();
-				for (APlayerController* MatchPlayer : MatchPlayers)
+				KillWeapon = WeaponDefinition->ItemIcon;
+			}
+		}
+	}
+
+	AttackerController->ClientRPC_AddNotify(KillPlayerName, DiePlayerName);
+
+	if (AttackerController->GetWorld())
+	{
+		AITBattleGameMode* BattleGameMode = AttackerController->GetWorld()->GetAuthGameMode<AITBattleGameMode>();
+		if (IsValid(BattleGameMode))
+		{
+			const TArray<TObjectPtr<APlayerController>>& MatchPlayers = BattleGameMode->GetMatchPlayers();
+			for (APlayerController* MatchPlayer : MatchPlayers)
+			{
+				AITBattlePlayerController* ITMatchPlayer = Cast<AITBattlePlayerController>(MatchPlayer);
+				if (IsValid(ITMatchPlayer))
 				{
-					//AttackerController->ClientRPC_AddKillLog();
+					ITMatchPlayer->ClientRPC_AddKillLog(KillCharacter, KillPlayerName, DieCharacter, DiePlayerName, KillWeapon);
 				}
 			}
 		}

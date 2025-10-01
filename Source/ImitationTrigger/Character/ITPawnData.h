@@ -11,6 +11,7 @@ class UITCameraMode;
 class UITAbilitySet;
 class UITInputConfig;
 class UDataTable;
+class UTexture2D;
 
 /**
  * Pawn을 정의하기 위한 속성(properties)를 가지고 있는 Data Asset
@@ -23,6 +24,10 @@ class IMITATIONTRIGGER_API UITPawnData : public UDataAsset
 
 public:
 	UITPawnData(const FObjectInitializer& ObjectInitializer);
+
+	// Character의 입력 설정
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "PawnData|Thumbnail")
+	TObjectPtr<UTexture2D> Thumbnail;
 
 	// Character에 부여할(grand) Ability 정보
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "PawnData|Abilities")

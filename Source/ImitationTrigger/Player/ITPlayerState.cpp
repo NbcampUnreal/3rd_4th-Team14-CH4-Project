@@ -81,6 +81,15 @@ UAbilitySystemComponent* AITPlayerState::GetAbilitySystemComponent() const
 	return GetITAbilitySystemComponent();
 }
 
+const UITPawnData* AITPlayerState::GetPawnData() const
+{
+	if (IsValid(GetITCharacter()))
+	{
+		return GetITCharacter()->GetPawnData();
+	}
+	return nullptr;
+}
+
 bool AITPlayerState::ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch,
 	FReplicationFlags* RepFlags)
 {

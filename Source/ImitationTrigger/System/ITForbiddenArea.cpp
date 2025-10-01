@@ -229,7 +229,7 @@ FVector AITForbiddenArea::GenerateRandomCenterPosition()
 	const FITForbiddenRoundInfo& NextRoundInfo = GetNextRoundInfo();
 	float Radius = GetActorScale().X * 100 / 2;
 	float NewRadius = Radius * NextRoundInfo.AreaPercentage / 100.0f;
-	float RandRange = Radius - NewRadius;
+	float RandRange = (Radius - NewRadius) / FMath::Sqrt(2.0f);
 	float RandomX = FMath::RandRange(CenterPosition.X - RandRange, CenterPosition.X + RandRange);
 	float RandomY = FMath::RandRange(CenterPosition.Y - RandRange, CenterPosition.Y + RandRange);
 	return FVector(RandomX, RandomY, CenterPosition.Z);

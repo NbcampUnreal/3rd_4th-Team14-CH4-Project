@@ -4,7 +4,7 @@
 #include "ITHealthSet.generated.h"
 
 struct FGameplayEffectSpec;
-
+class UAbilitySystemComponent;
 
 UCLASS()
 class IMITATIONTRIGGER_API UITHealthSet : public UITAttributeSet
@@ -56,7 +56,8 @@ protected:
 
 private:
 	float CalculateHeadshotDamage(float InDamage);
-	void ApplyDamage(float InDamage);
+	float ApplyDamageAndReturnRealDealtAmount(float InDamage);
+	void AccumulateDamageDealt(UAbilitySystemComponent* ASC, float DamageDealt);
 
 	// 현재 체력. 이 값이 0이 되면 캐릭터가 쓰러진다.
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Health, Category = "Attributes|Health", Meta = (AllowPrivateAccess = true))

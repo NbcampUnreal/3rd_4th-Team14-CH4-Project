@@ -79,6 +79,14 @@ void AITBattlePlayerController::HideMapWidget()
 	}
 }
 
+void AITBattlePlayerController::ClientRPC_OnFireAnimation_Implementation()
+{
+	if (IsValid(HUDWidget))
+	{
+		HUDWidget->OnFire();
+	}
+}
+
 void AITBattlePlayerController::ClientRPC_PlayHitMarkerAnimation_Implementation()
 {
 	if (IsValid(HUDWidget))

@@ -66,6 +66,7 @@ void UITWeaponFireAbility::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	ActorInfo->PlayerController->GetPlayerViewPoint(TraceStart, ViewRotation);
 	FVector TraceDirection = ViewRotation.Vector();
 
+	PlayClientHUDAnimationOnFire(AvatarActor);
 	Fire(TraceStart, TraceDirection);
 
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
@@ -136,7 +137,7 @@ void UITWeaponFireAbility::ApplyWeaponDamage(AActor* TargetActor)
 	}
 
 	AActor* AvaterActor = ActorInfo->AvatarActor.Get();
-	PlayClientHUDAnimation(AvaterActor, TargetActor);
+	PlayClientHUDAnimationOnHit(AvaterActor, TargetActor);
 }
 
 UITItemDefinition_Weapon* UITWeaponFireAbility::GetWeaponDefinition() const
@@ -157,7 +158,20 @@ UITItemDefinition_Weapon* UITWeaponFireAbility::GetWeaponDefinition() const
 	return WeaponDefinition;
 }
 
-void UITWeaponFireAbility::PlayClientHUDAnimation(AActor* Attacker, AActor* Target)
+void UITWeaponFireAbility::PlayClientHUDAnimationOnFire(AActor* Attacker)
+{
+	AITCharacter* ITAttacker = Cast<AITCharacter>(Attacker);
+	if (IsValid(ITAttacker))
+	{
+		AITBattlePlayerController* PlayerController = ITAttacker->GetController<AITBattlePlayerController>();
+		if (IsValid(PlayerController))
+		{
+			PlayerController->ClientRPC_OnFireAnimation();
+		}
+	}
+}
+
+void UITWeaponFireAbility::PlayClientHUDAnimationOnHit(AActor* Attacker, AActor* Target)
 {
 	AITCharacter* ITAttacker = Cast<AITCharacter>(Attacker);
 	AITCharacter* ITTarget = Cast<AITCharacter>(Target);

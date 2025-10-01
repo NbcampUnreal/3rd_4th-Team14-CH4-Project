@@ -40,6 +40,8 @@ public:
 	UFUNCTION(Client, Unreliable)
 	void ClientRPC_PlayKillMarkerAnimation();
 
+	UFUNCTION(Client, Unreliable)
+	void ClientRPC_OnFireAnimation();
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (AllowPrivateAccess = true))

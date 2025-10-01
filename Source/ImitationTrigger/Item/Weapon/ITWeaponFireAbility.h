@@ -50,5 +50,6 @@ protected:
 	TObjectPtr<USkeleton> MatchedSkeleton;
 
 private:
-	void PlayClientHUDAnimation(AActor* Attacker, AActor* Target);
+	void PlayClientHUDAnimationOnFire(AActor* Attacker);
+	void PlayClientHUDAnimationOnHit(AActor* Attacker, AActor* Target);
 };

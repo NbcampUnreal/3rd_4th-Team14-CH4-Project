@@ -43,9 +43,20 @@ void UITWeaponFireAbility_Hitscan::Fire(const FVector& TraceStart, const FVector
 				FGameplayCueParameters CueParams;
 				CueParams.Location = HitResult.ImpactPoint;
 				CueParams.Normal = HitResult.Normal;
-				ASC->ExecuteGameplayCue(ITItemGameplayTags::GameplayCue_Weapon_Hit, CueParams);
+				ASC->ExecuteGameplayCue(ITItemGameplayTags::GameplayCue_Weapon_Hit_Player, CueParams);
 			}
 		}
+		else
+		{
+			if (UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo())
+			{
+				FGameplayCueParameters CueParams;
+				CueParams.Location = HitResult.ImpactPoint;
+				CueParams.Normal = HitResult.Normal;
+				ASC->ExecuteGameplayCue(ITItemGameplayTags::GameplayCue_Weapon_Hit_Others, CueParams);
+			}
+		}
+		
 		ApplyWeaponDamage(HitResult.GetActor());
 	}
 }

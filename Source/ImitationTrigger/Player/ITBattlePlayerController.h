@@ -11,7 +11,6 @@ class UUserWidget;
 class UAbilitySystemComponent;
 class UITItemInstance;
 
-
 UCLASS()
 class IMITATIONTRIGGER_API AITBattlePlayerController : public AITPlayerController
 {
@@ -42,6 +41,12 @@ public:
 
 	UFUNCTION(Client, Unreliable)
 	void ClientRPC_OnFireAnimation();
+
+	UFUNCTION(Client, Reliable)
+	void ClientRPC_AddNotify(const FText& KillPlayer, const FText& DiePlayer);
+
+	UFUNCTION(Client, Reliable)
+	void ClientRPC_AddKillLog(UTexture2D* KillCharacter, const FText& KillName, UTexture2D* DieCharacter, const FText& DieName, UTexture2D* KillWeapon);
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (AllowPrivateAccess = true))

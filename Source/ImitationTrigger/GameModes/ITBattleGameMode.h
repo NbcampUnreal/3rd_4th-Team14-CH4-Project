@@ -11,10 +11,13 @@ class IMITATIONTRIGGER_API AITBattleGameMode : public AGameMode
 {
 	GENERATED_BODY()
 	
+public:
 	AITBattleGameMode();
 
 	virtual void BeginPlay() override;
 	virtual void PostLogin(APlayerController* NewPlayer) override;
+
+	const TArray<TObjectPtr<APlayerController>>& GetMatchPlayers() const { return MatchPlayers; }
 
 protected:
 	// 로비에서 URL로 넘겨주는 값

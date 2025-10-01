@@ -2,6 +2,8 @@
 #include "AbilitySystem/Attributes/ITCombatSet.h"
 #include "Net/UnrealNetwork.h"
 #include "Player/ITPlayerState.h"
+#include "Player/ITBattlePlayerController.h"
+#include "GameModes/ITBattleGameMode.h"
 #include "AbilitySystem/ITAbilitySystemComponent.h"
 #include "GameplayEffectExtension.h"
 
@@ -82,11 +84,27 @@ void UITHealthSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackDat
 
 	if (RealDealtAmount > 0)
 	{
-		AITPlayerState* ITPlayerState = Cast<AITPlayerState>(Instigator);
-		if (IsValid(ITPlayerState))
+		AITPlayerState* AttackerPlayerState = Cast<AITPlayerState>(Instigator);
+		if (IsValid(AttackerPlayerState))
 		{
-			UITAbilitySystemComponent* AttackerASC = ITPlayerState->GetITAbilitySystemComponent();
+			UAbilitySystemComponent* AttackerASC = AttackerPlayerState->GetAbilitySystemComponent();
 			AccumulateDamageDealt(AttackerASC, RealDealtAmount);
+
+			if (GetHealth() <= 0)
+			{
+				AITBattlePlayerController* AttackerController = Cast<AITBattlePlayerController>(AttackerPlayerState->GetOwningController());
+
+				AActor* TargetActor = Data.Target.GetOwnerActor();
+				if (IsValid(TargetActor))
+				{
+					AITPlayerState* TargetPlayerState = Cast<AITPlayerState>(TargetActor);
+					if (IsValid(TargetPlayerState))
+					{
+						AITBattlePlayerController* TargetController = Cast<AITBattlePlayerController>(TargetPlayerState->GetOwningController());
+						NotifyKillToClients(AttackerController, TargetController);
+					}
+				}
+			}
 		}
 	}
 
@@ -186,6 +204,30 @@ void UITHealthSet::AccumulateDamageDealt(UAbilitySystemComponent* ASC, float Dam
 		float OldValue = ASC->GetNumericAttribute(UITCombatSet::GetDamageDealtAttribute());
 		float NewValue = OldValue + DamageDealt;
 		ASC->SetNumericAttributeBase(UITCombatSet::GetDamageDealtAttribute(), NewValue);
+	}
+}
+
+void UITHealthSet::NotifyKillToClients(AITBattlePlayerController* AttackerController, AITBattlePlayerController* TargetController)
+{
+	if (IsValid(AttackerController))
+	{
+		// 각 Controller는 PlayerState에서 가져온 것이므로, ->PlayerState 는 항상 nullptr이 아님.
+		FText KillPlayerName = FText::FromString(AttackerController->PlayerState->GetPlayerName());
+		FText DiePlayerName = FText::FromString(TargetController->PlayerState->GetPlayerName());
+		AttackerController->ClientRPC_AddNotify(KillPlayerName, DiePlayerName);
+
+		if (AttackerController->GetWorld())
+		{
+			AITBattleGameMode* BattleGameMode = AttackerController->GetWorld()->GetAuthGameMode<AITBattleGameMode>();
+			if (IsValid(BattleGameMode))
+			{
+				const TArray<TObjectPtr<APlayerController>>& MatchPlayers = BattleGameMode->GetMatchPlayers();
+				for (APlayerController* MatchPlayer : MatchPlayers)
+				{
+					//AttackerController->ClientRPC_AddKillLog();
+				}
+			}
+		}
 	}
 }
 

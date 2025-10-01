@@ -5,6 +5,7 @@
 
 struct FGameplayEffectSpec;
 class UAbilitySystemComponent;
+class AITBattlePlayerController;
 
 UCLASS()
 class IMITATIONTRIGGER_API UITHealthSet : public UITAttributeSet
@@ -58,6 +59,7 @@ private:
 	float CalculateHeadshotDamage(float InDamage);
 	float ApplyDamageAndReturnRealDealtAmount(float InDamage);
 	void AccumulateDamageDealt(UAbilitySystemComponent* ASC, float DamageDealt);
+	void NotifyKillToClients(AITBattlePlayerController* AttackerController, AITBattlePlayerController* TargetController);
 
 	// 현재 체력. 이 값이 0이 되면 캐릭터가 쓰러진다.
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Health, Category = "Attributes|Health", Meta = (AllowPrivateAccess = true))

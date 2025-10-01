@@ -79,6 +79,22 @@ void AITBattlePlayerController::HideMapWidget()
 	}
 }
 
+void AITBattlePlayerController::ClientRPC_AddNotify_Implementation(const FText& KillPlayer, const FText& DiePlayer)
+{
+	if (IsValid(HUDWidget))
+	{
+		HUDWidget->AddNotifyText(KillPlayer, DiePlayer);
+	}
+}
+
+void AITBattlePlayerController::ClientRPC_AddKillLog_Implementation(UTexture2D* KillCharacter, const FText& KillName, UTexture2D* DieCharacter, const FText& DieName, UTexture2D* KillWeapon)
+{
+	if (IsValid(HUDWidget))
+	{
+		HUDWidget->AddKillLog(KillCharacter, KillName, DieCharacter, DieName, KillWeapon);
+	}
+}
+
 void AITBattlePlayerController::ClientRPC_OnFireAnimation_Implementation()
 {
 	if (IsValid(HUDWidget))

@@ -79,6 +79,22 @@ void AITBattlePlayerController::HideMapWidget()
 	}
 }
 
+void AITBattlePlayerController::ClientRPC_PlayHitMarkerAnimation_Implementation()
+{
+	if (IsValid(HUDWidget))
+	{
+		HUDWidget->PlayHitMarkerAnimation();
+	}
+}
+
+void AITBattlePlayerController::ClientRPC_PlayKillMarkerAnimation_Implementation()
+{
+	if (IsValid(HUDWidget))
+	{
+		HUDWidget->PlayKillMarkerAnimation();
+	}
+}
+
 void AITBattlePlayerController::InitWidgets()
 {
 	CreatePlayerWidgets();

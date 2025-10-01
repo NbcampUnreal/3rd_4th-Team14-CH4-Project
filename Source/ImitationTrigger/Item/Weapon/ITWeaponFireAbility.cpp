@@ -6,8 +6,10 @@
 #include "AbilitySystemComponent.h"
 #include "ITItemDefinition_Weapon.h"
 #include "Character/ITCharacter.h"
+#include "Player/ITBattlePlayerController.h"
 #include "Item/ITItemGameplayTags.h"
 #include "Item/ITItemInstance.h"
+#include "AbilitySystem/Attributes/ITHealthSet.h"
 
 UITWeaponFireAbility::UITWeaponFireAbility()
 {
@@ -124,6 +126,9 @@ void UITWeaponFireAbility::ApplyWeaponDamage(AActor* TargetActor)
 		                                DamageSpecHandle,
 		                                TargetDataHandle);
 	}
+
+	AActor* AvaterActor = ActorInfo->AvatarActor.Get();
+	PlayClientHUDAnimation(AvaterActor, TargetActor);
 }
 
 UITItemDefinition_Weapon* UITWeaponFireAbility::GetWeaponDefinition() const
@@ -142,4 +147,30 @@ UITItemDefinition_Weapon* UITWeaponFireAbility::GetWeaponDefinition() const
 
 	UITItemDefinition_Weapon* WeaponDefinition = Cast<UITItemDefinition_Weapon>(WeaponInstance->GetItemDefinition());
 	return WeaponDefinition;
+}
+
+void UITWeaponFireAbility::PlayClientHUDAnimation(AActor* Attacker, AActor* Target)
+{
+	AITCharacter* ITAttacker = Cast<AITCharacter>(Attacker);
+	AITCharacter* ITTarget = Cast<AITCharacter>(Target);
+	if (IsValid(ITAttacker) && IsValid(ITTarget))
+	{
+		AITBattlePlayerController* PlayerController = ITAttacker->GetController<AITBattlePlayerController>();
+		if (IsValid(PlayerController))
+		{
+			UAbilitySystemComponent* TargetASC = ITTarget->GetAbilitySystemComponent();
+			if (IsValid(TargetASC))
+			{
+				float RemainTargetHealth = TargetASC->GetNumericAttribute(UITHealthSet::GetHealthAttribute());
+				if (RemainTargetHealth > 0)
+				{
+					PlayerController->ClientRPC_PlayHitMarkerAnimation();
+				}
+				else
+				{
+					PlayerController->ClientRPC_PlayKillMarkerAnimation();
+				}
+			}
+		}
+	}
 }

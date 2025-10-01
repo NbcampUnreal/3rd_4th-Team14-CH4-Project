@@ -34,6 +34,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void HideMapWidget();
 
+	UFUNCTION(Client, Unreliable)
+	void ClientRPC_PlayHitMarkerAnimation();
+
+	UFUNCTION(Client, Unreliable)
+	void ClientRPC_PlayKillMarkerAnimation();
+
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (AllowPrivateAccess = true))

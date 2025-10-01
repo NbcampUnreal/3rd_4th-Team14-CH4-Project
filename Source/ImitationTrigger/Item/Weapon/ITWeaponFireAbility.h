@@ -48,6 +48,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "IT|Anim")
 	TObjectPtr<USkeleton> MatchedSkeleton;
+
 private:
 	void PlayClientHUDAnimation(AActor* Attacker, AActor* Target);
 };

@@ -27,6 +27,7 @@ public:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
 
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UFUNCTION(BlueprintCallable, Category = "ITPlayerState")
 	AITPlayerController* GetITPlayerController() const;
@@ -41,6 +42,9 @@ public:
 	UITWeaponManagerComponent* GetITWeaponManagerComponent() const { return WeaponManagerComponent; }
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
+	UPROPERTY(Replicated)
+	bool bIsAlive;
 
 protected:
 	virtual bool ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags) override;

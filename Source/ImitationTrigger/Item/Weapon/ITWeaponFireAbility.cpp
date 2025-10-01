@@ -7,6 +7,7 @@
 #include "ITItemDefinition_Weapon.h"
 #include "Character/ITCharacter.h"
 #include "Player/ITBattlePlayerController.h"
+#include "Player/ITPlayerState.h"
 #include "Item/ITItemGameplayTags.h"
 #include "Item/ITItemInstance.h"
 #include "AbilitySystem/Attributes/ITHealthSet.h"
@@ -90,6 +91,13 @@ void UITWeaponFireAbility::Fire(const FVector& StartLocation, const FVector& Fir
 void UITWeaponFireAbility::ApplyWeaponDamage(AActor* TargetActor)
 {
 	if (!TargetActor || !DamageEffect || !Cast<AITCharacter>(TargetActor))
+	{
+		return;
+	}
+
+	AITCharacter* ITCharacter = Cast<AITCharacter>(TargetActor);
+	AITPlayerState* ITPlayerState = ITCharacter->GetITPlayerState();
+	if (IsValid(ITPlayerState) && !ITPlayerState->bIsAlive)
 	{
 		return;
 	}

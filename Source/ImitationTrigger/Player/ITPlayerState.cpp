@@ -10,6 +10,7 @@
 #include "AbilitySystem/ITAbilitySystemComponent.h"
 #include "Engine/ActorChannel.h"
 #include "Item/ITItemInstance.h"
+#include "Net/UnrealNetwork.h"
 
 
 AITPlayerState::AITPlayerState(const FObjectInitializer& ObjectInitializer)
@@ -28,6 +29,8 @@ AITPlayerState::AITPlayerState(const FObjectInitializer& ObjectInitializer)
 	HealthSet = CreateDefaultSubobject<UITHealthSet>(TEXT("HealthSet"));
 	AmmoSet = CreateDefaultSubobject<UITAmmoSet>(TEXT("AmmoSet"));
 	CombatSet = CreateDefaultSubobject<UITCombatSet>(TEXT("CombatSet"));
+
+	bIsAlive = true;
 
 	// PlayerState와 Pawn(Chracter)가 모두 준비되었을 때 호출되는 Delegate
 	OnPawnSet.AddDynamic(this, &ThisClass::OnReadyPawnData);
@@ -54,6 +57,13 @@ void AITPlayerState::EndPlay(EEndPlayReason::Type EndPlayReason)
 			}
 		}
 	}
+}
+
+void AITPlayerState::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ThisClass, bIsAlive);
 }
 
 AITPlayerController* AITPlayerState::GetITPlayerController() const
@@ -153,6 +163,7 @@ void AITPlayerState::OnHealthChanged(const FOnAttributeChangeData& Data)
 			{
 				if (IsValid(ITCharacter))
 				{
+					bIsAlive = false;
 					ITCharacter->MulticastRPC_OnDead();
 				}
 			}

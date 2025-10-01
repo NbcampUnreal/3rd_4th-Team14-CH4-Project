@@ -141,6 +141,39 @@ UITCharacterAnimComponent* AITCharacter::GetITCharacterAnimComponent()
 	return AnimComponent;
 }
 
+void AITCharacter::OnDead()
+{
+	if (HasAuthority())
+	{
+		// TODO 여기서부터
+		// 랙돌 개체를 그냥 생성해버릴까
+
+		SetLifeSpan(5.0f);
+
+		TArray<UChildActorComponent*> ChildActorComponents;
+		GetComponents<UChildActorComponent>(ChildActorComponents);
+		for (UChildActorComponent* ChildActorComponent : ChildActorComponents)
+		{
+			if (IsValid(ChildActorComponent))
+			{
+				AActor* ChildActor = ChildActorComponent->GetChildActor();
+				if (IsValid(ChildActor))
+				{
+					USkeletalMeshComponent* MeshComponent = ChildActor->FindComponentByClass<USkeletalMeshComponent>();
+
+					MeshComponent->SetSimulatePhysics(true);
+					MeshComponent->SetCollisionProfileName(FName(TEXT("Ragdoll")));
+				}
+			}
+		}
+		AITPlayerController* PlayerController = GetITPlayerController();
+		if (IsValid(PlayerController))
+		{
+			//PlayerController->UnPossess();
+		}
+	}
+}
+
 void AITCharacter::AddInitCharacterPartsAtServer()
 {
 	UITCharacterPartComponent* PartComponent = GetITCharacterPartComponent();

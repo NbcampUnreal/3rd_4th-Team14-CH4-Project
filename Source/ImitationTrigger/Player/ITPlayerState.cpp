@@ -143,14 +143,19 @@ void AITPlayerState::BindAttributeDelegate()
 
 void AITPlayerState::OnHealthChanged(const FOnAttributeChangeData& Data)
 {
-	const float Health = Data.NewValue;
-	if (Health <= 0)
+	if (HasAuthority())
 	{
-		// TEMPORAL: 임시 사망 코드
-		// TODO: 기절(down) 등 구현
-		if (IsValid(GetPawn()))
+		AITCharacter* ITCharacter = GetITCharacter();
+		if (IsValid(ITCharacter))
 		{
-			GetPawn()->Destroy();
+			const float Health = Data.NewValue;
+			if (Health <= 0)
+			{
+				if (IsValid(ITCharacter))
+				{
+					ITCharacter->OnDead();
+				}
+			}
 		}
 	}
 }

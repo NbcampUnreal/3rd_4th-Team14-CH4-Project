@@ -56,6 +56,8 @@ public:
 	UITCharacterPartComponent* GetITCharacterPartComponent();
 	UITCharacterAnimComponent* GetITCharacterAnimComponent();
 
+	void OnDead();
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Replicated, Category = "PawnData")
 	TObjectPtr<const UITPawnData> PawnData;

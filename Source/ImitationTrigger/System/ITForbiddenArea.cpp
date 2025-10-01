@@ -214,8 +214,6 @@ void AITForbiddenArea::MulticastRPC_SyncArea_Implementation(FITSyncInfo SyncInfo
 
 void AITForbiddenArea::UpdateArea(const FVector& InCenterPosition, float InRadiusScale)
 {
-	IT_LOG_ROLE(LogITNet, Log, TEXT("InRadiusScale: %f"), InRadiusScale);
-
 	float ZScale = GetActorScale3D().Z;
 	FVector NewScale(InRadiusScale, InRadiusScale, ZScale);
 

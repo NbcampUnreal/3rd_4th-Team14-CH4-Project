@@ -14,11 +14,16 @@ void AITMinimapCapture::BeginPlay()
 	FCoreUObjectDelegates::PostLoadMapWithWorld.AddUObject(this, &ThisClass::OnMapLoaded);
 }
 
-void AITMinimapCapture::OnMapLoaded(UWorld* LoadedWorld)
+void AITMinimapCapture::CaptureOnce()
 {
 	USceneCaptureComponent2D* CaptureComponent2D = FindComponentByClass<USceneCaptureComponent2D>();
 	if (IsValid(CaptureComponent2D))
 	{
 		CaptureComponent2D->CaptureScene();
 	}
+}
+
+void AITMinimapCapture::OnMapLoaded(UWorld* LoadedWorld)
+{
+	CaptureOnce();
 }

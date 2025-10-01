@@ -130,7 +130,6 @@ void UITReloadAbility::OnMontageCompleted()
 	AITPlayerState* PlayerState = Cast<AITPlayerState>(ActorInfo->OwnerActor.Get());
 	if (!PlayerState || !PlayerState->HasAuthority())
 	{
-		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 		return;
 	}
 

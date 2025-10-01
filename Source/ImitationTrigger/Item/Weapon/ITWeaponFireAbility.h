@@ -31,7 +31,6 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "IT|Ability")
 	virtual void Fire(const FVector& StartLocation, const FVector& FireDirection);
 
-	// TODO: 팀 태그 추가 시, 피아 식별 로직 추가
 	UFUNCTION(BlueprintCallable, Category = "IT|Ability")
 	void ApplyWeaponDamage(AActor* TargetActor);
 
@@ -40,4 +39,13 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "IT|Effect")
 	TSubclassOf<UGameplayEffect> DamageEffect;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "IT|Anim")
+	TObjectPtr<UAnimMontage> ReboundAnimMontage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "IT|Anim")
+	TObjectPtr<UAnimMontage> FireAnimMontage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "IT|Anim")
+	TObjectPtr<USkeleton> MatchedSkeleton;
 };

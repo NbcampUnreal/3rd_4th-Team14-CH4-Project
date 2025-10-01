@@ -2,7 +2,10 @@
 
 
 #include "ITWeaponFireAbility_HitscanSG.h"
+#include "AbilitySystemComponent.h"
 #include "ITItemDefinition_Weapon.h"
+#include "Character/ITCharacter.h"
+#include "Item/ITItemGameplayTags.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -37,6 +40,27 @@ void UITWeaponFireAbility_HitscanSG::Fire(const FVector& TraceStart, const FVect
 
 		if (HitResult.bBlockingHit && HitResult.GetActor())
 		{
+			if (AITCharacter* Player = Cast<AITCharacter>(HitResult.GetActor()))
+			{
+				if (UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo())
+				{
+					FGameplayCueParameters CueParams;
+					CueParams.Location = HitResult.ImpactPoint;
+					CueParams.Normal = HitResult.Normal;
+					ASC->ExecuteGameplayCue(ITItemGameplayTags::GameplayCue_Weapon_Hit_Player, CueParams);
+				}
+			}
+			else
+			{
+				if (UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo())
+				{
+					FGameplayCueParameters CueParams;
+					CueParams.Location = HitResult.ImpactPoint;
+					CueParams.Normal = HitResult.Normal;
+					ASC->ExecuteGameplayCue(ITItemGameplayTags::GameplayCue_Weapon_Hit_Others, CueParams);
+				}
+			}
+			
 			ApplyWeaponDamage(HitResult.GetActor());
 		}
 	}

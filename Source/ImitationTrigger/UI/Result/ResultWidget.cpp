@@ -35,6 +35,7 @@ void UResultWidget::SetResult(int32 TotalPlayers, int32 PlayerRank, UTexture2D* 
 		int32 Seconds = SurvivalTime % 60;
 
 		FString Time = FString::Printf(TEXT("%d:%02d"), Minutes, Seconds);
+		SurvivalTimeBlock->SetText(FText::FromString(Time));
 	}
 
 	if (KillCountBlock)

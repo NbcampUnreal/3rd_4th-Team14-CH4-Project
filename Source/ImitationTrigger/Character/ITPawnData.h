@@ -25,7 +25,6 @@ class IMITATIONTRIGGER_API UITPawnData : public UDataAsset
 public:
 	UITPawnData(const FObjectInitializer& ObjectInitializer);
 
-	// Character의 입력 설정
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "PawnData|Thumbnail")
 	TObjectPtr<UTexture2D> Thumbnail;
 

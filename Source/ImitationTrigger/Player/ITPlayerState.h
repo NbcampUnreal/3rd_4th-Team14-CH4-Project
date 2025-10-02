@@ -14,6 +14,8 @@ class UITAbilitySystemComponent;
 class UITWeaponManagerComponent;
 class UITHealthSet;
 class UITAmmoSet;
+class UITCombatSet;
+class UITPawnData;
 struct FOnAttributeChangeData;
 
 UCLASS()
@@ -26,6 +28,7 @@ public:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
 
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UFUNCTION(BlueprintCallable, Category = "ITPlayerState")
 	AITPlayerController* GetITPlayerController() const;
@@ -41,6 +44,11 @@ public:
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
+	const UITPawnData* GetPawnData() const;
+
+	UPROPERTY(Replicated)
+	bool bIsAlive;
+
 protected:
 	virtual bool ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
 
@@ -49,6 +57,9 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<const UITAmmoSet> AmmoSet;
+
+	UPROPERTY()
+	TObjectPtr<const UITCombatSet> CombatSet;
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "ITPlayerState|AbilitySystemComponent")

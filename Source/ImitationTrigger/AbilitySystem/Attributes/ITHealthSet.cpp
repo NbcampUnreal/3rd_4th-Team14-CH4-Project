@@ -96,6 +96,7 @@ void UITHealthSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackDat
 
 			if (GetHealth() <= 0)
 			{
+				AccumulateKillCount(AttackerASC);
 				AITBattlePlayerController* AttackerController = Cast<AITBattlePlayerController>(AttackerPlayerState->GetOwningController());
 
 				AActor* TargetActor = Data.Target.GetOwnerActor();
@@ -208,6 +209,16 @@ void UITHealthSet::AccumulateDamageDealt(UAbilitySystemComponent* ASC, float Dam
 		float OldValue = ASC->GetNumericAttribute(UITCombatSet::GetDamageDealtAttribute());
 		float NewValue = OldValue + DamageDealt;
 		ASC->SetNumericAttributeBase(UITCombatSet::GetDamageDealtAttribute(), NewValue);
+	}
+}
+
+void UITHealthSet::AccumulateKillCount(UAbilitySystemComponent* ASC)
+{
+	if (IsValid(ASC))
+	{
+		float OldValue = ASC->GetNumericAttribute(UITCombatSet::GetKillCountAttribute());
+		float NewValue = OldValue + 1;
+		ASC->SetNumericAttributeBase(UITCombatSet::GetKillCountAttribute(), NewValue);
 	}
 }
 

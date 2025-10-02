@@ -59,6 +59,7 @@ private:
 	float CalculateHeadshotDamage(float InDamage);
 	float ApplyDamageAndReturnRealDealtAmount(float InDamage);
 	void AccumulateDamageDealt(UAbilitySystemComponent* ASC, float DamageDealt);
+	void AccumulateKillCount(UAbilitySystemComponent* ASC);
 	void NotifyKillToClients(AITBattlePlayerController* AttackerController, AITBattlePlayerController* TargetController);
 
 	// 현재 체력. 이 값이 0이 되면 캐릭터가 쓰러진다.

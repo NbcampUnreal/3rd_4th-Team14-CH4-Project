@@ -28,7 +28,12 @@ protected:
 	virtual void BeginPlay() override;
 
 	UFUNCTION()
-	void OnRep_ItemInstance();
+	void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent,
+	                     AActor* OtherActor,
+	                     UPrimitiveComponent* OtherComp,
+	                     int32 OtherBodyIndex,
+	                     bool bFromSweep,
+	                     const FHitResult& SweepResult);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "IT|Component")
 	TObjectPtr<USphereComponent> SphereComponent;
@@ -36,7 +41,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "IT|Component")
 	TObjectPtr<UStaticMeshComponent> StaticMeshComponent;
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ItemInstance, Category = "IT")
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = "IT")
 	TObjectPtr<UITItemInstance> ItemInstance;
 
 	// 레벨 배치 변수
@@ -48,4 +53,7 @@ protected:
 
 private:
 	void UpdateAppearance();
+
+	void EnablePickup();
+	FTimerHandle EnablePickupTimerHandle;
 };

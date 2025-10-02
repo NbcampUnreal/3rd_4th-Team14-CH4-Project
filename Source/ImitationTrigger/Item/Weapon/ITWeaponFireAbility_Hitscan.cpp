@@ -2,7 +2,11 @@
 
 
 #include "ITWeaponFireAbility_Hitscan.h"
+
+#include "AbilitySystemComponent.h"
 #include "ITItemDefinition_Weapon.h"
+#include "Character/ITCharacter.h"
+#include "Item/ITItemGameplayTags.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 void UITWeaponFireAbility_Hitscan::Fire(const FVector& TraceStart, const FVector& TraceDirection)
@@ -32,6 +36,27 @@ void UITWeaponFireAbility_Hitscan::Fire(const FVector& TraceStart, const FVector
 
 	if (HitResult.bBlockingHit && HitResult.GetActor())
 	{
+		if (AITCharacter* Player = Cast<AITCharacter>(HitResult.GetActor()))
+		{
+			if (UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo())
+			{
+				FGameplayCueParameters CueParams;
+				CueParams.Location = HitResult.ImpactPoint;
+				CueParams.Normal = HitResult.Normal;
+				ASC->ExecuteGameplayCue(ITItemGameplayTags::GameplayCue_Weapon_Hit_Player, CueParams);
+			}
+		}
+		else
+		{
+			if (UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo())
+			{
+				FGameplayCueParameters CueParams;
+				CueParams.Location = HitResult.ImpactPoint;
+				CueParams.Normal = HitResult.Normal;
+				ASC->ExecuteGameplayCue(ITItemGameplayTags::GameplayCue_Weapon_Hit_Others, CueParams);
+			}
+		}
+		
 		ApplyWeaponDamage(HitResult.GetActor());
 	}
 }

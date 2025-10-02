@@ -13,6 +13,7 @@ class AITCharacter;
 class UITAbilitySystemComponent;
 class UITWeaponManagerComponent;
 class UITHealthSet;
+class UITAmmoSet;
 struct FOnAttributeChangeData;
 
 UCLASS()
@@ -41,8 +42,13 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 protected:
+	virtual bool ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
+
 	UPROPERTY()
 	TObjectPtr<const UITHealthSet> HealthSet;
+
+	UPROPERTY()
+	TObjectPtr<const UITAmmoSet> AmmoSet;
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "ITPlayerState|AbilitySystemComponent")

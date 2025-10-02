@@ -8,6 +8,7 @@ UITHealthSet::UITHealthSet()
 	InitMaxHealth(0.0f);
 	InitShield(0.0f);
 	InitMaxShield(0.0f);
+	InitDamageResistances(0.0f);
 	InitHeadshotResistances(0.0f);
 	InitGainHealth(0.0f);
 	InitGainShield(0.0f);
@@ -23,6 +24,7 @@ void UITHealthSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, MaxHealth, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, Shield, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, MaxShield, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, DamageResistances, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, HeadshotResistances, COND_None, REPNOTIFY_Always);
 }
 
@@ -49,7 +51,7 @@ void UITHealthSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackDat
 
 	if (Data.EvaluatedData.Attribute == GetGainDamageAttribute())
 	{
-		const float DamageValue = GetGainDamage();
+		const float DamageValue = CalculateNormalDamage(GetGainDamage());
 		ApplyDamage(DamageValue);
 		SetGainDamage(0.0f);
 	}
@@ -137,6 +139,12 @@ void UITHealthSet::ClampAttribute(const FGameplayAttribute& Attribute, float& Ne
 	{
 		NewValue = FMath::Clamp(NewValue, 0, GetMaxShield());
 	}
+}
+
+float UITHealthSet::CalculateNormalDamage(float InDamage)
+{
+	const float ReducedRate = FMath::Max(0.0f, 1.0 - GetDamageResistances());
+	return InDamage * ReducedRate;
 }
 
 float UITHealthSet::CalculateHeadshotDamage(float InDamage)

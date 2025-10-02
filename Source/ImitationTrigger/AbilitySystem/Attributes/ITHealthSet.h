@@ -19,6 +19,7 @@ public:
 	ATTRIBUTE_ACCESSORS(UITHealthSet, MaxHealth);
 	ATTRIBUTE_ACCESSORS(UITHealthSet, Shield);
 	ATTRIBUTE_ACCESSORS(UITHealthSet, MaxShield);
+	ATTRIBUTE_ACCESSORS(UITHealthSet, DamageResistances);
 	ATTRIBUTE_ACCESSORS(UITHealthSet, HeadshotResistances);
 	ATTRIBUTE_ACCESSORS(UITHealthSet, GainHealth);
 	ATTRIBUTE_ACCESSORS(UITHealthSet, GainShield);
@@ -55,6 +56,7 @@ protected:
 	void ClampAttribute(const FGameplayAttribute& Attribute, float& NewValue) const;
 
 private:
+	float CalculateNormalDamage(float InDamage);
 	float CalculateHeadshotDamage(float InDamage);
 	void ApplyDamage(float InDamage);
 
@@ -73,6 +75,10 @@ private:
 	// 최대 보호막. 최대 보호막 양은 장비에 따라 바뀔 수 있다.
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxShield, Category = "Attributes|Health", Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData MaxShield;
+
+	// 받는 피해량 저항
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = "Attributes|Health", Meta = (AllowPrivateAccess = true))
+	FGameplayAttributeData DamageResistances;
 
 	// 헤드샷 피해량 저항. 이 값은 헬멧에 의해 바뀔 수 있다.
 	UPROPERTY(BlueprintReadOnly, Replicated, Category = "Attributes|Health", Meta = (AllowPrivateAccess = true))

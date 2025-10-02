@@ -70,7 +70,7 @@ void AITBattlePlayerController::OnRep_PlayerState()
 
 void AITBattlePlayerController::SetPawn(APawn* InPawn)
 {
-	if (HasAuthority())
+	if (HasAuthority() && SelectedCharacterIndex != -1)
 	{
 		if (AITCharacter* ITChar = Cast<AITCharacter>(InPawn))
 		{

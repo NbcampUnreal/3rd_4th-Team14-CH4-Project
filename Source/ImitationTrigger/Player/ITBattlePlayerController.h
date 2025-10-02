@@ -52,7 +52,7 @@ protected:
 	TObjectPtr<UUserWidget> MapWidget;
 
 	UPROPERTY()
-	int32 SelectedCharacterIndex;
+	int32 SelectedCharacterIndex = -1;
 
 
 private:

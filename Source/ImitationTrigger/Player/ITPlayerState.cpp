@@ -71,7 +71,7 @@ UAbilitySystemComponent* AITPlayerState::GetAbilitySystemComponent() const
 void AITPlayerState::OnReadyPawnData(APlayerState* Player, APawn* NewPawn, APawn* OldPawn)
 {
 	AITCharacter* ITCharacter = GetITCharacter();
-	if (IsValid(ITCharacter))
+	if (IsValid(ITCharacter) && IsValid(ITCharacter->GetPawnData()))
 	{
 		InitAbilitySystemComponent();
 

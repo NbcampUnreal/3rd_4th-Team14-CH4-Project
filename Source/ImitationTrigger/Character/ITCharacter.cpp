@@ -8,6 +8,7 @@
 #include "Cosmetics/ITCharacterAnimComponent.h"
 #include "AbilitySystem/ITAbilitySystemComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Net/UnrealNetwork.h"
 
 AITCharacter::AITCharacter()
@@ -153,20 +154,21 @@ void AITCharacter::MulticastRPC_OnDead_Implementation()
 		{
 			MovementComponent->DisableMovement();
 		}
-
+	}
+	else
+	{
 		APlayerController* PC = Cast<APlayerController>(GetController());
 		if (IsValid(PC))
 		{
 			DisableInput(PC);
 		}
-	}
-	else
-	{
+
 		USkeletalMeshComponent* RootMeshComponent = GetMesh();
 		if (IsValid(RootMeshComponent))
 		{
 			RootMeshComponent->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
 			RootMeshComponent->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+			RootMeshComponent->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
 		}
 
 		TArray<UChildActorComponent*> ChildActorComponents;

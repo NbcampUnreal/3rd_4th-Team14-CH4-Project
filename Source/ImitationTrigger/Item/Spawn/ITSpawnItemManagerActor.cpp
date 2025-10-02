@@ -33,6 +33,7 @@ void AITSpawnItemManagerActor::SpawnInitialItems()
 {
 	if (HasAuthority())
 	{
+		// 스폰 포인트가 너무 많을 경우, 타이머 추가
 		for (FVector SpawnLocation : InitialSpawnLocations)
 		{
 			SpawnItem(SpawnLocation, InitialItemDataTable, NumInitialItemsToSpawn);
@@ -56,15 +57,19 @@ void AITSpawnItemManagerActor::SpawnItem(FVector LocationToSpawn, UDataTable* It
 	}
 
 	TArray<FITSpawnItemData*> SpawnCandidates;
+	ItemDataTable->GetAllRows<FITSpawnItemData>(TEXT(""), SpawnCandidates);
 	float TotalWeight = 0.0f;
 
-	for (const TPair<FName, uint8*>& Row : ItemDataTable->GetRowMap())
+	for (int32 i = SpawnCandidates.Num() - 1; i >= 0; i--)
 	{
-		FITSpawnItemData* ItemData = reinterpret_cast<FITSpawnItemData*>(Row.Value);
+		FITSpawnItemData* ItemData = SpawnCandidates[i];
 		if (ItemData && ItemData->ItemActorClass)
 		{
-			SpawnCandidates.Add(ItemData);
 			TotalWeight += ItemData->Weight;
+		}
+		else
+		{
+			SpawnCandidates.RemoveAtSwap(i);
 		}
 	}
 
@@ -91,14 +96,28 @@ void AITSpawnItemManagerActor::SpawnItem(FVector LocationToSpawn, UDataTable* It
 
 		if (ItemDataToSpawn)
 		{
-			FVector SpawnLocation = LocationToSpawn;
+			FVector InitialSpawnLocation = LocationToSpawn;
 			if (NumToSpawn > 1)
 			{
 				const float Angle = (360.0f / NumToSpawn) * i;
-				SpawnLocation += FRotator(0.f, Angle, 0.f).Vector() * SpawnRadius;
+				InitialSpawnLocation += FRotator(0.f, Angle, 0.f).Vector() * SpawnRadius;
 			}
+
+			FVector FinalSpawnLocation = InitialSpawnLocation;
+			FHitResult HitResult;
+			FVector TraceStart = InitialSpawnLocation + FVector(0.f, 0.f, 2000.f);
+			FVector TraceEnd = InitialSpawnLocation - FVector(0.f, 0.f, 2000.f);
+
+			FCollisionQueryParams CollisionQueryParams;
+			CollisionQueryParams.AddIgnoredActor(this);
+			if (GetWorld()->LineTraceSingleByChannel(
+				HitResult, TraceStart, TraceEnd, ECC_Visibility, CollisionQueryParams))
+			{
+				FinalSpawnLocation = HitResult.ImpactPoint + FVector(0.f, 0.f, 50.f);
+			}
+
 			const FRotator SpawnRotation = FRotator(0.f, FMath::FRandRange(0.f, 360.f), 0.f);
-			const FTransform SpawnTransform(SpawnRotation, SpawnLocation, FVector::OneVector);
+			const FTransform SpawnTransform(SpawnRotation, FinalSpawnLocation, FVector::OneVector);
 
 			FActorSpawnParameters SpawnParams;
 			SpawnParams.SpawnCollisionHandlingOverride

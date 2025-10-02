@@ -10,6 +10,7 @@ UITHealthSet::UITHealthSet()
 	InitMaxShield(0.0f);
 	InitDamageResistances(0.0f);
 	InitHeadshotResistances(0.0f);
+	InitRecoveryEfficiency(0.0f);
 	InitGainHealth(0.0f);
 	InitGainShield(0.0f);
 	InitGainDamage(0.0f);
@@ -26,6 +27,7 @@ void UITHealthSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, MaxShield, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, DamageResistances, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, HeadshotResistances, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, RecoveryEfficiency, COND_None, REPNOTIFY_Always);
 }
 
 bool UITHealthSet::PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data)
@@ -64,14 +66,14 @@ void UITHealthSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackDat
 	}
 	else if (Data.EvaluatedData.Attribute == GetGainHealthAttribute())
 	{
-		const float RestoreValue = GetGainHealth();
+		const float RestoreValue = GetGainHealth() * GetRecoveryRate();
 		const float NewValue = FMath::Clamp(GetHealth() + RestoreValue, 0, GetMaxHealth());
 		SetHealth(NewValue);
 		SetGainHealth(0.0f);
 	}
 	else if (Data.EvaluatedData.Attribute == GetGainShieldAttribute())
 	{
-		const float RestoreValue = GetGainShield();
+		const float RestoreValue = GetGainShield() * GetRecoveryRate();
 		const float NewValue = FMath::Clamp(GetShield() + RestoreValue, 0, GetMaxShield());
 		SetShield(NewValue);
 		SetGainShield(0.0f);
@@ -151,6 +153,11 @@ float UITHealthSet::CalculateHeadshotDamage(float InDamage)
 {
 	const float ReducedRate = FMath::Max(0.0f, 1.0 - GetHeadshotResistances());
 	return InDamage * ReducedRate;
+}
+
+float UITHealthSet::GetRecoveryRate() const
+{
+	return FMath::Max(1.0f + GetRecoveryEfficiency(), 0.0f);
 }
 
 void UITHealthSet::ApplyDamage(float InDamage)

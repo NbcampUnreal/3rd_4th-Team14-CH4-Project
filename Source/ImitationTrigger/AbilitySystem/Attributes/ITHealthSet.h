@@ -21,6 +21,7 @@ public:
 	ATTRIBUTE_ACCESSORS(UITHealthSet, MaxShield);
 	ATTRIBUTE_ACCESSORS(UITHealthSet, DamageResistances);
 	ATTRIBUTE_ACCESSORS(UITHealthSet, HeadshotResistances);
+	ATTRIBUTE_ACCESSORS(UITHealthSet, RecoveryEfficiency);
 	ATTRIBUTE_ACCESSORS(UITHealthSet, GainHealth);
 	ATTRIBUTE_ACCESSORS(UITHealthSet, GainShield);
 	ATTRIBUTE_ACCESSORS(UITHealthSet, GainDamage);
@@ -58,6 +59,7 @@ protected:
 private:
 	float CalculateNormalDamage(float InDamage);
 	float CalculateHeadshotDamage(float InDamage);
+	float GetRecoveryRate() const;
 	void ApplyDamage(float InDamage);
 
 	// 현재 체력. 이 값이 0이 되면 캐릭터가 쓰러진다.
@@ -83,6 +85,10 @@ private:
 	// 헤드샷 피해량 저항. 이 값은 헬멧에 의해 바뀔 수 있다.
 	UPROPERTY(BlueprintReadOnly, Replicated, Category = "Attributes|Health", Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData HeadshotResistances;
+
+	// 회복 효율 증가량
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = "Attributes|Health", Meta = (AllowPrivateAccess = true))
+	FGameplayAttributeData RecoveryEfficiency;
 
 	// Meta Attribute, 받은 체력 회복량
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes|Health", Meta = (AllowPrivateAccess = true))

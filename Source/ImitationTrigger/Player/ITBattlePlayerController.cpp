@@ -51,7 +51,6 @@ void AITBattlePlayerController::PostNetInit()
 			int32 CharIndex = GI->GetSelectedCharacterIndex();
 
 			ServerRPC_SetCharacterIndex(CharIndex);
-			UE_LOG(LogTemp, Warning, TEXT("@@@@@@@@@@@@@@@Client sent character index: %d"), CharIndex);
 		}
 	}
 }
@@ -75,7 +74,6 @@ void AITBattlePlayerController::SetPawn(APawn* InPawn)
 		if (AITCharacter* ITChar = Cast<AITCharacter>(InPawn))
 		{
 			ITChar->SetPawnDataByIndex(SelectedCharacterIndex);
-			UE_LOG(LogTemp, Warning, TEXT("@@@@@@@@@@@@@@@SetPawn Index = %d @@@@@@@@@@@@@@@@"), SelectedCharacterIndex);
 		}
 	}
 
@@ -115,7 +113,6 @@ void AITBattlePlayerController::HideMapWidget()
 
 void AITBattlePlayerController::ServerRPC_SetCharacterIndex_Implementation(int32 CharIndex)
 {
-	UE_LOG(LogTemp, Warning, TEXT("@@@@@@@@@@@@@@@@@@Server received character index: %d"), CharIndex);
 
 	SelectedCharacterIndex = CharIndex;
 
@@ -123,7 +120,6 @@ void AITBattlePlayerController::ServerRPC_SetCharacterIndex_Implementation(int32
 	{
 		if(AITBattleGameMode* GM = GetWorld()->GetAuthGameMode<AITBattleGameMode>())
 		{
-			UE_LOG(LogTemp, Warning, TEXT("@@@@@@@@@@@@@@@RestartPlayer@@@@@@@@@@@@"));
 			AITCharacter* ITChar = Cast<AITCharacter>(GetPawn());
 			ITChar->Destroy();
 			SetPawn(nullptr);

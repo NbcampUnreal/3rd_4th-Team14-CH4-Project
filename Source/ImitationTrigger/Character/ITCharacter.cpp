@@ -155,7 +155,6 @@ void AITCharacter::SetPawnDataByIndex(int32 Index)
 			if (PawnData == nullptr && PawnDataList->PawnDatas.IsValidIndex(Index))
 			{
 				PawnData = PawnDataList->PawnDatas[Index];
-				UE_LOG(LogTemp, Warning, TEXT("@@@@SetPawnDataByIndex: %d@@@@"), Index);
 			}
 		}
 	}

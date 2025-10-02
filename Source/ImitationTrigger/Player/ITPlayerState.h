@@ -13,6 +13,8 @@ class AITCharacter;
 class UITAbilitySystemComponent;
 class UITWeaponManagerComponent;
 class UITHealthSet;
+class UITPawnData;
+class UITPawnDataList;
 struct FOnAttributeChangeData;
 
 UCLASS()
@@ -24,7 +26,6 @@ public:
 	AITPlayerState(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 	virtual void BeginPlay() override;
 	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
-
 
 	UFUNCTION(BlueprintCallable, Category = "ITPlayerState")
 	AITPlayerController* GetITPlayerController() const;
@@ -39,6 +40,7 @@ public:
 	UITWeaponManagerComponent* GetITWeaponManagerComponent() const { return WeaponManagerComponent; }
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
 
 protected:
 	UPROPERTY()

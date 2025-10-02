@@ -2,7 +2,9 @@
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/GameplayStatics.h"
 #include "Network/ITTitlePlayerController.h"
+#include "ITGameInstance.h"
 
 void UITLobbyWidget::NativeConstruct()
 {
@@ -14,6 +16,15 @@ void UITLobbyWidget::NativeConstruct()
 
 	if (ExitButton && !ExitButton->OnClicked.IsAlreadyBound(this, &ThisClass::OnExitClicked))
 		ExitButton->OnClicked.AddDynamic(this, &ThisClass::OnExitClicked);
+
+	if (Character0Button && !Character0Button->OnClicked.IsAlreadyBound(this, &ThisClass::OnCharacter0Clicked))
+		Character0Button->OnClicked.AddDynamic(this, &ThisClass::OnCharacter0Clicked);
+
+	if (Character1Button && !Character1Button->OnClicked.IsAlreadyBound(this, &ThisClass::OnCharacter1Clicked))
+		Character1Button->OnClicked.AddDynamic(this, &ThisClass::OnCharacter1Clicked);
+
+	if (Character2Button && !Character2Button->OnClicked.IsAlreadyBound(this, &ThisClass::OnCharacter2Clicked))
+		Character2Button->OnClicked.AddDynamic(this, &ThisClass::OnCharacter2Clicked);
 
 	// 초기 버튼 모양 설정
 	UpdateStartButtonAppearance();
@@ -86,6 +97,42 @@ void UITLobbyWidget::UpdateMatchmakingState(bool bIsInQueue)
 		bIsInQueue ? TEXT("In Queue") : TEXT("Not In Queue"));
 }
 
+void UITLobbyWidget::OnCharacter0Clicked()
+{
+	SelectedCharacterIndex = 0;
+
+	if (UITGameInstance* GI = Cast<UITGameInstance>(UGameplayStatics::GetGameInstance(GetWorld())))
+	{
+		GI->SetSelectedCharacterIndex(0);
+		UE_LOG(LogTemp, Warning, TEXT("Character 0 selected"));
+	}
+
+}
+
+void UITLobbyWidget::OnCharacter1Clicked()
+{
+	SelectedCharacterIndex = 1;
+
+	if (UITGameInstance* GI = Cast<UITGameInstance>(UGameplayStatics::GetGameInstance(GetWorld())))
+	{
+		GI->SetSelectedCharacterIndex(1);
+		UE_LOG(LogTemp, Warning, TEXT("Character 1 selected"));
+	}
+
+}
+
+void UITLobbyWidget::OnCharacter2Clicked()
+{
+	SelectedCharacterIndex = 2;
+
+	if (UITGameInstance* GI = Cast<UITGameInstance>(UGameplayStatics::GetGameInstance(GetWorld())))
+	{
+		GI->SetSelectedCharacterIndex(2);
+		UE_LOG(LogTemp, Warning, TEXT("Character 2 selected"));
+	}
+
+}
+
 void UITLobbyWidget::UpdateStartButtonAppearance()
 {
 	if (StartButtonText && StartButton)
@@ -94,13 +141,13 @@ void UITLobbyWidget::UpdateStartButtonAppearance()
 		{
 			// 매칭 중: 빨간색 "Match Cancel"
 			StartButtonText->SetText(FText::FromString(TEXT("게임 찾는 중(취소)")));
-			StartButton->SetBackgroundColor(FLinearColor::Red);
+			//StartButton->SetBackgroundColor(FLinearColor::Red);
 		}
 		else
 		{
 			// 대기 중: 초록색 "Match Start"
 			StartButtonText->SetText(FText::FromString(TEXT("게임 시작")));
-			StartButton->SetBackgroundColor(FLinearColor::Green);
+			//StartButton->SetBackgroundColor(FLinearColor::Green);
 		}
 	}
 }

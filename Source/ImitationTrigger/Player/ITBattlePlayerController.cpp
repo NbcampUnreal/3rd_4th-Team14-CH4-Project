@@ -9,7 +9,12 @@
 #include "Item/Weapon/ITWeaponManagerComponent.h"
 #include "Engine/Engine.h"
 #include "Engine/GameViewportClient.h"
-
+#include "Network/ITGameInstance.h"
+#include "Player/ITPlayerState.h"
+#include "Character/ITCharacter.h"
+#include "Character/ITPawnData.h"
+#include "Character/ITPawnDataList.h"
+#include "GameModes/ITBattleGameMode.h"
 
 AITBattlePlayerController::AITBattlePlayerController()
 {
@@ -36,6 +41,21 @@ void AITBattlePlayerController::EndPlay(EEndPlayReason::Type EndPlayReason)
 	}
 }
 
+void AITBattlePlayerController::PostNetInit()
+{
+	Super::PostNetInit();
+	if (IsLocalController())
+	{
+		if (UITGameInstance* GI = Cast<UITGameInstance>(GetGameInstance()))
+		{
+			int32 CharIndex = GI->GetSelectedCharacterIndex();
+
+			ServerRPC_SetCharacterIndex(CharIndex);
+			UE_LOG(LogTemp, Warning, TEXT("@@@@@@@@@@@@@@@Client sent character index: %d"), CharIndex);
+		}
+	}
+}
+
 void AITBattlePlayerController::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
@@ -46,6 +66,20 @@ void AITBattlePlayerController::OnRep_PlayerState()
 	SetInputMode(Mode); 
 	bShowMouseCursor = false;
 	
+}
+
+void AITBattlePlayerController::SetPawn(APawn* InPawn)
+{
+	if (HasAuthority())
+	{
+		if (AITCharacter* ITChar = Cast<AITCharacter>(InPawn))
+		{
+			ITChar->SetPawnDataByIndex(SelectedCharacterIndex);
+			UE_LOG(LogTemp, Warning, TEXT("@@@@@@@@@@@@@@@SetPawn Index = %d @@@@@@@@@@@@@@@@"), SelectedCharacterIndex);
+		}
+	}
+
+	Super::SetPawn(InPawn);
 }
 
 void AITBattlePlayerController::ToggleMapWidget()
@@ -77,6 +111,26 @@ void AITBattlePlayerController::HideMapWidget()
 	{
 		MapWidget->RemoveFromParent();
 	}
+}
+
+void AITBattlePlayerController::ServerRPC_SetCharacterIndex_Implementation(int32 CharIndex)
+{
+	UE_LOG(LogTemp, Warning, TEXT("@@@@@@@@@@@@@@@@@@Server received character index: %d"), CharIndex);
+
+	SelectedCharacterIndex = CharIndex;
+
+	if(HasAuthority())
+	{
+		if(AITBattleGameMode* GM = GetWorld()->GetAuthGameMode<AITBattleGameMode>())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("@@@@@@@@@@@@@@@RestartPlayer@@@@@@@@@@@@"));
+			AITCharacter* ITChar = Cast<AITCharacter>(GetPawn());
+			ITChar->Destroy();
+			SetPawn(nullptr);
+			GM->RestartPlayer(this);
+		}
+	}
+	
 }
 
 void AITBattlePlayerController::InitWidgets()
@@ -223,4 +277,3 @@ void AITBattlePlayerController::OnSubWeaponUpdate(UITItemInstance* ItemInstance)
 		}
 	}
 }
-

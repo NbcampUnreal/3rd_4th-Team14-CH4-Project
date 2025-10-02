@@ -21,9 +21,9 @@ public:
 	AITBattlePlayerController();
 	virtual void BeginPlay() override;
 	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
-
+	virtual void PostNetInit() override;
 	virtual void OnRep_PlayerState() override;
-
+	virtual void SetPawn(APawn* InPawn) override;
 
 	UFUNCTION(BlueprintCallable)
 	void ToggleMapWidget();
@@ -33,6 +33,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void HideMapWidget();
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_SetCharacterIndex(int32 CharIndex);
 
 
 protected:
@@ -47,6 +50,9 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UUserWidget> MapWidget;
+
+	UPROPERTY()
+	int32 SelectedCharacterIndex;
 
 
 private:

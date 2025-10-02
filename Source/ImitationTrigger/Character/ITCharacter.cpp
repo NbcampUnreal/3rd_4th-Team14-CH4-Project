@@ -8,6 +8,7 @@
 #include "Cosmetics/ITCharacterAnimComponent.h"
 #include "AbilitySystem/ITAbilitySystemComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "ITPawnDataList.h"
 
 AITCharacter::AITCharacter()
 {
@@ -49,7 +50,6 @@ UAbilitySystemComponent* AITCharacter::GetAbilitySystemComponent() const
 void AITCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
 	if (!HasAuthority())
 	{
 		SetBodyMeshes();
@@ -70,7 +70,8 @@ void AITCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME_CONDITION(ThisClass, PawnData, COND_InitialOnly);
+	DOREPLIFETIME_CONDITION(ThisClass, PawnData, COND_None);
+	DOREPLIFETIME_CONDITION(ThisClass, PawnDataList, COND_None);
 }
 
 void AITCharacter::PossessedBy(AController* NewController)
@@ -141,6 +142,21 @@ void AITCharacter::SetAnimLayerRules()
 		if (IsValid(PawnData))
 		{
 			PartComponent->SetAnimLayerRules(PawnData->AnimLayerRules);
+		}
+	}
+}
+
+void AITCharacter::SetPawnDataByIndex(int32 Index)
+{
+	if (HasAuthority())
+	{
+		if (IsValid(PawnDataList)) 
+		{
+			if (PawnDataList->PawnDatas.IsValidIndex(Index))
+			{
+				PawnData = PawnDataList->PawnDatas[Index];
+				UE_LOG(LogTemp, Warning, TEXT("@@@@SetPawnDataByIndex: %d@@@@"), Index);
+			}
 		}
 	}
 }

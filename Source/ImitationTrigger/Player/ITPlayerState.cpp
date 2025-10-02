@@ -6,6 +6,8 @@
 #include "AbilitySystem/Attributes/ITHealthSet.h"
 #include "AbilitySystem/Attributes/ITAttributeTableRow.h"
 #include "AbilitySystem/ITAbilitySystemComponent.h"
+#include "Character/ITPawnDataList.h"
+#include "Net/UnrealNetwork.h"
 
 
 AITPlayerState::AITPlayerState(const FObjectInitializer& ObjectInitializer)
@@ -26,6 +28,7 @@ AITPlayerState::AITPlayerState(const FObjectInitializer& ObjectInitializer)
 	// PlayerState와 Pawn(Chracter)가 모두 준비되었을 때 호출되는 Delegate
 	OnPawnSet.AddDynamic(this, &ThisClass::OnReadyPawnData);
 }
+
 
 void AITPlayerState::BeginPlay()
 {
@@ -163,7 +166,7 @@ void AITPlayerState::BindWeaponChanged()
 			UITCharacterAnimComponent* AnimComponent = ITCharacter->GetITCharacterAnimComponent();
 			if (IsValid(AnimComponent))
 			{
-				WeaponManagerComponent->OnCurrentWeaponTypeChanged.AddDynamic(AnimComponent, &UITCharacterAnimComponent::OnUpdateCurrentWeapon);
+				WeaponManagerComponent->OnCurrentWeaponTypeChanged.AddUniqueDynamic(AnimComponent, &UITCharacterAnimComponent::OnUpdateCurrentWeapon);
 			}
 		}
 	}

@@ -9,8 +9,6 @@ AITSpawnItemManagerActor::AITSpawnItemManagerActor()
 {
 	PrimaryActorTick.bCanEverTick = false;
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneComponent"));
-
-	bReplicates = true;
 }
 
 void AITSpawnItemManagerActor::BeginPlay()
@@ -24,7 +22,10 @@ void AITSpawnItemManagerActor::BeginPlay()
 
 		for (AActor* Actor : FoundActors)
 		{
-			InitialSpawnLocations.Add(Actor->GetActorLocation());
+			if (IsValid(Actor))
+			{
+				InitialSpawnLocations.Add(Actor->GetActorLocation());
+			}
 		}
 	}
 }
@@ -33,7 +34,9 @@ void AITSpawnItemManagerActor::SpawnInitialItems()
 {
 	if (HasAuthority())
 	{
-		// 스폰 포인트가 너무 많을 경우, 타이머 추가
+		/*	스폰 포인트가 너무 많아질 경우, 지연이 발생할 수 있기 때문에
+		 *	타이머 등을 이용해, 스레드를 나누어 주어야 합니다.
+		 */
 		for (FVector SpawnLocation : InitialSpawnLocations)
 		{
 			SpawnItem(SpawnLocation, InitialItemDataTable, NumInitialItemsToSpawn);

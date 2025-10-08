@@ -18,6 +18,7 @@
 #include "UltimateGauge/UltimateGaugeWidget.h"
 #include "WeaponSlot/WeaponSlotNumberWidget.h"
 #include "WeaponSlot/WeaponSlotWidget.h"
+#include "Area/AreaWidget.h"
 
 void UHUDWidget::NativeConstruct()
 {
@@ -155,6 +156,14 @@ void UHUDWidget::OnSkill(float CoolDown)
 	if (SkillSlotWidget)
 	{
 		SkillSlotWidget->OnSkill(CoolDown);
+	}
+}
+
+void UHUDWidget::OnUpdateAreaInfo(int32 CurrentRoundNumber, int32 AreaTime, float Distance, bool bIsWait)
+{
+	if (AreaWidget)
+	{
+		AreaWidget->SetAreaText(CurrentRoundNumber, AreaTime, Distance, bIsWait);
 	}
 }
 

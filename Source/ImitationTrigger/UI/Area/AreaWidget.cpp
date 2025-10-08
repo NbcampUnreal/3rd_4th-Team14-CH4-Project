@@ -5,12 +5,20 @@
 
 #include "Components/TextBlock.h"
 
-void UAreaWidget::SetAreaText(int32 CurrentRoundNumber, int32 AreaTime, float Distance)
+void UAreaWidget::SetAreaText(int32 CurrentRoundNumber, int32 AreaTime, float Distance, bool bIsWait)
 {
 	if (RoundTextBlock)
 	{
-		FString RoundText = FString::Printf(TEXT("라운드 %d"), CurrentRoundNumber);
-		RoundTextBlock->SetText(FText::FromString(RoundText));
+		if (bIsWait)
+		{
+			FString RoundText = FString::Printf(TEXT("라운드 %d 대기"), CurrentRoundNumber);
+			RoundTextBlock->SetText(FText::FromString(RoundText));
+		}
+		else
+		{
+			FString RoundText = FString::Printf(TEXT("라운드 %d 구역 축소"), CurrentRoundNumber);
+			RoundTextBlock->SetText(FText::FromString(RoundText));
+		}
 	}
 
 	if (TimeTextBlock)

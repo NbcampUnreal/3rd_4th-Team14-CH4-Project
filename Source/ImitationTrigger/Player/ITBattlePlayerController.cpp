@@ -242,6 +242,14 @@ void AITBattlePlayerController::UpdateShield()
 	}
 }
 
+void AITBattlePlayerController::OnUpdateAreaInfo(int32 CurrentRoundNumber, int32 AreaTime, float Distance, bool bIsWait)
+{
+	if (IsValid(HUDWidget))
+	{
+		HUDWidget->OnUpdateAreaInfo(CurrentRoundNumber, AreaTime, Distance, bIsWait);
+	}
+}
+
 void AITBattlePlayerController::OnMainWeaponUpdate(UITItemInstance* ItemInstance)
 {
 	if (IsValid(ItemInstance))

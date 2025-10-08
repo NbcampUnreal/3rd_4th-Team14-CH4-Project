@@ -19,7 +19,7 @@ class IMITATIONTRIGGER_API UAreaWidget : public UUserWidget
 public:
 
 	UFUNCTION(BlueprintCallable)
-	void SetAreaText(int32 CurrentRoundNumber, int32 AreaTime, float Distance);
+	void SetAreaText(int32 CurrentRoundNumber, int32 AreaTime, float Distance, bool bIsWait);
 
 protected:
 	

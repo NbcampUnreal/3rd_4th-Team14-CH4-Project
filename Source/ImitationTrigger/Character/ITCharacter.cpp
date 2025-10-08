@@ -7,6 +7,8 @@
 #include "Cosmetics/ITCharacterPartComponent.h"
 #include "Cosmetics/ITCharacterAnimComponent.h"
 #include "AbilitySystem/ITAbilitySystemComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Net/UnrealNetwork.h"
 
 AITCharacter::AITCharacter()
@@ -139,6 +141,58 @@ UITCharacterAnimComponent* AITCharacter::GetITCharacterAnimComponent()
 	UActorComponent* FindComponent = GetComponentByClass(UITCharacterAnimComponent::StaticClass());
 	UITCharacterAnimComponent* AnimComponent = Cast<UITCharacterAnimComponent>(FindComponent);
 	return AnimComponent;
+}
+
+void AITCharacter::MulticastRPC_OnDead_Implementation()
+{
+	if (HasAuthority())
+	{
+		SetLifeSpan(3.0f);
+
+		UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
+		if (IsValid(MovementComponent))
+		{
+			MovementComponent->DisableMovement();
+		}
+	}
+	else
+	{
+		APlayerController* PC = Cast<APlayerController>(GetController());
+		if (IsValid(PC))
+		{
+			DisableInput(PC);
+		}
+
+		USkeletalMeshComponent* RootMeshComponent = GetMesh();
+		if (IsValid(RootMeshComponent))
+		{
+			RootMeshComponent->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
+			RootMeshComponent->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+			RootMeshComponent->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+		}
+
+		TArray<UChildActorComponent*> ChildActorComponents;
+		GetComponents<UChildActorComponent>(ChildActorComponents);
+		for (UChildActorComponent* ChildActorComponent : ChildActorComponents)
+		{
+			if (IsValid(ChildActorComponent))
+			{
+				AActor* ChildActor = ChildActorComponent->GetChildActor();
+				if (IsValid(ChildActor))
+				{
+					USkeletalMeshComponent* MeshComponent = ChildActor->FindComponentByClass<USkeletalMeshComponent>();
+
+					if (IsValid(MeshComponent))
+					{
+						MeshComponent->SetSimulatePhysics(true);
+						MeshComponent->SetCollisionProfileName(FName(TEXT("Ragdoll")));
+						MeshComponent->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
+						MeshComponent->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+					}
+				}
+			}
+		}
+	}
 }
 
 void AITCharacter::AddInitCharacterPartsAtServer()

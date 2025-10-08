@@ -1,5 +1,14 @@
 #include "AbilitySystem/Attributes/ITHealthSet.h"
+#include "AbilitySystem/Attributes/ITCombatSet.h"
 #include "Net/UnrealNetwork.h"
+#include "Character/ITPawnData.h"
+#include "Player/ITPlayerState.h"
+#include "Player/ITBattlePlayerController.h"
+#include "Item/Weapon/ITWeaponManagerComponent.h"
+#include "Item/ITItemInstance.h"
+#include "Item/Weapon/ITItemDefinition_Weapon.h"
+#include "GameModes/ITBattleGameMode.h"
+#include "AbilitySystem/ITAbilitySystemComponent.h"
 #include "GameplayEffectExtension.h"
 
 UITHealthSet::UITHealthSet()
@@ -47,17 +56,19 @@ void UITHealthSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackDat
 	AActor* Instigator = EffectContext.GetOriginalInstigator();
 	AActor* Causer = EffectContext.GetEffectCauser();
 
+	float RealDealtAmount = 0.0f;
+
 	if (Data.EvaluatedData.Attribute == GetGainDamageAttribute())
 	{
 		const float DamageValue = GetGainDamage();
-		ApplyDamage(DamageValue);
+		RealDealtAmount += ApplyDamageAndReturnRealDealtAmount(DamageValue);
 		SetGainDamage(0.0f);
 	}
 	else if (Data.EvaluatedData.Attribute == GetGainHeadshotDamageAttribute())
 	{
 		const float HeadDamageValue = GetGainHeadshotDamage();
 		const float DamageValue = CalculateHeadshotDamage(HeadDamageValue);
-		ApplyDamage(DamageValue);
+		RealDealtAmount += ApplyDamageAndReturnRealDealtAmount(DamageValue);
 		SetGainHeadshotDamage(0.0f);
 	}
 	else if (Data.EvaluatedData.Attribute == GetGainHealthAttribute())
@@ -73,6 +84,33 @@ void UITHealthSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackDat
 		const float NewValue = FMath::Clamp(GetShield() + RestoreValue, 0, GetMaxShield());
 		SetShield(NewValue);
 		SetGainShield(0.0f);
+	}
+
+	if (RealDealtAmount > 0)
+	{
+		AITPlayerState* AttackerPlayerState = Cast<AITPlayerState>(Instigator);
+		if (IsValid(AttackerPlayerState))
+		{
+			UAbilitySystemComponent* AttackerASC = AttackerPlayerState->GetAbilitySystemComponent();
+			AccumulateDamageDealt(AttackerASC, RealDealtAmount);
+
+			if (GetHealth() <= 0)
+			{
+				AccumulateKillCount(AttackerASC);
+				AITBattlePlayerController* AttackerController = Cast<AITBattlePlayerController>(AttackerPlayerState->GetOwningController());
+
+				AActor* TargetActor = Data.Target.GetOwnerActor();
+				if (IsValid(TargetActor))
+				{
+					AITPlayerState* TargetPlayerState = Cast<AITPlayerState>(TargetActor);
+					if (IsValid(TargetPlayerState))
+					{
+						AITBattlePlayerController* TargetController = Cast<AITBattlePlayerController>(TargetPlayerState->GetOwningController());
+						NotifyKillToClients(AttackerController, TargetController);
+					}
+				}
+			}
+		}
 	}
 
 	if (GetHealth() != BeforeHealth)
@@ -145,18 +183,115 @@ float UITHealthSet::CalculateHeadshotDamage(float InDamage)
 	return InDamage * ReducedRate;
 }
 
-void UITHealthSet::ApplyDamage(float InDamage)
+float UITHealthSet::ApplyDamageAndReturnRealDealtAmount(float InDamage)
 {
 	float RemainDamage = InDamage;
+	float DealtAmount = 0;
 
 	const float ReducedShield = FMath::Min(GetShield(), RemainDamage);
 	SetShield(GetShield() - ReducedShield);
 	RemainDamage -= ReducedShield;
+	DealtAmount += ReducedShield;
 	
 	if (!FMath::IsNearlyZero(RemainDamage))
 	{
 		const float ReducedHealth = FMath::Min(GetHealth(), RemainDamage);
 		SetHealth(GetHealth() - ReducedHealth);
+		DealtAmount += ReducedHealth;
+	}
+	return DealtAmount;
+}
+
+void UITHealthSet::AccumulateDamageDealt(UAbilitySystemComponent* ASC, float DamageDealt)
+{
+	if (IsValid(ASC))
+	{
+		float OldValue = ASC->GetNumericAttribute(UITCombatSet::GetDamageDealtAttribute());
+		float NewValue = OldValue + DamageDealt;
+		ASC->SetNumericAttributeBase(UITCombatSet::GetDamageDealtAttribute(), NewValue);
+	}
+}
+
+void UITHealthSet::AccumulateKillCount(UAbilitySystemComponent* ASC)
+{
+	if (IsValid(ASC))
+	{
+		float OldValue = ASC->GetNumericAttribute(UITCombatSet::GetKillCountAttribute());
+		float NewValue = OldValue + 1;
+		ASC->SetNumericAttributeBase(UITCombatSet::GetKillCountAttribute(), NewValue);
+	}
+}
+
+void UITHealthSet::NotifyKillToClients(AITBattlePlayerController* AttackerController, AITBattlePlayerController* TargetController)
+{
+	if (!IsValid(AttackerController))
+	{
+		return;
+	}
+	if (!IsValid(TargetController))
+	{
+		return;
+	}
+
+	AITPlayerState* AttackerPlayerState = AttackerController->GetITPlayerState();;
+	AITPlayerState* TargetPlayerState = TargetController->GetITPlayerState();;
+
+	if (!IsValid(AttackerPlayerState))
+	{
+		return;
+	}
+	if (!IsValid(TargetPlayerState))
+	{
+		return;
+	}
+
+	FText KillPlayerName = FText::FromString(AttackerController->PlayerState->GetPlayerName());
+	FText DiePlayerName = FText::FromString(TargetController->PlayerState->GetPlayerName());
+
+	UTexture2D* KillCharacter = nullptr;
+	if (AttackerPlayerState->GetPawnData())
+	{
+		KillCharacter = AttackerPlayerState->GetPawnData()->Thumbnail;
+	}
+
+	UTexture2D* DieCharacter = nullptr;
+	if (TargetPlayerState->GetPawnData())
+	{
+		DieCharacter = TargetPlayerState->GetPawnData()->Thumbnail;
+	}
+
+	UTexture2D* KillWeapon = nullptr;
+	UITWeaponManagerComponent* WeaponManagerComponent = AttackerPlayerState->GetITWeaponManagerComponent();
+	if (IsValid(WeaponManagerComponent))
+	{
+		UITItemInstance* WeaponInstance = WeaponManagerComponent->GetCurrentWeapon();
+		if (IsValid(WeaponInstance))
+		{
+			UITItemDefinition* WeaponDefinition = WeaponInstance->GetItemDefinition();
+			if (IsValid(WeaponDefinition))
+			{
+				KillWeapon = WeaponDefinition->ItemIcon;
+			}
+		}
+	}
+
+	AttackerController->ClientRPC_AddNotify(KillPlayerName, DiePlayerName);
+
+	if (AttackerController->GetWorld())
+	{
+		AITBattleGameMode* BattleGameMode = AttackerController->GetWorld()->GetAuthGameMode<AITBattleGameMode>();
+		if (IsValid(BattleGameMode))
+		{
+			const TArray<TObjectPtr<APlayerController>>& MatchPlayers = BattleGameMode->GetMatchPlayers();
+			for (APlayerController* MatchPlayer : MatchPlayers)
+			{
+				AITBattlePlayerController* ITMatchPlayer = Cast<AITBattlePlayerController>(MatchPlayer);
+				if (IsValid(ITMatchPlayer))
+				{
+					ITMatchPlayer->ClientRPC_AddKillLog(KillCharacter, KillPlayerName, DieCharacter, DiePlayerName, KillWeapon);
+				}
+			}
+		}
 	}
 }
 

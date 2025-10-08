@@ -11,6 +11,7 @@ class IMITATIONTRIGGER_API AITMinimapCapture : public AActor
 public:
 	AITMinimapCapture();
 	virtual void BeginPlay() override;
+	void CaptureOnce();
 
 protected:
 	void OnMapLoaded(UWorld* LoadedWorld);

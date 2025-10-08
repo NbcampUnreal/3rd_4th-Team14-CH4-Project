@@ -6,7 +6,6 @@
 
 class UEditableTextBox;
 class UButton;
-class UTextBlock;
 
 UCLASS()
 class IMITATIONTRIGGER_API UITTitleWidget : public UUserWidget
@@ -15,41 +14,15 @@ class IMITATIONTRIGGER_API UITTitleWidget : public UUserWidget
 
 public:
 	virtual void NativeConstruct() override;
-	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
-
-	// 매칭 상태 업데이트 (PlayerController에서 호출)
-	UFUNCTION(BlueprintCallable)
-	void UpdateMatchmakingState(bool bIsInQueue);
 
 protected:
+	// 타이틀 화면 전용 위젯들
 	UPROPERTY(meta = (BindWidget), BlueprintReadWrite)
 	UEditableTextBox* ServerIPEdit;
-	UPROPERTY(meta = (BindWidget), BlueprintReadWrite)
-	UButton* PlayButton;
-	UPROPERTY(meta = (BindWidget), BlueprintReadWrite)
-	UButton* ExitButton;
-	UPROPERTY(meta = (BindWidget), BlueprintReadWrite)
-	UButton* StartButton;
 
 	UPROPERTY(meta = (BindWidget), BlueprintReadWrite)
-	UTextBlock* StartButtonText;
-
-
+	UButton* JoinServerButton;  // PlayButton → JoinServerButton으로 변경
 
 	UFUNCTION()
-	void OnPlayClicked();
-
-	UFUNCTION()
-	void OnExitClicked();
-
-	UFUNCTION()
-	void OnStartClicked();
-
-private:
-	// 현재 매칭 상태
-	bool bIsInMatchmakingQueue = false;
-
-	// UI 업데이트
-	void UpdateStartButtonAppearance();
-
+	void OnJoinServerClicked();  // OnPlayClicked → OnJoinServerClicked로 변경
 };

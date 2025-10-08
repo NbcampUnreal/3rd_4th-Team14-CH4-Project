@@ -14,18 +14,24 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> TitleUIClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> LobbyUIClass;
+
 	UFUNCTION(BlueprintCallable)
 	bool IsInMatchmakingQueue() const { return bIsInMatchmakingQueue; }
 
 protected:
-	UPROPERTY()
-	TObjectPtr<UUserWidget> TitleUIInstance;
-
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
+	UPROPERTY()
+	TObjectPtr<UUserWidget> TitleUIInstance;
+
+	UPROPERTY()
+	TObjectPtr<UUserWidget> LobbyUIInstance;
+	
 	// UI 설정
-	void SetupTitleUI();
+	void SetupUI();
 
 	// 매칭 상태
 	UPROPERTY()

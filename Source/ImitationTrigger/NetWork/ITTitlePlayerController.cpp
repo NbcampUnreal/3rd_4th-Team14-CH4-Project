@@ -4,6 +4,7 @@
 #include "Network/ITLobbyGameMode.h"
 #include "Network/ITTitleGameMode.h"
 #include "Network/ITTitleWidget.h"
+#include "Network/ITLobbyWidget.h"
 
 void AITTitlePlayerController::BeginPlay()
 {
@@ -19,36 +20,18 @@ void AITTitlePlayerController::BeginPlay()
 			CurrentMapName.Contains(TEXT("Lobby")) ||
 			CurrentMapName.Contains(TEXT("Entry")))
 		{
-			SetupTitleUI();  // UI 모드 설정
+			SetupUI();  // UI 모드 설정
 		}
 		else
 		{
 			SetGameInputMode();  // 게임 모드 설정
 		}
-
-		/*
-		if (TitleUIClass)
-		{
-			TitleUIInstance = CreateWidget<UUserWidget>(this, TitleUIClass);
-			if (TitleUIInstance)
-			{
-				TitleUIInstance->AddToViewport();
-				FInputModeUIOnly Mode;
-				Mode.SetWidgetToFocus(TitleUIInstance->GetCachedWidget());
-				SetInputMode(Mode);
-				bShowMouseCursor = true;
-			}
-		}
-		else
-		{
-			UE_LOG(LogTemp, Error, TEXT("TitleUIClass is null!"));
-		}*/
 	}
 }
 
 void AITTitlePlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	// ⭐ 게임 종료 시 매칭 큐에서 자동 제거
+	// 게임 종료 시 매칭 큐에서 자동 제거
 	if (bIsInMatchmakingQueue && EndPlayReason != EEndPlayReason::LevelTransition)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Player disconnecting - Remove from matchmaking queue"));
@@ -70,18 +53,40 @@ void AITTitlePlayerController::SetGameInputMode()
 	UE_LOG(LogTemp, Warning, TEXT("Game input mode activated"));
 }
 
-void AITTitlePlayerController::SetupTitleUI()
+void AITTitlePlayerController::SetupUI()
 {
-	if (TitleUIClass)
+	FString CurrentMapName = GetWorld()->GetMapName();
+
+	if (CurrentMapName.Contains(TEXT("Title")))
 	{
-		TitleUIInstance = CreateWidget<UUserWidget>(this, TitleUIClass);
-		if (TitleUIInstance)
+		// 타이틀 맵: 타이틀 위젯 생성
+		if (TitleUIClass)
 		{
-			TitleUIInstance->AddToViewport();
-			FInputModeUIOnly Mode;
-			Mode.SetWidgetToFocus(TitleUIInstance->GetCachedWidget());
-			SetInputMode(Mode);
-			bShowMouseCursor = true;
+			TitleUIInstance = CreateWidget<UUserWidget>(this, TitleUIClass);
+			if (TitleUIInstance)
+			{
+				TitleUIInstance->AddToViewport();
+				FInputModeUIOnly Mode;
+				Mode.SetWidgetToFocus(TitleUIInstance->GetCachedWidget());
+				SetInputMode(Mode);
+				bShowMouseCursor = true;
+			}
+		}
+	}
+	else if (CurrentMapName.Contains(TEXT("Lobby")) || CurrentMapName.Contains(TEXT("Entry")))
+	{
+		// 로비 맵: 로비 위젯 생성
+		if (LobbyUIClass)
+		{
+			LobbyUIInstance = CreateWidget<UUserWidget>(this, LobbyUIClass);
+			if (LobbyUIInstance)
+			{
+				LobbyUIInstance->AddToViewport();
+				FInputModeUIOnly Mode;
+				Mode.SetWidgetToFocus(LobbyUIInstance->GetCachedWidget());
+				SetInputMode(Mode);
+				bShowMouseCursor = true;
+			}
 		}
 	}
 }
@@ -136,6 +141,9 @@ void AITTitlePlayerController::ServerRPC_JoinMatchmakingQueue_Implementation()
 		// LobbyGameMode인 경우 매칭 대기열에 추가
 		if (AITLobbyGameMode* GameMode = Cast<AITLobbyGameMode>(CurrentGameMode))
 		{
+			bIsInMatchmakingQueue = true;
+			ClientRPC_UpdateMatchmakingState(true);
+
 			GameMode->JoinMatchmakingQueue(this);
 			UE_LOG(LogTemp, Warning, TEXT("Successfully joined matchmaking queue"));
 		}
@@ -171,13 +179,13 @@ void AITTitlePlayerController::ServerRPC_LeaveMatchmakingQueue_Implementation()
 
 void AITTitlePlayerController::ClientRPC_UpdateMatchmakingState_Implementation(bool bIsInQueue)
 {
-	// ⭐ 클라이언트 상태 동기화
+	// 클라이언트 상태 동기화
 	bIsInMatchmakingQueue = bIsInQueue;
 
-	// UI에 상태 변경 알림
-	if (UITTitleWidget* TitleWidget = Cast<UITTitleWidget>(TitleUIInstance))
+	// 로비 위젯에만 매칭 상태 업데이트 (타이틀 위젯은 매칭 기능 없음)
+	if (UITLobbyWidget* LobbyWidget = Cast<UITLobbyWidget>(LobbyUIInstance))
 	{
-		TitleWidget->UpdateMatchmakingState(bIsInQueue);
+		LobbyWidget->UpdateMatchmakingState(bIsInQueue);
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("Client matchmaking state updated: %s"),

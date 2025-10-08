@@ -23,7 +23,9 @@ AITItemActor::AITItemActor()
 	SetRootComponent(StaticMeshComponent);
 	StaticMeshComponent->SetIsReplicated(true);
 	StaticMeshComponent->SetSimulatePhysics(true);
+	StaticMeshComponent->SetUseCCD(true);
 	StaticMeshComponent->SetCollisionProfileName(TEXT("PhysicsActor"));
+	StaticMeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 
 	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
 	SphereComponent->SetupAttachment(RootComponent);

@@ -6,8 +6,11 @@
 #include "AbilitySystemComponent.h"
 #include "ITItemDefinition_Weapon.h"
 #include "Character/ITCharacter.h"
+#include "Player/ITBattlePlayerController.h"
+#include "Player/ITPlayerState.h"
 #include "Item/ITItemGameplayTags.h"
 #include "Item/ITItemInstance.h"
+#include "AbilitySystem/Attributes/ITHealthSet.h"
 
 UITWeaponFireAbility::UITWeaponFireAbility()
 {
@@ -63,6 +66,7 @@ void UITWeaponFireAbility::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	ActorInfo->PlayerController->GetPlayerViewPoint(TraceStart, ViewRotation);
 	FVector TraceDirection = ViewRotation.Vector();
 
+	PlayClientHUDAnimationOnFire(AvatarActor);
 	Fire(TraceStart, TraceDirection);
 
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
@@ -79,11 +83,22 @@ void UITWeaponFireAbility::ApplyCooldown(const FGameplayAbilitySpecHandle Handle
 
 void UITWeaponFireAbility::Fire(const FVector& StartLocation, const FVector& FireDirection)
 {
+	if (AITCharacter* Character = Cast<AITCharacter>(GetAvatarActorFromActorInfo()))
+	{
+		Character->MulticastRPC_PlayFireEffects(ReboundAnimMontage, FireAnimMontage, MatchedSkeleton);
+	}
 }
 
 void UITWeaponFireAbility::ApplyWeaponDamage(AActor* TargetActor)
 {
 	if (!TargetActor || !DamageEffect || !Cast<AITCharacter>(TargetActor))
+	{
+		return;
+	}
+
+	AITCharacter* ITCharacter = Cast<AITCharacter>(TargetActor);
+	AITPlayerState* ITPlayerState = ITCharacter->GetITPlayerState();
+	if (IsValid(ITPlayerState) && !ITPlayerState->bIsAlive)
 	{
 		return;
 	}
@@ -120,6 +135,9 @@ void UITWeaponFireAbility::ApplyWeaponDamage(AActor* TargetActor)
 		                                DamageSpecHandle,
 		                                TargetDataHandle);
 	}
+
+	AActor* AvaterActor = ActorInfo->AvatarActor.Get();
+	PlayClientHUDAnimationOnHit(AvaterActor, TargetActor);
 }
 
 UITItemDefinition_Weapon* UITWeaponFireAbility::GetWeaponDefinition() const
@@ -138,4 +156,43 @@ UITItemDefinition_Weapon* UITWeaponFireAbility::GetWeaponDefinition() const
 
 	UITItemDefinition_Weapon* WeaponDefinition = Cast<UITItemDefinition_Weapon>(WeaponInstance->GetItemDefinition());
 	return WeaponDefinition;
+}
+
+void UITWeaponFireAbility::PlayClientHUDAnimationOnFire(AActor* Attacker)
+{
+	AITCharacter* ITAttacker = Cast<AITCharacter>(Attacker);
+	if (IsValid(ITAttacker))
+	{
+		AITBattlePlayerController* PlayerController = ITAttacker->GetController<AITBattlePlayerController>();
+		if (IsValid(PlayerController))
+		{
+			PlayerController->ClientRPC_OnFireAnimation();
+		}
+	}
+}
+
+void UITWeaponFireAbility::PlayClientHUDAnimationOnHit(AActor* Attacker, AActor* Target)
+{
+	AITCharacter* ITAttacker = Cast<AITCharacter>(Attacker);
+	AITCharacter* ITTarget = Cast<AITCharacter>(Target);
+	if (IsValid(ITAttacker) && IsValid(ITTarget))
+	{
+		AITBattlePlayerController* PlayerController = ITAttacker->GetController<AITBattlePlayerController>();
+		if (IsValid(PlayerController))
+		{
+			UAbilitySystemComponent* TargetASC = ITTarget->GetAbilitySystemComponent();
+			if (IsValid(TargetASC))
+			{
+				float RemainTargetHealth = TargetASC->GetNumericAttribute(UITHealthSet::GetHealthAttribute());
+				if (RemainTargetHealth > 0)
+				{
+					PlayerController->ClientRPC_PlayHitMarkerAnimation();
+				}
+				else
+				{
+					PlayerController->ClientRPC_PlayKillMarkerAnimation();
+				}
+			}
+		}
+	}
 }

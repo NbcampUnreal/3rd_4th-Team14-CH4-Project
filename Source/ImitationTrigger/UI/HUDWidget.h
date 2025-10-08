@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "HUDWidget.generated.h"
 
+class USkillWidget;
 class UAmmoWidget;
 class UBorder;
 class UEquipmentIconWidget;
@@ -85,12 +86,18 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void UpdateRifleAmmo(int32 CurrentAmmo, int32 MaxAmmo);
+	
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void UpdateShotgunAmmo(int32 CurrentAmmo, int32 MaxAmmo);
+	
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void UpdateSniperAmmo(int32 CurrentAmmo, int32 MaxAmmo);
+	
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void HasWeapon(bool bHasWeapon);
+
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void OnSkill(float CoolDown);
 	
 protected:
 	
@@ -160,6 +167,9 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	UAmmoWidget* AmmoWidget;
+
+	UPROPERTY(meta = (BindWidget))
+	USkillWidget* SkillSlotWidget;
 
 
 private:

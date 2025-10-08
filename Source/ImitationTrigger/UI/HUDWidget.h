@@ -21,6 +21,7 @@ class UUltimateGaugeWidget;
 class UTextBlock;
 class UImage;
 class UMaterialInstanceDynamic;
+class UAreaWidget;
 
 
 UCLASS()
@@ -171,6 +172,8 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	USkillWidget* SkillSlotWidget;
 
+	UPROPERTY(meta = (BindWidget))
+	UAreaWidget* AreaWidget;
 
 private:
 

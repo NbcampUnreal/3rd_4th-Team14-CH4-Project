@@ -21,6 +21,7 @@ class UUltimateGaugeWidget;
 class UTextBlock;
 class UImage;
 class UMaterialInstanceDynamic;
+class UAreaWidget;
 
 
 UCLASS()
@@ -99,6 +100,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void OnSkill(float CoolDown);
 	
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void OnUpdateAreaInfo(int32 CurrentRoundNumber, int32 AreaTime, float Distance, bool bIsWait);
+
 protected:
 	
 	virtual void NativeConstruct() override;
@@ -171,6 +175,8 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	USkillWidget* SkillSlotWidget;
 
+	UPROPERTY(meta = (BindWidget))
+	UAreaWidget* AreaWidget;
 
 private:
 

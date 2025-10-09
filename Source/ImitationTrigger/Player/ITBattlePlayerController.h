@@ -48,6 +48,8 @@ public:
 	UFUNCTION(Client, Reliable)
 	void ClientRPC_AddKillLog(UTexture2D* KillCharacter, const FText& KillName, UTexture2D* DieCharacter, const FText& DieName, UTexture2D* KillWeapon);
 
+	void OnUpdateAreaInfo(int32 CurrentRoundNumber, int32 AreaTime, float Distance, bool bIsWait);
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
 	TSubclassOf<UHUDWidget> HUDWidgetClass;

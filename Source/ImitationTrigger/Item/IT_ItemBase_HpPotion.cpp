@@ -9,9 +9,9 @@ void AIT_ItemBase_HpPotion::OnItemOverlap(UPrimitiveComponent* OverlappedComp, A
 {
 	if (OtherActor && OtherActor != this)
 	{
-		// TODO: GAS Heal Effect Àû¿ë °¡´É
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), nullptr, GetActorLocation()); // Heal VFX
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), nullptr, GetActorLocation());   // Heal Sound
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), nullptr, GetActorLocation()); // Èú VFX
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), nullptr, GetActorLocation());   // Èú Sound
 		Destroy();
 	}
 }
+

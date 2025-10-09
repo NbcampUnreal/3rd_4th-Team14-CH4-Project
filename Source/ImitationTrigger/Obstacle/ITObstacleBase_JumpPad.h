@@ -17,12 +17,26 @@ class IMITATIONTRIGGER_API AITObstacleBase_JumpPad : public AITObstacleBase
 public:
     AITObstacleBase_JumpPad();
 
+
+protected:
+    virtual void BeginPlay() override;
+    virtual void Tick(float DeltaTime) override;
+
+
 protected:
     UPROPERTY(VisibleAnywhere)
     UBoxComponent* Collision;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "JumpPad")
     float LaunchStrength = 2000.f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visual")
+    float GrowDuration;
+
+    bool bGrowing;
+    float StartTime;
+
+
 
     UFUNCTION()
     void OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,

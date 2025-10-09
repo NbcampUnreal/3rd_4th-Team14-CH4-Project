@@ -30,7 +30,7 @@ protected:
 
 	virtual void BeginPlay() override;
 
-	// 오버랩 시 처리
+
 	UFUNCTION()
 	virtual void OnItemOverlap(
 		UPrimitiveComponent* OverlappedComp,

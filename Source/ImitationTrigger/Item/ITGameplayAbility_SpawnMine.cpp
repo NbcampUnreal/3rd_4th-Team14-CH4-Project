@@ -6,7 +6,6 @@
 
 UITGameplayAbility_SpawnMine::UITGameplayAbility_SpawnMine()
 {
-    // 기본 ItemClass 지정
     ItemClass = AIT_ItemBase_Mine::StaticClass();
 }
 
@@ -16,10 +15,10 @@ void UITGameplayAbility_SpawnMine::ActivateAbility(
     const FGameplayAbilityActivationInfo ActivationInfo,
     const FGameplayEventData* TriggerEventData)
 {
-    if (CommitAbility(Handle, ActorInfo, ActivationInfo)) // 코스트/쿨타임 소모
+    if (CommitAbility(Handle, ActorInfo, ActivationInfo))
     {
         AActor* Avatar = ActorInfo->AvatarActor.Get();
-        if (Avatar)
+        if (Avatar && ItemClass)
         {
             FVector SpawnLoc = Avatar->GetActorLocation() + Avatar->GetActorForwardVector() * 200.f;
             FRotator SpawnRot = Avatar->GetActorRotation();

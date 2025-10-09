@@ -13,6 +13,39 @@ AITObstacleBase_JumpPad::AITObstacleBase_JumpPad()
     Collision->SetupAttachment(SceneRoot);
 
     Collision->OnComponentBeginOverlap.AddDynamic(this, &AITObstacleBase_JumpPad::OnOverlap);
+
+    GrowDuration = 0.5f;
+    bGrowing = false;
+}
+
+void AITObstacleBase_JumpPad::BeginPlay()
+{
+    Super::BeginPlay();
+
+    SetActorScale3D(FVector(0.1f));
+
+    StartTime = GetWorld()->GetTimeSeconds();
+    bGrowing = true;
+}
+
+void AITObstacleBase_JumpPad::Tick(float DeltaTime)
+{
+    Super::Tick(DeltaTime);
+
+    if (bGrowing)
+    {
+        float Elapsed = GetWorld()->GetTimeSeconds() - StartTime;
+        float Alpha = Elapsed / GrowDuration;
+        Alpha = FMath::Clamp(Alpha, 0.f, 1.f);
+
+        FVector NewScale = FMath::Lerp(FVector(0.1f), FVector(1.0f), Alpha);
+        SetActorScale3D(NewScale);
+
+        if (Alpha >= 1.f)
+        {
+            bGrowing = false;
+        }
+    }
 }
 
 void AITObstacleBase_JumpPad::OnOverlap(

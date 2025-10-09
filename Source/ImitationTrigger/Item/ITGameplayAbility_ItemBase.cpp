@@ -8,18 +8,29 @@
 UITGameplayAbility_ItemBase::UITGameplayAbility_ItemBase()
 {
     InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+    NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::ServerOnly;
 }
 
 void UITGameplayAbility_ItemBase::SpawnItem(const FVector& SpawnLocation, const FRotator& SpawnRotation)
 {
-    if (!ItemClass) return;
+    if (!ItemClass)
+    {
+        return;
+    }
 
-    UWorld* World = GetWorld();
-    if (!World) return;
+    if (!HasAuthority(GetCurrentActivationInfoRef()))
+    {
+        return;
+    }
 
-    FActorSpawnParameters SpawnParams;
-    SpawnParams.Owner = GetOwningActorFromActorInfo();
-    SpawnParams.Instigator = Cast<APawn>(GetOwningActorFromActorInfo());
+    if (UWorld* World = GetWorld())
+    {
+        FActorSpawnParameters Params;
+        Params.Owner = GetOwningActorFromActorInfo();
+        Params.Instigator = Cast<APawn>(GetOwningActorFromActorInfo());
+        Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-    World->SpawnActor<AIT_ItemBase>(ItemClass, SpawnLocation, SpawnRotation, SpawnParams);
+        World->SpawnActor<AIT_ItemBase>(ItemClass, SpawnLocation, SpawnRotation, Params);
+    }
 }
+

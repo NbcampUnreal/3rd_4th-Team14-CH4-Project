@@ -4,20 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "Obstacle/ITGameplayAbility_Obstacle.h"
-#include "ITGameplayAbility_SpawnObstacle.generated.h"
+#include "ITGameplayAbility_SpawnToyTowerAndJumpPad.generated.h"
 
 
 UCLASS()
-class IMITATIONTRIGGER_API UITGameplayAbility_SpawnObstacle : public UITGameplayAbility_Obstacle
+class IMITATIONTRIGGER_API UITGameplayAbility_SpawnToyTowerAndJumpPad : public UITGameplayAbility_Obstacle
 {
     GENERATED_BODY()
 
 public:
-    UITGameplayAbility_SpawnObstacle();
+    UITGameplayAbility_SpawnToyTowerAndJumpPad();
 
 protected:
-    //UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Cooldown")
-    //TSubclassOf<UGameplayEffect> CooldownEffectClass;
 
 protected:
     virtual void ActivateAbility(

@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -6,9 +5,7 @@
 #include "Obstacle/ITGameplayAbility_Obstacle.h"
 #include "ITGameplayAbility_SpawnDropBox.generated.h"
 
-/**
- * 
- */
+
 UCLASS()
 class IMITATIONTRIGGER_API UITGameplayAbility_SpawnDropBox : public UITGameplayAbility_Obstacle
 {
@@ -26,7 +23,6 @@ protected:
     ) override;
 
 protected:
-    /** DropBox ½ºÆù */
     AActor* SpawnObstacleActor(const FGameplayAbilityActorInfo* ActorInfo);
 	
 };

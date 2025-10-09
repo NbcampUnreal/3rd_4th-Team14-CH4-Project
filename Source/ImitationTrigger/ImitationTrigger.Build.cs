@@ -25,6 +25,8 @@ public class ImitationTrigger : ModuleRules
 			"NetCore",
 			// Niagara
             "Niagara",
+			// Physics
+			"PhysicsCore"
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });

@@ -16,11 +16,15 @@ AIT_ItemBase::AIT_ItemBase()
 	Collision->InitSphereRadius(50.f);
 	Collision->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 	Collision->SetupAttachment(SceneRoot);
+	Collision->OnComponentBeginOverlap.AddDynamic(this, &AIT_ItemBase::OnItemOverlap);
+
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(Collision);
 
-	Collision->OnComponentBeginOverlap.AddDynamic(this, &AIT_ItemBase::OnItemOverlap);
+	bReplicates = true;
+	SetReplicateMovement(true);
+
 }
 
 void AIT_ItemBase::BeginPlay()
@@ -33,9 +37,19 @@ void AIT_ItemBase::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+// 서버 전용으로 오버랩 처리
 void AIT_ItemBase::OnItemOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	// 파생 클래스에서 구현
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+
+	if (!OtherActor || OtherActor == this)
+	{
+		return;
+	}
 }
 

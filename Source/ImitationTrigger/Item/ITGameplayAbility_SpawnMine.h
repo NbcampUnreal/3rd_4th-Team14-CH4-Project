@@ -17,9 +17,7 @@ public:
     UITGameplayAbility_SpawnMine();
 
 protected:
-    //UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "VFX")
-    //UNiagaraSystem* 
-    
+
 
     virtual void ActivateAbility(
         const FGameplayAbilitySpecHandle Handle,

@@ -1,6 +1,4 @@
 
-
-// 3.(2) 지면에서 올라온 뒤에 멈춤. 
 #include "Obstacle/ITObstacleBase_ToyTower.h"
 
 AITObstacleBase_ToyTower::AITObstacleBase_ToyTower()
@@ -35,7 +33,6 @@ void AITObstacleBase_ToyTower::Tick(float DeltaTime)
 	float ElapsedTime = GetWorld()->GetTimeSeconds() - StartTime;
 	float Alpha = ElapsedTime / RiseDuration;
 
-	// 선형 보간 0이랑 1 사이로 정함.
 	Alpha = FMath::Clamp(Alpha, 0.f, 1.f);
 
 	FVector NewLoc = FMath::Lerp(StartLocation, TargetLocation, Alpha);

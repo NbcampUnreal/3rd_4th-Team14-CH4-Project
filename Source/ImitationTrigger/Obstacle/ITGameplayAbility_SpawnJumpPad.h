@@ -27,6 +27,5 @@ protected:
     ) override;
 
 protected:
-    //AActor* SpawnObstacleActor(const FGameplayAbilityActorInfo* ActorInfo);
 
 };

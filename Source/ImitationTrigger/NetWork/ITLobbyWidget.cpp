@@ -1,9 +1,9 @@
 #include "Network/ITLobbyWidget.h"
+#include "Network/ITTitlePlayerController.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
-#include "Network/ITTitlePlayerController.h"
 #include "ITGameInstance.h"
 
 void UITLobbyWidget::NativeConstruct()
@@ -139,13 +139,11 @@ void UITLobbyWidget::UpdateStartButtonAppearance()
 	{
 		if (bIsInMatchmakingQueue)
 		{
-			// 매칭 중: 빨간색 "Match Cancel"
 			StartButtonText->SetText(FText::FromString(TEXT("게임 찾는 중(취소)")));
 			//StartButton->SetBackgroundColor(FLinearColor::Red);
 		}
 		else
 		{
-			// 대기 중: 초록색 "Match Start"
 			StartButtonText->SetText(FText::FromString(TEXT("게임 시작")));
 			//StartButton->SetBackgroundColor(FLinearColor::Green);
 		}

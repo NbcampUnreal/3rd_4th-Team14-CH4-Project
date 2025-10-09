@@ -11,7 +11,6 @@ class UUserWidget;
 class UAbilitySystemComponent;
 class UITItemInstance;
 
-
 UCLASS()
 class IMITATIONTRIGGER_API AITBattlePlayerController : public AITPlayerController
 {
@@ -37,6 +36,22 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_SetCharacterIndex(int32 CharIndex);
 
+	UFUNCTION(Client, Unreliable)
+	void ClientRPC_PlayHitMarkerAnimation();
+
+	UFUNCTION(Client, Unreliable)
+	void ClientRPC_PlayKillMarkerAnimation();
+
+	UFUNCTION(Client, Unreliable)
+	void ClientRPC_OnFireAnimation();
+
+	UFUNCTION(Client, Reliable)
+	void ClientRPC_AddNotify(const FText& KillPlayer, const FText& DiePlayer);
+
+	UFUNCTION(Client, Reliable)
+	void ClientRPC_AddKillLog(UTexture2D* KillCharacter, const FText& KillName, UTexture2D* DieCharacter, const FText& DieName, UTexture2D* KillWeapon);
+
+	void OnUpdateAreaInfo(int32 CurrentRoundNumber, int32 AreaTime, float Distance, bool bIsWait);
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
@@ -53,7 +68,6 @@ protected:
 
 	UPROPERTY()
 	int32 SelectedCharacterIndex = -1;
-
 
 private:
 	void InitWidgets();

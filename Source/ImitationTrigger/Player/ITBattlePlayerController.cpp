@@ -3,14 +3,15 @@
 #include "AbilitySystem/ITAbilitySystemComponent.h"
 #include "AbilitySystem/Attributes/ITHealthSet.h"
 #include "System/ITLogChannel.h"
+#include "Kismet/GameplayStatics.h"
 #include "UI/HUDWidget.h"
+#include "UI/ITMinimapCapture.h"
 #include "Item/ITItemInstance.h"
 #include "Item/Weapon/ITItemDefinition_Weapon.h"
 #include "Item/Weapon/ITWeaponManagerComponent.h"
 #include "Engine/Engine.h"
 #include "Engine/GameViewportClient.h"
 #include "Network/ITGameInstance.h"
-#include "Player/ITPlayerState.h"
 #include "Character/ITCharacter.h"
 #include "Character/ITPawnData.h"
 #include "Character/ITPawnDataList.h"
@@ -58,6 +59,14 @@ void AITBattlePlayerController::PostNetInit()
 void AITBattlePlayerController::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
+
+	// 미니맵 Caputer 한번 더 (멀티플레이어 환경에서, 한 번에 Capture가 안되는 경우가 있음)
+	AActor* Actor = UGameplayStatics::GetActorOfClass(this, AITMinimapCapture::StaticClass());
+	AITMinimapCapture* Capture = Cast<AITMinimapCapture>(Actor);
+	if (IsValid(Capture))
+	{
+		Capture->CaptureOnce();
+	}
 
 	// 클라이언트에 PlayerState가 준비 되어야 HUD를 초기화할 수 있다.
 	InitWidgets();
@@ -113,12 +122,11 @@ void AITBattlePlayerController::HideMapWidget()
 
 void AITBattlePlayerController::ServerRPC_SetCharacterIndex_Implementation(int32 CharIndex)
 {
-
 	SelectedCharacterIndex = CharIndex;
 
-	if(HasAuthority())
+	if (HasAuthority())
 	{
-		if(AITBattleGameMode* GM = GetWorld()->GetAuthGameMode<AITBattleGameMode>())
+		if (AITBattleGameMode* GM = GetWorld()->GetAuthGameMode<AITBattleGameMode>())
 		{
 			AITCharacter* ITChar = Cast<AITCharacter>(GetPawn());
 			ITChar->Destroy();
@@ -126,7 +134,46 @@ void AITBattlePlayerController::ServerRPC_SetCharacterIndex_Implementation(int32
 			GM->RestartPlayer(this);
 		}
 	}
-	
+}
+
+void AITBattlePlayerController::ClientRPC_AddNotify_Implementation(const FText& KillPlayer, const FText& DiePlayer)
+{
+	if (IsValid(HUDWidget))
+	{
+		HUDWidget->AddNotifyText(KillPlayer, DiePlayer);
+	}
+}
+
+void AITBattlePlayerController::ClientRPC_AddKillLog_Implementation(UTexture2D* KillCharacter, const FText& KillName, UTexture2D* DieCharacter, const FText& DieName, UTexture2D* KillWeapon)
+{
+	if (IsValid(HUDWidget))
+	{
+		HUDWidget->AddKillLog(KillCharacter, KillName, DieCharacter, DieName, KillWeapon);
+	}
+}
+
+void AITBattlePlayerController::ClientRPC_OnFireAnimation_Implementation()
+{
+	if (IsValid(HUDWidget))
+	{
+		HUDWidget->OnFire();
+	}
+}
+
+void AITBattlePlayerController::ClientRPC_PlayHitMarkerAnimation_Implementation()
+{
+	if (IsValid(HUDWidget))
+	{
+		HUDWidget->PlayHitMarkerAnimation();
+	}
+}
+
+void AITBattlePlayerController::ClientRPC_PlayKillMarkerAnimation_Implementation()
+{
+	if (IsValid(HUDWidget))
+	{
+		HUDWidget->PlayKillMarkerAnimation();
+	}
 }
 
 void AITBattlePlayerController::InitWidgets()
@@ -239,6 +286,14 @@ void AITBattlePlayerController::UpdateShield()
 			const float MaxShield = ITASC->GetNumericAttribute(UITHealthSet::GetMaxShieldAttribute());
 			HUDWidget->UpdateShield(Shield, MaxShield);
 		}
+	}
+}
+
+void AITBattlePlayerController::OnUpdateAreaInfo(int32 CurrentRoundNumber, int32 AreaTime, float Distance, bool bIsWait)
+{
+	if (IsValid(HUDWidget))
+	{
+		HUDWidget->OnUpdateAreaInfo(CurrentRoundNumber, AreaTime, Distance, bIsWait);
 	}
 }
 

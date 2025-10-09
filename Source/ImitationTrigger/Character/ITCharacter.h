@@ -6,6 +6,7 @@
 #include "GameplayTagContainer.h"
 #include "ITCharacter.generated.h"
 
+class UITAbilitySystemComponent;
 class AITPlayerController;
 class AITPlayerState;
 class UITPawnData;
@@ -22,6 +23,11 @@ class IMITATIONTRIGGER_API AITCharacter : public ACharacter, public IAbilitySyst
 
 public:
 	AITCharacter();
+
+	// 총기 이펙트를 다른 클라이언트에서도 볼 수 있게 해주는 멀티캐스트 함수
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastRPC_PlayFireEffects(
+		UAnimMontage* ReboundAnimMontage, UAnimMontage* FireAnimMontage, USkeleton* MatchedSkeleton);
 
 	UFUNCTION(BlueprintCallable, Category = "AITCharacter")
 	AITPlayerController* GetITPlayerController() const;
@@ -52,6 +58,10 @@ public:
 	UITCharacterPartComponent* GetITCharacterPartComponent();
 	UITCharacterAnimComponent* GetITCharacterAnimComponent();
 
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRPC_OnDead();
+
+protected:
 	UPROPERTY(EditDefaultsOnly, Replicated, Category = "PawnData")
 	TObjectPtr<const UITPawnData> PawnData;
 

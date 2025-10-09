@@ -2,6 +2,7 @@
 #include "Player/ITPlayerController.h"
 #include "Character/ITCharacter.h"
 #include "Character/ITPawnData.h"
+#include "Character/ITPawnDataList.h"
 #include "Item/Weapon/ITWeaponManagerComponent.h"
 #include "AbilitySystem/Attributes/ITHealthSet.h"
 #include "AbilitySystem/Attributes/ITAmmoSet.h"
@@ -116,7 +117,7 @@ bool AITPlayerState::ReplicateSubobjects(class UActorChannel* Channel, class FOu
 void AITPlayerState::OnReadyPawnData(APlayerState* Player, APawn* NewPawn, APawn* OldPawn)
 {
 	AITCharacter* ITCharacter = GetITCharacter();
-	if (IsValid(ITCharacter))
+	if (IsValid(ITCharacter) && IsValid(ITCharacter->GetPawnData()))
 	{
 		InitAbilitySystemComponent();
 
@@ -217,7 +218,7 @@ void AITPlayerState::BindWeaponChanged()
 			UITCharacterAnimComponent* AnimComponent = ITCharacter->GetITCharacterAnimComponent();
 			if (IsValid(AnimComponent))
 			{
-				WeaponManagerComponent->OnCurrentWeaponTypeChanged.AddDynamic(AnimComponent, &UITCharacterAnimComponent::OnUpdateCurrentWeapon);
+				WeaponManagerComponent->OnCurrentWeaponTypeChanged.AddUniqueDynamic(AnimComponent, &UITCharacterAnimComponent::OnUpdateCurrentWeapon);
 			}
 		}
 	}

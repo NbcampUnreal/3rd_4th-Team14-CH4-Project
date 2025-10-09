@@ -11,7 +11,11 @@
 #include "Item/Weapon/ITWeaponManagerComponent.h"
 #include "Engine/Engine.h"
 #include "Engine/GameViewportClient.h"
-
+#include "Network/ITGameInstance.h"
+#include "Character/ITCharacter.h"
+#include "Character/ITPawnData.h"
+#include "Character/ITPawnDataList.h"
+#include "GameModes/ITBattleGameMode.h"
 
 AITBattlePlayerController::AITBattlePlayerController()
 {
@@ -38,6 +42,20 @@ void AITBattlePlayerController::EndPlay(EEndPlayReason::Type EndPlayReason)
 	}
 }
 
+void AITBattlePlayerController::PostNetInit()
+{
+	Super::PostNetInit();
+	if (IsLocalController())
+	{
+		if (UITGameInstance* GI = Cast<UITGameInstance>(GetGameInstance()))
+		{
+			int32 CharIndex = GI->GetSelectedCharacterIndex();
+
+			ServerRPC_SetCharacterIndex(CharIndex);
+		}
+	}
+}
+
 void AITBattlePlayerController::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
@@ -56,6 +74,19 @@ void AITBattlePlayerController::OnRep_PlayerState()
 	SetInputMode(Mode); 
 	bShowMouseCursor = false;
 	
+}
+
+void AITBattlePlayerController::SetPawn(APawn* InPawn)
+{
+	if (HasAuthority() && SelectedCharacterIndex != -1)
+	{
+		if (AITCharacter* ITChar = Cast<AITCharacter>(InPawn))
+		{
+			ITChar->SetPawnDataByIndex(SelectedCharacterIndex);
+		}
+	}
+
+	Super::SetPawn(InPawn);
 }
 
 void AITBattlePlayerController::ToggleMapWidget()
@@ -86,6 +117,22 @@ void AITBattlePlayerController::HideMapWidget()
 	if (IsValid(MapWidget) && MapWidget->IsInViewport())
 	{
 		MapWidget->RemoveFromParent();
+	}
+}
+
+void AITBattlePlayerController::ServerRPC_SetCharacterIndex_Implementation(int32 CharIndex)
+{
+	SelectedCharacterIndex = CharIndex;
+
+	if (HasAuthority())
+	{
+		if (AITBattleGameMode* GM = GetWorld()->GetAuthGameMode<AITBattleGameMode>())
+		{
+			AITCharacter* ITChar = Cast<AITCharacter>(GetPawn());
+			ITChar->Destroy();
+			SetPawn(nullptr);
+			GM->RestartPlayer(this);
+		}
 	}
 }
 
@@ -281,4 +328,3 @@ void AITBattlePlayerController::OnSubWeaponUpdate(UITItemInstance* ItemInstance)
 		}
 	}
 }
-

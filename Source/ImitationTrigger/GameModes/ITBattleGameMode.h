@@ -16,6 +16,7 @@ public:
 
 	virtual void BeginPlay() override;
 	virtual void PostLogin(APlayerController* NewPlayer) override;
+	virtual void RestartPlayer(AController* NewPlayer) override;
 
 	const TArray<TObjectPtr<APlayerController>>& GetMatchPlayers() const { return MatchPlayers; }
 

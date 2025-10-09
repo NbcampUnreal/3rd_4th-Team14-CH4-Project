@@ -10,6 +10,7 @@ class UITAbilitySystemComponent;
 class AITPlayerController;
 class AITPlayerState;
 class UITPawnData;
+class UITPawnDataList;
 class UITCameraComponent;
 class UITHeroComponent;
 class UITCharacterPartComponent;
@@ -45,6 +46,7 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 
 	const UITPawnData* GetPawnData() const { return PawnData; }
+	void SetPawnDataByIndex(int32 Index);
 	TArray<FITCharacterPartHandle>& GetCharacterPartHandles() { return CharacterPartHandles; }
 
 	FGameplayTagContainer GetASCGameplayTags() const;
@@ -62,6 +64,11 @@ public:
 protected:
 	UPROPERTY(EditDefaultsOnly, Replicated, Category = "PawnData")
 	TObjectPtr<const UITPawnData> PawnData;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "PawnData")
+	TObjectPtr<UITPawnDataList> PawnDataList;
+
+protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "IT|Character")
 	TObjectPtr<UITCameraComponent> CameraComponent;

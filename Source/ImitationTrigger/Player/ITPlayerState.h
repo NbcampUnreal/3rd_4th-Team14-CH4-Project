@@ -16,6 +16,7 @@ class UITHealthSet;
 class UITAmmoSet;
 class UITCombatSet;
 class UITPawnData;
+class UITPawnDataList;
 struct FOnAttributeChangeData;
 
 UCLASS()
@@ -27,7 +28,6 @@ public:
 	AITPlayerState(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 	virtual void BeginPlay() override;
 	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
-
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UFUNCTION(BlueprintCallable, Category = "ITPlayerState")

@@ -32,13 +32,13 @@ protected:
 	UButton* ExitButton;
 
 	UPROPERTY(meta = (BindWidget), BlueprintReadWrite)
-	UButton* Character1;
+	UButton* Character0Button;
 
 	UPROPERTY(meta = (BindWidget), BlueprintReadWrite)
-	UButton* Character2;
+	UButton* Character1Button;
 
 	UPROPERTY(meta = (BindWidget), BlueprintReadWrite)
-	UButton* Character3;
+	UButton* Character2Button;
 
 	UFUNCTION()
 	void OnStartClicked();
@@ -46,9 +46,19 @@ protected:
 	UFUNCTION()
 	void OnExitClicked();
 
+	UFUNCTION()
+	void OnCharacter0Clicked();
+
+	UFUNCTION()
+	void OnCharacter1Clicked();
+
+	UFUNCTION()
+	void OnCharacter2Clicked();
+
 private:
 	// 현재 매칭 상태
 	bool bIsInMatchmakingQueue = false;
+	int32 SelectedCharacterIndex = 0;
 
 	// UI 업데이트
 	void UpdateStartButtonAppearance();

@@ -26,6 +26,12 @@ void AITBattleGameMode::PostLogin(APlayerController* NewPlayer)
 	StartMatchWhenReady();
 }
 
+void AITBattleGameMode::RestartPlayer(AController* NewPlayer)
+{
+	Super::RestartPlayer(NewPlayer);
+}
+
+
 void AITBattleGameMode::ExtractSessionInfoFromURL()
 {
 	const FString URL = GetWorld() ? GetWorld()->URL.ToString() : FString();

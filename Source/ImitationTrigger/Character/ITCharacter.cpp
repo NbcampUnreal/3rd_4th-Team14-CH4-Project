@@ -7,7 +7,10 @@
 #include "Cosmetics/ITCharacterPartComponent.h"
 #include "Cosmetics/ITCharacterAnimComponent.h"
 #include "AbilitySystem/ITAbilitySystemComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "ITPawnDataList.h"
 
 AITCharacter::AITCharacter()
 {
@@ -81,7 +84,6 @@ UAbilitySystemComponent* AITCharacter::GetAbilitySystemComponent() const
 void AITCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
 	if (!HasAuthority())
 	{
 		SetBodyMeshes();
@@ -102,7 +104,8 @@ void AITCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME_CONDITION(ThisClass, PawnData, COND_InitialOnly);
+	DOREPLIFETIME_CONDITION(ThisClass, PawnData, COND_None);
+	DOREPLIFETIME_CONDITION(ThisClass, PawnDataList, COND_None);
 }
 
 void AITCharacter::PossessedBy(AController* NewController)
@@ -141,6 +144,58 @@ UITCharacterAnimComponent* AITCharacter::GetITCharacterAnimComponent()
 	return AnimComponent;
 }
 
+void AITCharacter::MulticastRPC_OnDead_Implementation()
+{
+	if (HasAuthority())
+	{
+		SetLifeSpan(3.0f);
+
+		UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
+		if (IsValid(MovementComponent))
+		{
+			MovementComponent->DisableMovement();
+		}
+	}
+	else
+	{
+		APlayerController* PC = Cast<APlayerController>(GetController());
+		if (IsValid(PC))
+		{
+			DisableInput(PC);
+		}
+
+		USkeletalMeshComponent* RootMeshComponent = GetMesh();
+		if (IsValid(RootMeshComponent))
+		{
+			RootMeshComponent->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
+			RootMeshComponent->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+			RootMeshComponent->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+		}
+
+		TArray<UChildActorComponent*> ChildActorComponents;
+		GetComponents<UChildActorComponent>(ChildActorComponents);
+		for (UChildActorComponent* ChildActorComponent : ChildActorComponents)
+		{
+			if (IsValid(ChildActorComponent))
+			{
+				AActor* ChildActor = ChildActorComponent->GetChildActor();
+				if (IsValid(ChildActor))
+				{
+					USkeletalMeshComponent* MeshComponent = ChildActor->FindComponentByClass<USkeletalMeshComponent>();
+
+					if (IsValid(MeshComponent))
+					{
+						MeshComponent->SetSimulatePhysics(true);
+						MeshComponent->SetCollisionProfileName(FName(TEXT("Ragdoll")));
+						MeshComponent->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
+						MeshComponent->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+					}
+				}
+			}
+		}
+	}
+}
+
 void AITCharacter::AddInitCharacterPartsAtServer()
 {
 	UITCharacterPartComponent* PartComponent = GetITCharacterPartComponent();
@@ -173,6 +228,20 @@ void AITCharacter::SetAnimLayerRules()
 		if (IsValid(PawnData))
 		{
 			PartComponent->SetAnimLayerRules(PawnData->AnimLayerRules);
+		}
+	}
+}
+
+void AITCharacter::SetPawnDataByIndex(int32 Index)
+{
+	if (HasAuthority())
+	{
+		if (IsValid(PawnDataList)) 
+		{
+			if (PawnData == nullptr && PawnDataList->PawnDatas.IsValidIndex(Index))
+			{
+				PawnData = PawnDataList->PawnDatas[Index];
+			}
 		}
 	}
 }

@@ -11,7 +11,11 @@
 #include "Item/Weapon/ITWeaponManagerComponent.h"
 #include "Engine/Engine.h"
 #include "Engine/GameViewportClient.h"
-
+#include "Network/ITGameInstance.h"
+#include "Character/ITCharacter.h"
+#include "Character/ITPawnData.h"
+#include "Character/ITPawnDataList.h"
+#include "GameModes/ITBattleGameMode.h"
 
 AITBattlePlayerController::AITBattlePlayerController()
 {
@@ -38,6 +42,20 @@ void AITBattlePlayerController::EndPlay(EEndPlayReason::Type EndPlayReason)
 	}
 }
 
+void AITBattlePlayerController::PostNetInit()
+{
+	Super::PostNetInit();
+	if (IsLocalController())
+	{
+		if (UITGameInstance* GI = Cast<UITGameInstance>(GetGameInstance()))
+		{
+			int32 CharIndex = GI->GetSelectedCharacterIndex();
+
+			ServerRPC_SetCharacterIndex(CharIndex);
+		}
+	}
+}
+
 void AITBattlePlayerController::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
@@ -56,6 +74,19 @@ void AITBattlePlayerController::OnRep_PlayerState()
 	SetInputMode(Mode); 
 	bShowMouseCursor = false;
 	
+}
+
+void AITBattlePlayerController::SetPawn(APawn* InPawn)
+{
+	if (HasAuthority() && SelectedCharacterIndex != -1)
+	{
+		if (AITCharacter* ITChar = Cast<AITCharacter>(InPawn))
+		{
+			ITChar->SetPawnDataByIndex(SelectedCharacterIndex);
+		}
+	}
+
+	Super::SetPawn(InPawn);
 }
 
 void AITBattlePlayerController::ToggleMapWidget()
@@ -86,6 +117,62 @@ void AITBattlePlayerController::HideMapWidget()
 	if (IsValid(MapWidget) && MapWidget->IsInViewport())
 	{
 		MapWidget->RemoveFromParent();
+	}
+}
+
+void AITBattlePlayerController::ServerRPC_SetCharacterIndex_Implementation(int32 CharIndex)
+{
+	SelectedCharacterIndex = CharIndex;
+
+	if (HasAuthority())
+	{
+		if (AITBattleGameMode* GM = GetWorld()->GetAuthGameMode<AITBattleGameMode>())
+		{
+			AITCharacter* ITChar = Cast<AITCharacter>(GetPawn());
+			ITChar->Destroy();
+			SetPawn(nullptr);
+			GM->RestartPlayer(this);
+		}
+	}
+}
+
+void AITBattlePlayerController::ClientRPC_AddNotify_Implementation(const FText& KillPlayer, const FText& DiePlayer)
+{
+	if (IsValid(HUDWidget))
+	{
+		HUDWidget->AddNotifyText(KillPlayer, DiePlayer);
+	}
+}
+
+void AITBattlePlayerController::ClientRPC_AddKillLog_Implementation(UTexture2D* KillCharacter, const FText& KillName, UTexture2D* DieCharacter, const FText& DieName, UTexture2D* KillWeapon)
+{
+	if (IsValid(HUDWidget))
+	{
+		HUDWidget->AddKillLog(KillCharacter, KillName, DieCharacter, DieName, KillWeapon);
+	}
+}
+
+void AITBattlePlayerController::ClientRPC_OnFireAnimation_Implementation()
+{
+	if (IsValid(HUDWidget))
+	{
+		HUDWidget->OnFire();
+	}
+}
+
+void AITBattlePlayerController::ClientRPC_PlayHitMarkerAnimation_Implementation()
+{
+	if (IsValid(HUDWidget))
+	{
+		HUDWidget->PlayHitMarkerAnimation();
+	}
+}
+
+void AITBattlePlayerController::ClientRPC_PlayKillMarkerAnimation_Implementation()
+{
+	if (IsValid(HUDWidget))
+	{
+		HUDWidget->PlayKillMarkerAnimation();
 	}
 }
 
@@ -202,6 +289,14 @@ void AITBattlePlayerController::UpdateShield()
 	}
 }
 
+void AITBattlePlayerController::OnUpdateAreaInfo(int32 CurrentRoundNumber, int32 AreaTime, float Distance, bool bIsWait)
+{
+	if (IsValid(HUDWidget))
+	{
+		HUDWidget->OnUpdateAreaInfo(CurrentRoundNumber, AreaTime, Distance, bIsWait);
+	}
+}
+
 void AITBattlePlayerController::OnMainWeaponUpdate(UITItemInstance* ItemInstance)
 {
 	if (IsValid(ItemInstance))
@@ -233,4 +328,3 @@ void AITBattlePlayerController::OnSubWeaponUpdate(UITItemInstance* ItemInstance)
 		}
 	}
 }
-

@@ -77,7 +77,7 @@ public:
 	TArray<FITForbiddenRoundInfo> RoundInfos;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Area|Config")
-	float TickInterval = 1.0f;
+	float TickInterval = 0.5f;
 
 	UPROPERTY(ReplicatedUsing = OnRep_Round)
 	int32 Round;
@@ -105,6 +105,7 @@ protected:
 	FTimerHandle AreaRoundWaitTimer;
 	FTimerHandle AreaProgressTimer;
 	FTimerHandle AreaSyncTimer;
+	FTimerHandle AreaNotifyTimer;
 
 	float SyncInterval = 1.0f;
 
@@ -120,8 +121,14 @@ protected:
 	UFUNCTION()
 	void OnSyncTimer();
 
+	UFUNCTION()
+	void OnNotifyTimer();
+
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastRPC_SyncArea(FITSyncInfo SyncInfo);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRPC_NotifyAreaInfo(int32 InRound, float InRemainTime, FVector InCenterPosition, float InRadius, int8 bIsWait);
 
 	FITSyncInfo ClientSyncInfo;
 

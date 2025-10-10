@@ -2,13 +2,16 @@
 #include "Player/ITPlayerController.h"
 #include "Character/ITCharacter.h"
 #include "Character/ITPawnData.h"
+#include "Character/ITPawnDataList.h"
 #include "Item/Weapon/ITWeaponManagerComponent.h"
 #include "AbilitySystem/Attributes/ITHealthSet.h"
 #include "AbilitySystem/Attributes/ITAmmoSet.h"
+#include "AbilitySystem/Attributes/ITCombatSet.h"
 #include "AbilitySystem/Attributes/ITAttributeTableRow.h"
 #include "AbilitySystem/ITAbilitySystemComponent.h"
 #include "Engine/ActorChannel.h"
 #include "Item/ITItemInstance.h"
+#include "Net/UnrealNetwork.h"
 
 
 AITPlayerState::AITPlayerState(const FObjectInitializer& ObjectInitializer)
@@ -26,6 +29,9 @@ AITPlayerState::AITPlayerState(const FObjectInitializer& ObjectInitializer)
 
 	HealthSet = CreateDefaultSubobject<UITHealthSet>(TEXT("HealthSet"));
 	AmmoSet = CreateDefaultSubobject<UITAmmoSet>(TEXT("AmmoSet"));
+	CombatSet = CreateDefaultSubobject<UITCombatSet>(TEXT("CombatSet"));
+
+	bIsAlive = true;
 
 	// PlayerState와 Pawn(Chracter)가 모두 준비되었을 때 호출되는 Delegate
 	OnPawnSet.AddDynamic(this, &ThisClass::OnReadyPawnData);
@@ -54,6 +60,13 @@ void AITPlayerState::EndPlay(EEndPlayReason::Type EndPlayReason)
 	}
 }
 
+void AITPlayerState::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ThisClass, bIsAlive);
+}
+
 AITPlayerController* AITPlayerState::GetITPlayerController() const
 {
 	return Cast<AITPlayerController>(GetOwner());
@@ -67,6 +80,15 @@ AITCharacter* AITPlayerState::GetITCharacter() const
 UAbilitySystemComponent* AITPlayerState::GetAbilitySystemComponent() const
 {
 	return GetITAbilitySystemComponent();
+}
+
+const UITPawnData* AITPlayerState::GetPawnData() const
+{
+	if (IsValid(GetITCharacter()))
+	{
+		return GetITCharacter()->GetPawnData();
+	}
+	return nullptr;
 }
 
 bool AITPlayerState::ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch,
@@ -95,7 +117,7 @@ bool AITPlayerState::ReplicateSubobjects(class UActorChannel* Channel, class FOu
 void AITPlayerState::OnReadyPawnData(APlayerState* Player, APawn* NewPawn, APawn* OldPawn)
 {
 	AITCharacter* ITCharacter = GetITCharacter();
-	if (IsValid(ITCharacter))
+	if (IsValid(ITCharacter) && IsValid(ITCharacter->GetPawnData()))
 	{
 		InitAbilitySystemComponent();
 
@@ -141,14 +163,20 @@ void AITPlayerState::BindAttributeDelegate()
 
 void AITPlayerState::OnHealthChanged(const FOnAttributeChangeData& Data)
 {
-	const float Health = Data.NewValue;
-	if (Health <= 0)
+	if (HasAuthority())
 	{
-		// TEMPORAL: 임시 사망 코드
-		// TODO: 기절(down) 등 구현
-		if (IsValid(GetPawn()))
+		AITCharacter* ITCharacter = GetITCharacter();
+		if (IsValid(ITCharacter))
 		{
-			GetPawn()->Destroy();
+			const float Health = Data.NewValue;
+			if (Health <= 0)
+			{
+				if (IsValid(ITCharacter))
+				{
+					bIsAlive = false;
+					ITCharacter->MulticastRPC_OnDead();
+				}
+			}
 		}
 	}
 }
@@ -190,7 +218,7 @@ void AITPlayerState::BindWeaponChanged()
 			UITCharacterAnimComponent* AnimComponent = ITCharacter->GetITCharacterAnimComponent();
 			if (IsValid(AnimComponent))
 			{
-				WeaponManagerComponent->OnCurrentWeaponTypeChanged.AddDynamic(AnimComponent, &UITCharacterAnimComponent::OnUpdateCurrentWeapon);
+				WeaponManagerComponent->OnCurrentWeaponTypeChanged.AddUniqueDynamic(AnimComponent, &UITCharacterAnimComponent::OnUpdateCurrentWeapon);
 			}
 		}
 	}

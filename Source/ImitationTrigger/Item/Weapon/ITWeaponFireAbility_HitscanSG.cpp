@@ -69,7 +69,7 @@ void UITWeaponFireAbility_HitscanSG::Fire(const FVector& TraceStart, const FVect
 			}
 
 			bool bIsHeadshot = false;
-			if (HitResult.BoneName == FName("Head"))
+			if (HitResult.BoneName == FName("Head") || HitResult.BoneName == FName("J_Bip_C_Head"))
 			{
 				bIsHeadshot = true;
 			}

@@ -46,7 +46,7 @@ public:
 
 	const UITPawnData* GetPawnData() const;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(BlueprintReadOnly, Replicated)
 	bool bIsAlive;
 
 protected:

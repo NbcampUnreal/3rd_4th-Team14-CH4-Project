@@ -4,6 +4,8 @@
 #include "Components/TextBlock.h"
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
+#include "GameModes/ITBattleGameMode.h"
+#include "Player/ITBattlePlayerController.h"
 
 void UResultWidget::SetResult(int32 TotalPlayers, int32 PlayerRank, UTexture2D* CharacterImage, FText PlayerName,
                               int32 SurvivalTime, int32 KillCount, float Damage)
@@ -74,13 +76,13 @@ void UResultWidget::SetWinnerName(const FString& WinnerName)
 void UResultWidget::OnReturnToLobbyClicked()
 {
 #if WITH_EDITOR
-	// 에디터 환경: ConsoleCommand로 Open 실행
-	const FString LobbyMapName = TEXT("IT_TestEntry");
-	UE_LOG(LogTemp, Warning, TEXT("EDITOR MODE: Opening lobby map - %s"), *LobbyMapName);
+	UE_LOG(LogTemp, Warning, TEXT("EDITOR MODE: Requesting return to lobby"));
 
-	if (APlayerController* PC = GetOwningPlayer())
+	UE_LOG(LogTemp, Warning, TEXT("EDITOR: Requesting return to lobby via RPC"));
+
+	if (AITBattlePlayerController* BattlePC = Cast<AITBattlePlayerController>(GetOwningPlayer()))
 	{
-		PC->ConsoleCommand(FString::Printf(TEXT("Open %s"), *LobbyMapName));
+		BattlePC->ServerRPC_ReturnToLobby();
 	}
 #else
 	// 패키징 환경: ClientTravel로 로비 서버 연결

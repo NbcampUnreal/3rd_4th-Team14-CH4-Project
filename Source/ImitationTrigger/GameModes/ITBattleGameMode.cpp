@@ -162,3 +162,19 @@ void AITBattleGameMode::StartMatchWhenReady()
 		}
 	}
 }
+
+void AITBattleGameMode::ReturnToLobby() //에디터 용
+{
+#if WITH_EDITOR
+	const FString LobbyMapName = TEXT("IT_TestEntry");
+	UE_LOG(LogTemp, Warning, TEXT("GameMode: ServerTravel to lobby - %s"), *LobbyMapName);
+
+	if (UWorld* World = GetWorld())
+	{
+		World->ServerTravel(LobbyMapName);
+	}
+#else
+	// 패키징 환경에서는 각 플레이어가 ClientTravel 사용
+	UE_LOG(LogTemp, Warning, TEXT("GameMode: Packaged build - players use ClientTravel"));
+#endif
+}

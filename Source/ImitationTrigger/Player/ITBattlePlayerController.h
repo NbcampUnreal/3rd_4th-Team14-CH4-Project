@@ -58,6 +58,9 @@ public:
 	UFUNCTION(Client, Reliable)
 	void ClientShowResult(const FString& WinnerName);
 
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_ReturnToLobby(); //에디터 테스트 용 로비 돌아가기
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
 	TSubclassOf<UHUDWidget> HUDWidgetClass;

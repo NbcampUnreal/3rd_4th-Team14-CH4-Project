@@ -19,6 +19,9 @@ public:
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 	virtual void RestartPlayer(AController* NewPlayer) override;
 
+	UFUNCTION(BlueprintCallable)
+	void ReturnToLobby();
+
 	// 플레이어 사망 처리
 	void OnPlayerDeath(AITPlayerState* DeadPlayer);
 

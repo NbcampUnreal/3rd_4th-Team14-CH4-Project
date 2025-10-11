@@ -302,6 +302,28 @@ void AITBattlePlayerController::OnUpdateAreaInfo(int32 CurrentRoundNumber, int32
 	}
 }
 
+void AITBattlePlayerController::ServerRPC_ReturnToLobby_Implementation()
+{
+	// 서버에서만 실행됨
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+#if WITH_EDITOR
+	UE_LOG(LogTemp, Warning, TEXT("Server: Returning all players to lobby"));
+
+	if (UWorld* World = GetWorld())
+	{
+		const FString LobbyMapName = TEXT("IT_TestEntry");
+		World->ServerTravel(LobbyMapName); // 모든 클라이언트가 함께 이동
+	}
+#else
+	UE_LOG(LogTemp, Warning, TEXT("Server: PackagedBuild - client should use ClientTravel"));
+	// 패키징 환경에서는 클라이언트가 각자 ClientTravel 사용
+#endif
+}
+
 void AITBattlePlayerController::ClientShowResult_Implementation(const FString& WinnerName)
 {
 	if (!IsLocalController()) 

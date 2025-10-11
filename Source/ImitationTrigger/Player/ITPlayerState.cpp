@@ -11,6 +11,7 @@
 #include "AbilitySystem/ITAbilitySystemComponent.h"
 #include "Engine/ActorChannel.h"
 #include "Item/ITItemInstance.h"
+#include "GameModes/ITBattleGameMode.h"
 #include "Net/UnrealNetwork.h"
 
 
@@ -174,6 +175,15 @@ void AITPlayerState::OnHealthChanged(const FOnAttributeChangeData& Data)
 				if (IsValid(ITCharacter))
 				{
 					bIsAlive = false;
+
+					if (HasAuthority())
+					{
+						if (AITBattleGameMode* GameMode = Cast<AITBattleGameMode>(GetWorld()->GetAuthGameMode()))
+						{
+							GameMode->OnPlayerDeath(this);
+						}
+					}
+
 					ITCharacter->MulticastRPC_OnDead();
 				}
 			}

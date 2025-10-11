@@ -16,6 +16,9 @@
 #include "Character/ITPawnData.h"
 #include "Character/ITPawnDataList.h"
 #include "GameModes/ITBattleGameMode.h"
+#include "UI/Result/ResultWidget.h"
+#include "Blueprint/UserWidget.h"
+#include "Net/UnrealNetwork.h"
 
 AITBattlePlayerController::AITBattlePlayerController()
 {
@@ -40,6 +43,8 @@ void AITBattlePlayerController::EndPlay(EEndPlayReason::Type EndPlayReason)
 	{
 		ReleaseWidgets();
 	}
+
+	SelectedCharacterIndex = -1;
 }
 
 void AITBattlePlayerController::PostNetInit()
@@ -294,6 +299,32 @@ void AITBattlePlayerController::OnUpdateAreaInfo(int32 CurrentRoundNumber, int32
 	if (IsValid(HUDWidget))
 	{
 		HUDWidget->OnUpdateAreaInfo(CurrentRoundNumber, AreaTime, Distance, bIsWait);
+	}
+}
+
+void AITBattlePlayerController::ClientShowResult_Implementation(const FString& WinnerName)
+{
+	if (!IsLocalController()) 
+	{
+		return;
+	}
+
+	// 결과창 생성 및 표시
+	if (ResultWidgetClass && !ResultWidget)
+	{
+		ResultWidget = CreateWidget<UResultWidget>(this, ResultWidgetClass);
+	}
+
+	if (ResultWidget)
+	{
+		ResultWidget->SetWinnerName(WinnerName);
+		ResultWidget->AddToViewport(100); // 최상위 레이어에 표시
+
+		// 입력 모드를 UI로 변경
+		FInputModeUIOnly InputMode;
+		InputMode.SetWidgetToFocus(ResultWidget->TakeWidget());
+		SetInputMode(InputMode);
+		bShowMouseCursor = true;
 	}
 }
 

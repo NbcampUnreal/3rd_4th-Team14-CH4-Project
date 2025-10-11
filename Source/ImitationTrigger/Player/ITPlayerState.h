@@ -46,6 +46,10 @@ public:
 
 	const UITPawnData* GetPawnData() const;
 
+	// 생존 여부 확인
+	UFUNCTION(BlueprintCallable, Category = "ITPlayerState")
+	bool IsAlive() const { return bIsAlive; }
+
 	UPROPERTY(Replicated)
 	bool bIsAlive;
 

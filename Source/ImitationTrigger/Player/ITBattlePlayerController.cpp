@@ -251,11 +251,15 @@ void AITBattlePlayerController::InitHUD()
 				                            &ThisClass::OnNormalAmmoChanged);
 				BindAttributeChangeDelegate(ITASC, UITAmmoSet::GetSpecialAmmoAttribute(), this,
 				                            &ThisClass::OnSpecialAmmoChanged);
+				BindAttributeChangeDelegate(ITASC, UITCombatSet::GetKillCountAttribute(), this,
+				                            &ThisClass::OnKillCountChanged);
 			}
 		}
 		UpdateHealth();
 		UpdateShield();
 		UpdateAmmo();
+		UpdateKillCount();
+		ServerRPC_RequestAlivePlayerCount();
 
 		AITPlayerState* ITPlayerState = GetITPlayerState();
 		if (IsValid(ITPlayerState))
@@ -390,11 +394,50 @@ void AITBattlePlayerController::UpdateAmmo()
 	}
 }
 
+void AITBattlePlayerController::OnKillCountChanged(const FOnAttributeChangeData& Data)
+{
+	UpdateKillCount();
+}
+
+void AITBattlePlayerController::UpdateKillCount()
+{
+	UITAbilitySystemComponent* ITASC = GetITAbilitySystemComponent();
+	if (IsValid(ITASC))
+	{
+		int32 KillCount = (int32)ITASC->GetNumericAttribute(UITCombatSet::GetKillCountAttribute());
+		if (IsValid(HUDWidget))
+		{
+			HUDWidget->UpdatePlayerKillCount(KillCount);
+		}
+	}
+}
+
 void AITBattlePlayerController::OnUpdateAreaInfo(int32 CurrentRoundNumber, int32 AreaTime, float Distance, bool bIsWait)
 {
 	if (IsValid(HUDWidget))
 	{
 		HUDWidget->OnUpdateAreaInfo(CurrentRoundNumber, AreaTime, Distance, bIsWait);
+	}
+}
+
+void AITBattlePlayerController::ServerRPC_RequestAlivePlayerCount_Implementation()
+{
+	if (HasAuthority() && GetWorld())
+	{
+		AITBattleGameMode* GameMode = GetWorld()->GetAuthGameMode<AITBattleGameMode>();
+		if (IsValid(GameMode))
+		{
+			int32 AlivePlayerCount = GameMode->GetAlivePlayerCount();
+			ClientRPC_ChangeAlivePlayerCount(AlivePlayerCount);
+		}
+	}
+}
+
+void AITBattlePlayerController::ClientRPC_ChangeAlivePlayerCount_Implementation(int32 Count)
+{
+	if (IsValid(HUDWidget))
+	{
+		HUDWidget->UpdateRemainingPlayer(Count);
 	}
 }
 

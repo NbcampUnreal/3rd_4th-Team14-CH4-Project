@@ -42,6 +42,8 @@ void AITBattleGameMode::PostLogin(APlayerController* NewPlayer)
 	if (AITPlayerState* PlayerState = Cast<AITPlayerState>(NewPlayer->PlayerState))
 	{
 		AlivePlayers.AddUnique(PlayerState);
+		UpdateAlivePlayerCountToAllPlayers();
+
 		PlayerState->SetStartTimeSeconds(UGameplayStatics::GetTimeSeconds(this));
 		UE_LOG(LogTemp, Log, TEXT("Player joined and added to alive list: %s"), *PlayerState->GetPlayerName());
 	}
@@ -62,6 +64,7 @@ void AITBattleGameMode::OnPlayerDeath(AITPlayerState* DeadPlayer)
 
 	// 생존자 배열에서 제거
 	AlivePlayers.Remove(DeadPlayer);
+	UpdateAlivePlayerCountToAllPlayers();
 
 	DeadPlayer->SetEndTimeSeconds(UGameplayStatics::GetTimeSeconds(this));
 	DeadPlayer->SetRank(AlivePlayers.Num() + 1);
@@ -206,6 +209,19 @@ void AITBattleGameMode::StartMatchWhenReady()
 		{
 			StartMatch();
 			UE_LOG(LogTemp, Log, TEXT("Match started. Session=%s Players=%d"), *CurrentSessionID, MatchPlayers.Num());
+		}
+	}
+}
+
+void AITBattleGameMode::UpdateAlivePlayerCountToAllPlayers()
+{
+	for (APlayerController* PC : MatchPlayers)
+	{
+		AITBattlePlayerController* BattlePC = Cast<AITBattlePlayerController>(PC);
+		if (IsValid(BattlePC))
+		{
+			int32 AlivePlayerCount = GetAlivePlayerCount();
+			BattlePC->ClientRPC_ChangeAlivePlayerCount(AlivePlayerCount);
 		}
 	}
 }

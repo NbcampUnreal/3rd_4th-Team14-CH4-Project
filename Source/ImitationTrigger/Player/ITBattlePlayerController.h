@@ -58,6 +58,12 @@ public:
 	UFUNCTION(BlueprintCallable, Client, Reliable)
 	void ClientRPC_OnUseActiveSkill(float Cooldown);
 
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_RequestAlivePlayerCount();
+
+	UFUNCTION(BlueprintCallable, Client, Reliable)
+	void ClientRPC_ChangeAlivePlayerCount(int32 Count);
+
 	// 결과창 표시 (클라이언트 RPC)
 	UFUNCTION(Client, Reliable)
 	void ClientShowResult(const FString& WinnerName, int32 TotalPlayers);
@@ -116,6 +122,9 @@ private:
 	void OnSpecialAmmoChanged(const FOnAttributeChangeData& Data);
 	void UpdateAmmo();
 
+	void OnKillCountChanged(const FOnAttributeChangeData& Data);
+	void UpdateKillCount();
+
 	UFUNCTION()
 	void OnMainWeaponUpdate(UITItemInstance* ItemInstance);
 
@@ -130,6 +139,7 @@ private:
 
 	UFUNCTION()
 	void OnCurrentArmorUpdate(int32 CurrentArmorTier);
+
 
 	bool bISFirstWeapon = true;
 };

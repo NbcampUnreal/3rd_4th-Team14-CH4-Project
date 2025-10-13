@@ -78,14 +78,6 @@ void AITBattlePlayerController::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
 
-	// 미니맵 Caputer 한번 더 (멀티플레이어 환경에서, 한 번에 Capture가 안되는 경우가 있음)
-	AActor* Actor = UGameplayStatics::GetActorOfClass(this, AITMinimapCapture::StaticClass());
-	AITMinimapCapture* Capture = Cast<AITMinimapCapture>(Actor);
-	if (IsValid(Capture))
-	{
-		Capture->CaptureOnce();
-	}
-
 	// 클라이언트에 PlayerState가 준비 되어야 HUD를 초기화할 수 있다.
 	InitWidgets();
 	FInputModeGameOnly Mode;

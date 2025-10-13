@@ -55,6 +55,9 @@ public:
 	void UpdateWeaponSlotTwo(UTexture2D* WeaponImage);
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
+	void UpdateWeaponSlotHand();
+
+	UFUNCTION(BlueprintCallable, Category = "UI")
 	void SetWeaponOneInfo(FText WeaponName);
 
 	UFUNCTION(BlueprintCallable, Category = "UI")

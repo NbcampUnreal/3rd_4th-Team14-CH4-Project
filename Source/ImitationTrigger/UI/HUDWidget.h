@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "HUDWidget.generated.h"
 
+class UItemSlotWidget;
 class UPlayerKillCount;
 class USkillWidget;
 class UAmmoWidget;
@@ -109,6 +110,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void UpdatePlayerKillCount(int32 PlayerKillCount);
+
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void UpdateItemAmount(int32 ItemAmount);
 	
 protected:
 	
@@ -178,6 +182,9 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	UPlayerKillCount* PlayerKillCountWidget;
+
+	UPROPERTY(meta = (BindWidget))
+	UItemSlotWidget* ItemSlotWidget;
 
 private:
 

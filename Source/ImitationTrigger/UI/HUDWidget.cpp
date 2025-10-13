@@ -18,6 +18,7 @@
 #include "WeaponSlot/WeaponSlotNumberWidget.h"
 #include "WeaponSlot/WeaponSlotWidget.h"
 #include "Area/AreaWidget.h"
+#include "ItemSlot/ItemSlotWidget.h"
 #include "PlayerKillCount/PlayerKillCount.h"
 
 void UHUDWidget::NativeConstruct()
@@ -180,6 +181,14 @@ void UHUDWidget::UpdatePlayerKillCount(int32 PlayerKillCount)
 	if (PlayerKillCountWidget)
 	{
 		PlayerKillCountWidget->UpdatePlayerKillCount(PlayerKillCount);
+	}
+}
+
+void UHUDWidget::UpdateItemAmount(int32 ItemAmount)
+{
+	if (ItemSlotWidget)
+	{
+		ItemSlotWidget->UpdateItemAmount(ItemAmount);
 	}
 }
 

@@ -67,10 +67,10 @@ public:
 	void AddNotifyText(FText KillPlayer, FText DiePlayer);
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
-	void SetEquipmentIconArmor();
+	void SetEquipmentIconArmor(int32 Rarity);
 	
 	UFUNCTION(BlueprintCallable, Category = "UI")
-	void SetEquipmentIconHelmet();
+	void SetEquipmentIconHelmet(int32 Rarity);
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void SetAimMaker(float Value);
@@ -94,7 +94,7 @@ public:
 	void UpdateSniperAmmo(int32 CurrentAmmo, int32 MaxAmmo);
 	
 	UFUNCTION(BlueprintCallable, Category = "UI")
-	void HasWeapon(bool bHasWeapon);
+	void HasNoWeapon();
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void OnSkill(float CoolDown);

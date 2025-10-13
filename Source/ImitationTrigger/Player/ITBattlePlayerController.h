@@ -4,6 +4,7 @@
 #include "AbilitySystemComponent.h"
 #include "AttributeSet.h"
 #include "GameplayEffectTypes.h"
+#include "Item/Weapon/ITWeaponManagerComponent.h"
 #include "ITBattlePlayerController.generated.h"
 
 class UHUDWidget;
@@ -87,11 +88,25 @@ private:
 	void OnMaxShieldChanged(const FOnAttributeChangeData& Data);
 	void UpdateShield();
 
+	void OnAmmoChanged(const FOnAttributeChangeData& Data);
+	void OnNormalAmmoChanged(const FOnAttributeChangeData& Data);
+	void OnSpecialAmmoChanged(const FOnAttributeChangeData& Data);
+	void UpdateAmmo();
+
 	UFUNCTION()
 	void OnMainWeaponUpdate(UITItemInstance* ItemInstance);
 
 	UFUNCTION()
 	void OnSubWeaponUpdate(UITItemInstance* ItemInstance);
+
+	UFUNCTION()
+	void OnCurrentWeaponUpdate(ECurrentWeaponSlot CurrentWeaponType);
+
+	UFUNCTION()
+	void OnCurrentHelmetUpdate(int32 CurrentHelmetTier);
+
+	UFUNCTION()
+	void OnCurrentArmorUpdate(int32 CurrentArmorTier);
 };
 
 template<class UClass, typename FuncType>

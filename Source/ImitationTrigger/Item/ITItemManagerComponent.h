@@ -24,6 +24,8 @@ public:
 private:
 	bool PutOnEquipment(UITItemDefinition* ItemDefinition);
 
+	void DropEquipment(UITItemDefinition* ItemDefinition);
+
 	// 아이템 티어가 0일 경우, EffectHandle에 접근 금지
 	UPROPERTY(Replicated)
 	int32 CurrentHelmetTier = 0;
@@ -36,4 +38,10 @@ private:
 
 	UPROPERTY()
 	FActiveGameplayEffectHandle ArmorEffectHandle;
+
+	UPROPERTY()
+	TObjectPtr<UITItemDefinition> HelmetDefinition;
+	
+	UPROPERTY()
+	TObjectPtr<UITItemDefinition> ArmorDefinition;
 };

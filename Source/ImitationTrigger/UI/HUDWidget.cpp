@@ -144,11 +144,15 @@ void UHUDWidget::UpdateSniperAmmo(int32 CurrentAmmo, int32 MaxAmmo)
 	}
 }
 
-void UHUDWidget::HasWeapon(bool bHasWeapon)
+void UHUDWidget::HasNoWeapon()
 {
 	if (AmmoWidget)
 	{
-		AmmoWidget->HasWeapon(bHasWeapon);
+		AmmoWidget->HasWeapon(false);
+	}
+	if (WeaponSlot)
+	{
+		WeaponSlot->HasWeapon(false);
 	}
 }
 
@@ -280,14 +284,14 @@ void UHUDWidget::AddNotifyText(FText KillPlayer, FText DiePlayer)
 	
 }
 
-void UHUDWidget::SetEquipmentIconArmor()
+void UHUDWidget::SetEquipmentIconArmor(int32 Rarity)
 {
-	EquipmentIcon_Armor->SetEpicItem();
+	EquipmentIcon_Armor->SetItemRarity(Rarity);
 }
 
-void UHUDWidget::SetEquipmentIconHelmet()
+void UHUDWidget::SetEquipmentIconHelmet(int32 Rarity)
 {
-	EquipmentIcon_Helmet->SetRareItem();
+	EquipmentIcon_Helmet->SetItemRarity(Rarity);
 }
 
 

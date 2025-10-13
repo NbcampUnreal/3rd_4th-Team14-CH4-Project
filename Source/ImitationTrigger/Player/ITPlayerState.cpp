@@ -12,6 +12,7 @@
 #include "Engine/ActorChannel.h"
 #include "Item/ITItemInstance.h"
 #include "GameModes/ITBattleGameMode.h"
+#include "Item/ITItemManagerComponent.h"
 #include "Net/UnrealNetwork.h"
 
 
@@ -24,6 +25,9 @@ AITPlayerState::AITPlayerState(const FObjectInitializer& ObjectInitializer)
 
 	WeaponManagerComponent = CreateDefaultSubobject<UITWeaponManagerComponent>(TEXT("WeaponManagerComponent"));
 	WeaponManagerComponent->SetIsReplicated(true);
+
+	ItemManagerComponent = CreateDefaultSubobject<UITItemManagerComponent>(TEXT("ItemManagerComponent"));
+	ItemManagerComponent->SetIsReplicated(true);
 
 	// AbilitySystem 네트워크 관련: needs to be updated at a high frequency.
 	SetNetUpdateFrequency(100.0f);

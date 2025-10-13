@@ -17,13 +17,10 @@ class IMITATIONTRIGGER_API UEquipmentIconWidget : public UUserWidget
 
 
 public:
-	UEquipmentIconWidget(const FObjectInitializer& ObjectInitializer);
 	
-	void SetCommonItem();
+	UEquipmentIconWidget(const FObjectInitializer& ObjectInitializer);
 
-	void SetRareItem();
-
-	void SetEpicItem();
+	void SetItemRarity(int32 Rarity);
 
 
 protected:

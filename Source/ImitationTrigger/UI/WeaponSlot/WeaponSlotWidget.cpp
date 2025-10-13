@@ -13,5 +13,24 @@ void UWeaponSlotWidget::SetWeaponImage(UTexture2D* NewImage)
 		FSlateBrush Brush = WeaponImage->GetBrush();
 		Brush.SetResourceObject(NewImage);
 		WeaponImage->SetBrush(Brush);
+		HasWeapon(true);
+	}
+}
+
+void UWeaponSlotWidget::HasWeapon(bool bHasWeapon)
+{
+	if (!bHasWeapon)
+	{
+		if (WeaponImage)
+		{
+			WeaponImage->SetVisibility(ESlateVisibility::Collapsed);
+		}
+	}
+	else
+	{
+		if (WeaponImage)
+		{
+			WeaponImage->SetVisibility(ESlateVisibility::Visible);
+		}
 	}
 }

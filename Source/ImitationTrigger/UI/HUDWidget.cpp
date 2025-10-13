@@ -7,7 +7,6 @@
 #include "Components/Border.h"
 #include "Components/Image.h"
 #include "Components/ScrollBox.h"
-#include "Components/VerticalBox.h"
 #include "EquipmentIcon/EquipmentIconWidget.h"
 #include "GameFramework/Character.h"
 #include "KillLog/KillLogWidget.h"
@@ -19,6 +18,8 @@
 #include "WeaponSlot/WeaponSlotNumberWidget.h"
 #include "WeaponSlot/WeaponSlotWidget.h"
 #include "Area/AreaWidget.h"
+#include "ItemSlot/ItemSlotWidget.h"
+#include "PlayerKillCount/PlayerKillCount.h"
 
 void UHUDWidget::NativeConstruct()
 {
@@ -143,11 +144,15 @@ void UHUDWidget::UpdateSniperAmmo(int32 CurrentAmmo, int32 MaxAmmo)
 	}
 }
 
-void UHUDWidget::HasWeapon(bool bHasWeapon)
+void UHUDWidget::HasNoWeapon()
 {
 	if (AmmoWidget)
 	{
-		AmmoWidget->HasWeapon(bHasWeapon);
+		AmmoWidget->HasWeapon(false);
+	}
+	if (WeaponSlot)
+	{
+		WeaponSlot->HasWeapon(false);
 	}
 }
 
@@ -164,6 +169,22 @@ void UHUDWidget::OnUpdateAreaInfo(int32 CurrentRoundNumber, int32 AreaTime, floa
 	if (AreaWidget)
 	{
 		AreaWidget->SetAreaText(CurrentRoundNumber, AreaTime, Distance, bIsWait);
+	}
+}
+
+void UHUDWidget::UpdateRemainingPlayer(int32 RemainingPlayerCount)
+{
+	if (PlayerKillCountWidget)
+	{
+		PlayerKillCountWidget->UpdateRemainingPlayer(RemainingPlayerCount);
+	}
+}
+
+void UHUDWidget::UpdatePlayerKillCount(int32 PlayerKillCount)
+{
+	if (PlayerKillCountWidget)
+	{
+		PlayerKillCountWidget->UpdatePlayerKillCount(PlayerKillCount);
 	}
 }
 
@@ -263,19 +284,14 @@ void UHUDWidget::AddNotifyText(FText KillPlayer, FText DiePlayer)
 	
 }
 
-void UHUDWidget::SetEquipmentIconBag()
+void UHUDWidget::SetEquipmentIconArmor(int32 Rarity)
 {
-	EquipmentIcon_Bag->SetCommonItem();
+	EquipmentIcon_Armor->SetItemRarity(Rarity);
 }
 
-void UHUDWidget::SetEquipmentIconArmor()
+void UHUDWidget::SetEquipmentIconHelmet(int32 Rarity)
 {
-	EquipmentIcon_Armor->SetEpicItem();
-}
-
-void UHUDWidget::SetEquipmentIconHelmet()
-{
-	EquipmentIcon_Helmet->SetRareItem();
+	EquipmentIcon_Helmet->SetItemRarity(Rarity);
 }
 
 

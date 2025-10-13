@@ -51,7 +51,20 @@ public:
 	UITItemDefinition();
 
 	UFUNCTION(BlueprintCallable, Category = "Item|Fragment")
-	UITItemFragment* FindFragmentByClass(const TSubclassOf<UITItemFragment> FragmentClass) const;
+	UITItemFragment* K2_FindFragmentByClass(const TSubclassOf<UITItemFragment> FragmentClass) const;
+
+	template <typename T>
+	const T* FindFragmentByClass() const
+	{
+		for (UITItemFragment* Fragment : Fragments)
+		{
+			if (const T* FoundFragment = Cast<T>(Fragment))
+			{
+				return FoundFragment;
+			}
+		}
+		return nullptr;
+	}
 
 #if WITH_EDITOR
 	// 메시에 필요한 머티리얼 개수로 자동으로 변경해주는 에디터 함수

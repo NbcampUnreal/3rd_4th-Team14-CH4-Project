@@ -5,6 +5,7 @@
 #include "ITItemDefinition.h"
 #include "ITItemGameplayTags.h"
 #include "ITItemInstance.h"
+#include "ITItemManagerComponent.h"
 #include "AbilitySystem/ITAbilitySystemComponent.h"
 #include "AbilitySystem/Attributes/ITAmmoSet.h"
 #include "Character/ITCharacter.h"
@@ -65,7 +66,7 @@ void AITItemActor::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AAc
                                    UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
                                    const FHitResult& SweepResult)
 {
-	if (HasAuthority() && ItemInstance)
+	if (HasAuthority() && ItemInstance && ItemInstance->ItemDefinition)
 	{
 		if (AITCharacter* Player = Cast<AITCharacter>(OtherActor))
 		{
@@ -106,6 +107,16 @@ void AITItemActor::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AAc
 									UITAmmoSet::GetSpecialAmmoAttribute(), CurrentReserveAmmo + PlacedItemQuantity);
 								Destroy();
 							}
+						}
+					}
+				}
+				else if (ItemInstance->ItemDefinition->ItemTags.HasTag(ITItemGameplayTags::Item_Equipment))
+				{
+					if (UITItemManagerComponent* ItemManagerComponent = PlayerState->GetITItemManagerComponent())
+					{
+						if (ItemManagerComponent->TryAddItem(ItemInstance->ItemDefinition))
+						{
+							Destroy();
 						}
 					}
 				}

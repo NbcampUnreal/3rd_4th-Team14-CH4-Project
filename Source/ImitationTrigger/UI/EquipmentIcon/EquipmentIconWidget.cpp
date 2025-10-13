@@ -14,29 +14,33 @@ UEquipmentIconWidget::UEquipmentIconWidget(const FObjectInitializer& ObjectIniti
 	EpicColor = FLinearColor::Red + FLinearColor::Blue;
 }
 
-void UEquipmentIconWidget::SetCommonItem()
+void UEquipmentIconWidget::SetItemRarity(int32 Rarity)
 {
-
-	if (EquipmentIconBackGround)
+	if (!EquipmentIconBackGround)
 	{
-		EquipmentIconBackGround->SetBrushTintColor(FSlateColor(CommonColor));
+		return;
 	}
-}
 
-void UEquipmentIconWidget::SetRareItem()
-{
+	FLinearColor TargetColor = FLinearColor::White;
 	
-	if (EquipmentIconBackGround)
+	switch (Rarity)
 	{
-		EquipmentIconBackGround->SetBrushTintColor(FSlateColor(RareColor));
-	}
-}
 
-void UEquipmentIconWidget::SetEpicItem()
-{
+		case 0:
+			TargetColor = CommonColor;
+			break;
 
-	if (EquipmentIconBackGround)
-	{
-		EquipmentIconBackGround->SetBrushTintColor(FSlateColor(EpicColor));
+		case 1:
+			TargetColor = RareColor;
+			break;
+
+		case 2:
+			TargetColor = EpicColor;
+			break;
+
+		default:
+			return;
 	}
+
+	EquipmentIconBackGround->SetBrushTintColor(FSlateColor(TargetColor));
 }

@@ -314,6 +314,11 @@ void AITBattlePlayerController::OnUpdateAreaInfo(int32 CurrentRoundNumber, int32
 
 void AITBattlePlayerController::ServerRPC_SetPlayerNickname_Implementation(const FString& Nickname)
 {
+	if (!HasAuthority())
+	{
+		return;
+	}
+
 	if (APlayerState* PS = GetPlayerState<APlayerState>())
 	{
 		PS->SetPlayerName(Nickname);

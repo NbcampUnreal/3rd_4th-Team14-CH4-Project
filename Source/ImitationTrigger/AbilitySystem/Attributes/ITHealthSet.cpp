@@ -162,6 +162,11 @@ void UITHealthSet::PreAttributeBaseChange(const FGameplayAttribute& Attribute, f
 void UITHealthSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
 {
 	Super::PostAttributeChange(Attribute, OldValue, NewValue);
+
+	if (Attribute == GetMaxShieldAttribute())
+	{
+		SetShield(GetShield() + NewValue - OldValue);
+	}
 }
 
 void UITHealthSet::PostAttributeBaseChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) const

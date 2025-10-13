@@ -8,6 +8,7 @@
 #include "AttributeSet.h"
 #include "ITPlayerState.generated.h"
 
+class UITItemManagerComponent;
 class AITPlayerController;
 class AITCharacter;
 class UITAbilitySystemComponent;
@@ -39,8 +40,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "ITPlayerState")
 	UITAbilitySystemComponent* GetITAbilitySystemComponent() const { return AbilitySystemComponent; }
 
-	UFUNCTION(BlueprintCallable, Category = "ITPlayerState|Weapon")
+	UFUNCTION(BlueprintCallable, Category = "ITPlayerState")
 	UITWeaponManagerComponent* GetITWeaponManagerComponent() const { return WeaponManagerComponent; }
+
+	UFUNCTION(BlueprintCallable, Category = "ITPlayerState")
+	UITItemManagerComponent* GetITItemManagerComponent() const { return ItemManagerComponent; }
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
@@ -67,6 +71,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "ITPlayerState|Component")
 	TObjectPtr<UITWeaponManagerComponent> WeaponManagerComponent;
+
+	UPROPERTY(VisibleAnywhere, Category = "ITPlayerState|Component")
+	TObjectPtr<UITItemManagerComponent> ItemManagerComponent;
 
 	UFUNCTION()
 	void OnReadyPawnData(APlayerState* Player, APawn* NewPawn, APawn* OldPawn);

@@ -89,9 +89,9 @@ void UITWeaponFireAbility::Fire(const FVector& StartLocation, const FVector& Fir
 	}
 }
 
-void UITWeaponFireAbility::ApplyWeaponDamage(AActor* TargetActor)
+void UITWeaponFireAbility::ApplyWeaponDamage(AActor* TargetActor, bool bIsHeadshot)
 {
-	if (!TargetActor || !DamageEffect || !Cast<AITCharacter>(TargetActor))
+	if (!TargetActor || !NormalDamageEffect || !HeadshotDamageEffect || !Cast<AITCharacter>(TargetActor))
 	{
 		return;
 	}
@@ -121,19 +121,42 @@ void UITWeaponFireAbility::ApplyWeaponDamage(AActor* TargetActor)
 	}
 
 	float Damage = WeaponDefinition->Damage;
-	FGameplayEffectSpecHandle DamageSpecHandle = MakeOutgoingGameplayEffectSpec(DamageEffect);
-	if (DamageSpecHandle.IsValid())
+
+	if (bIsHeadshot)
 	{
-		DamageSpecHandle.Data->SetSetByCallerMagnitude(ITItemGameplayTags::Weapon_Damage, Damage);
+		Damage *= HeadshotDamageMultiplier;
 
-		FGameplayAbilityTargetDataHandle TargetDataHandle
-			= UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(TargetActor);
+		FGameplayEffectSpecHandle DamageSpecHandle = MakeOutgoingGameplayEffectSpec(HeadshotDamageEffect);
+		if (DamageSpecHandle.IsValid())
+		{
+			DamageSpecHandle.Data->SetSetByCallerMagnitude(ITItemGameplayTags::Weapon_Damage, Damage);
 
-		ApplyGameplayEffectSpecToTarget(Spec->Handle,
-		                                ActorInfo,
-		                                GetCurrentActivationInfo(),
-		                                DamageSpecHandle,
-		                                TargetDataHandle);
+			FGameplayAbilityTargetDataHandle TargetDataHandle
+				= UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(TargetActor);
+
+			ApplyGameplayEffectSpecToTarget(Spec->Handle,
+			                                ActorInfo,
+			                                GetCurrentActivationInfo(),
+			                                DamageSpecHandle,
+			                                TargetDataHandle);
+		}
+	}
+	else
+	{
+		FGameplayEffectSpecHandle DamageSpecHandle = MakeOutgoingGameplayEffectSpec(NormalDamageEffect);
+		if (DamageSpecHandle.IsValid())
+		{
+			DamageSpecHandle.Data->SetSetByCallerMagnitude(ITItemGameplayTags::Weapon_Damage, Damage);
+
+			FGameplayAbilityTargetDataHandle TargetDataHandle
+				= UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(TargetActor);
+
+			ApplyGameplayEffectSpecToTarget(Spec->Handle,
+			                                ActorInfo,
+			                                GetCurrentActivationInfo(),
+			                                DamageSpecHandle,
+			                                TargetDataHandle);
+		}
 	}
 
 	AActor* AvaterActor = ActorInfo->AvatarActor.Get();

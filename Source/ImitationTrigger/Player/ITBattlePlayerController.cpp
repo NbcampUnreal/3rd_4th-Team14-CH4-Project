@@ -78,14 +78,6 @@ void AITBattlePlayerController::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
 
-	// 미니맵 Caputer 한번 더 (멀티플레이어 환경에서, 한 번에 Capture가 안되는 경우가 있음)
-	AActor* Actor = UGameplayStatics::GetActorOfClass(this, AITMinimapCapture::StaticClass());
-	AITMinimapCapture* Capture = Cast<AITMinimapCapture>(Actor);
-	if (IsValid(Capture))
-	{
-		Capture->CaptureOnce();
-	}
-
 	// 클라이언트에 PlayerState가 준비 되어야 HUD를 초기화할 수 있다.
 	InitWidgets();
 	FInputModeGameOnly Mode;
@@ -251,11 +243,15 @@ void AITBattlePlayerController::InitHUD()
 				                            &ThisClass::OnNormalAmmoChanged);
 				BindAttributeChangeDelegate(ITASC, UITAmmoSet::GetSpecialAmmoAttribute(), this,
 				                            &ThisClass::OnSpecialAmmoChanged);
+				BindAttributeChangeDelegate(ITASC, UITCombatSet::GetKillCountAttribute(), this,
+				                            &ThisClass::OnKillCountChanged);
 			}
 		}
 		UpdateHealth();
 		UpdateShield();
 		UpdateAmmo();
+		UpdateKillCount();
+		ServerRPC_RequestAlivePlayerCount();
 
 		AITPlayerState* ITPlayerState = GetITPlayerState();
 		if (IsValid(ITPlayerState))
@@ -326,6 +322,17 @@ void AITBattlePlayerController::UpdateShield()
 	}
 }
 
+void AITBattlePlayerController::ClientRPC_OnUseActiveSkill_Implementation(float Cooldown)
+{
+	if (IsLocalController())
+	{
+		if (IsValid(HUDWidget))
+		{
+			HUDWidget->OnSkill(Cooldown);
+		}
+	}
+}
+
 void AITBattlePlayerController::OnAmmoChanged(const FOnAttributeChangeData& Data)
 {
 	UpdateAmmo();
@@ -379,11 +386,59 @@ void AITBattlePlayerController::UpdateAmmo()
 	}
 }
 
+void AITBattlePlayerController::OnKillCountChanged(const FOnAttributeChangeData& Data)
+{
+	UpdateKillCount();
+}
+
+void AITBattlePlayerController::UpdateKillCount()
+{
+	UITAbilitySystemComponent* ITASC = GetITAbilitySystemComponent();
+	if (IsValid(ITASC))
+	{
+		int32 KillCount = (int32)ITASC->GetNumericAttribute(UITCombatSet::GetKillCountAttribute());
+		if (IsValid(HUDWidget))
+		{
+			HUDWidget->UpdatePlayerKillCount(KillCount);
+		}
+	}
+}
+
 void AITBattlePlayerController::OnUpdateAreaInfo(int32 CurrentRoundNumber, int32 AreaTime, float Distance, bool bIsWait)
 {
 	if (IsValid(HUDWidget))
 	{
 		HUDWidget->OnUpdateAreaInfo(CurrentRoundNumber, AreaTime, Distance, bIsWait);
+	}
+}
+
+void AITBattlePlayerController::ServerRPC_RequestAlivePlayerCount_Implementation()
+{
+	if (HasAuthority() && GetWorld())
+	{
+		AITBattleGameMode* GameMode = GetWorld()->GetAuthGameMode<AITBattleGameMode>();
+		if (IsValid(GameMode))
+		{
+			int32 AlivePlayerCount = GameMode->GetAlivePlayerCount();
+			ClientRPC_ChangeAlivePlayerCount(AlivePlayerCount);
+		}
+	}
+}
+
+void AITBattlePlayerController::ClientRPC_ChangeAlivePlayerCount_Implementation(int32 Count)
+{
+	if (IsValid(HUDWidget))
+	{
+		HUDWidget->UpdateRemainingPlayer(Count);
+	}
+}
+
+void AITBattlePlayerController::SetHUDUsingPawnData(const FText& PlayerName, UTexture2D* PlayerIcon, UTexture2D* ActiveSkillIcon, UTexture2D* UltimateSkillIcon)
+{
+	if (IsValid(HUDWidget))
+	{
+		HUDWidget->SetLocalPlayerBar(PlayerName, PlayerIcon);
+		HUDWidget->SetActiveSkillIcon(ActiveSkillIcon);
 	}
 }
 

@@ -28,6 +28,8 @@ public:
 
 	const TArray<TObjectPtr<APlayerController>>& GetMatchPlayers() const { return MatchPlayers; }
 
+	int32 GetAlivePlayerCount() const { return AlivePlayers.Num(); }
+
 protected:
 	// 로비에서 URL로 넘겨주는 값
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Match")
@@ -56,6 +58,8 @@ protected:
 
 	void ExtractSessionInfoFromURL(); // ThirdPersonMap?SessionID=...&MatchPlayers=...
 	void StartMatchWhenReady();
+
+	void UpdateAlivePlayerCountToAllPlayers();
 
 private:
 	FTimerHandle ShowResultTimerHandle;

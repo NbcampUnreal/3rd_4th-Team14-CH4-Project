@@ -55,6 +55,15 @@ public:
 
 	void OnUpdateAreaInfo(int32 CurrentRoundNumber, int32 AreaTime, float Distance, bool bIsWait);
 
+	UFUNCTION(BlueprintCallable, Client, Reliable)
+	void ClientRPC_OnUseActiveSkill(float Cooldown);
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_RequestAlivePlayerCount();
+
+	UFUNCTION(BlueprintCallable, Client, Reliable)
+	void ClientRPC_ChangeAlivePlayerCount(int32 Count);
+
 	// 결과창 표시 (클라이언트 RPC)
 	UFUNCTION(Client, Reliable)
 	void ClientShowResult(const FString& WinnerName, int32 TotalPlayers);
@@ -64,6 +73,8 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_SetPlayerNickname(const FString& Nickname);
+
+	void SetHUDUsingPawnData(const FText& PlayerName, UTexture2D* PlayerIcon, UTexture2D* ActiveSkillIcon, UTexture2D* UltimateSkillIcon);
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
@@ -111,6 +122,9 @@ private:
 	void OnSpecialAmmoChanged(const FOnAttributeChangeData& Data);
 	void UpdateAmmo();
 
+	void OnKillCountChanged(const FOnAttributeChangeData& Data);
+	void UpdateKillCount();
+
 	UFUNCTION()
 	void OnMainWeaponUpdate(UITItemInstance* ItemInstance);
 
@@ -125,6 +139,7 @@ private:
 
 	UFUNCTION()
 	void OnCurrentArmorUpdate(int32 CurrentArmorTier);
+
 
 	bool bISFirstWeapon = true;
 };

@@ -28,6 +28,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "PawnData|Thumbnail")
 	TObjectPtr<UTexture2D> Thumbnail;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "PawnData|Thumbnail")
+	TObjectPtr<UTexture2D> ActiveSkillIcon;
+
 	// Character에 부여할(grand) Ability 정보
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "PawnData|Abilities")
 	TArray<TObjectPtr<UITAbilitySet>> AbilitySets;

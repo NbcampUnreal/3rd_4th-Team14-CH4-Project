@@ -5,6 +5,7 @@
 #include "Network/ITMatchTypes.h"
 #include "ITBattleGameMode.generated.h"
 
+class AITPlayerState;
 
 UCLASS()
 class IMITATIONTRIGGER_API AITBattleGameMode : public AGameMode
@@ -15,8 +16,15 @@ public:
 	AITBattleGameMode();
 
 	virtual void BeginPlay() override;
+	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 	virtual void RestartPlayer(AController* NewPlayer) override;
+
+	UFUNCTION(BlueprintCallable)
+	void ReturnToLobby();
+
+	// 플레이어 사망 처리
+	void OnPlayerDeath(AITPlayerState* DeadPlayer);
 
 	const TArray<TObjectPtr<APlayerController>>& GetMatchPlayers() const { return MatchPlayers; }
 
@@ -31,7 +39,25 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Match")
 	TArray<TObjectPtr<APlayerController>> MatchPlayers;
 
+	// 생존자 배열
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Match")
+	TArray<TObjectPtr<AITPlayerState>> AlivePlayers;
+
+	// 게임 종료 여부
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Match")
+	bool bGameEnded = false;
+
+	// 승자 확인 및 게임 종료 처리
+	void CheckForWinner();
+	void EndGame(AITPlayerState* Winner);
+
+	// 모든 클라이언트에게 결과창 표시 요청
+	void ShowResultToAllPlayers(AITPlayerState* Winner);
+
 	void ExtractSessionInfoFromURL(); // ThirdPersonMap?SessionID=...&MatchPlayers=...
 	void StartMatchWhenReady();
 
+private:
+	FTimerHandle ShowResultTimerHandle;
+	FTimerHandle ShutdownTimerHandle;
 };

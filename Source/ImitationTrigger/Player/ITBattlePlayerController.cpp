@@ -274,21 +274,6 @@ void AITBattlePlayerController::InitHUD()
 				ItemManagerComponent->OnCurrentHelmetChanged.AddDynamic(this, &ThisClass::OnCurrentHelmetUpdate);
 				ItemManagerComponent->OnCurrentArmorChanged.AddDynamic(this, &ThisClass::OnCurrentArmorUpdate);
 			}
-
-			AITCharacter* ITCharacter = GetPawn<AITCharacter>();
-			if (IsValid(ITCharacter))
-			{
-				const UITPawnData* PawnData = ITCharacter->GetPawnData();
-				if (IsValid(PawnData) && HUDWidget)
-				{
-					FText PlayerName = FText::FromString(ITPlayerState->GetPlayerName());
-					UTexture2D* PlayerIcon = PawnData->Thumbnail;
-					UTexture2D* ActiveSkillIcon = PawnData->ActiveSkillIcon;
-
-					HUDWidget->SetLocalPlayerBar(PlayerName, PlayerIcon);
-					HUDWidget->SetSkillIcon(ActiveSkillIcon);
-				}
-			}
 		}
 	}
 }
@@ -410,6 +395,15 @@ void AITBattlePlayerController::OnUpdateAreaInfo(int32 CurrentRoundNumber, int32
 	if (IsValid(HUDWidget))
 	{
 		HUDWidget->OnUpdateAreaInfo(CurrentRoundNumber, AreaTime, Distance, bIsWait);
+	}
+}
+
+void AITBattlePlayerController::SetHUDUsingPawnData(const FText& PlayerName, UTexture2D* PlayerIcon, UTexture2D* ActiveSkillIcon, UTexture2D* UltimateSkillIcon)
+{
+	if (IsValid(HUDWidget))
+	{
+		HUDWidget->SetLocalPlayerBar(PlayerName, PlayerIcon);
+		HUDWidget->SetActiveSkillIcon(ActiveSkillIcon);
 	}
 }
 

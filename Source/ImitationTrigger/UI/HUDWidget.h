@@ -112,7 +112,7 @@ public:
 	void UpdatePlayerKillCount(int32 PlayerKillCount);
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
-	void SetSkillIcon(UTexture2D* SkillIcon);
+	void SetActiveSkillIcon(UTexture2D* SkillIcon);
 	
 protected:
 	

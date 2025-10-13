@@ -188,7 +188,7 @@ void UHUDWidget::UpdatePlayerKillCount(int32 PlayerKillCount)
 	}
 }
 
-void UHUDWidget::SetSkillIcon(UTexture2D* SkillIcon)
+void UHUDWidget::SetActiveSkillIcon(UTexture2D* SkillIcon)
 {
 	if (SkillSlotWidget)
 	{

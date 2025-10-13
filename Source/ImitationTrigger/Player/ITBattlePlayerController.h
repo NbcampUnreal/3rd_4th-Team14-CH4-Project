@@ -68,6 +68,8 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_SetPlayerNickname(const FString& Nickname);
 
+	void SetHUDUsingPawnData(const FText& PlayerName, UTexture2D* PlayerIcon, UTexture2D* ActiveSkillIcon, UTexture2D* UltimateSkillIcon);
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
 	TSubclassOf<UHUDWidget> HUDWidgetClass;

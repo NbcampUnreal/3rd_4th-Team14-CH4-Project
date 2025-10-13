@@ -3,6 +3,7 @@
 #include "Character/ITPawnData.h"
 #include "Player/ITPlayerState.h"
 #include "Player/ITPlayerController.h"
+#include "Player/ITBattlePlayerController.h"
 #include "Camera/ITCameraComponent.h"
 #include "Cosmetics/ITCharacterPartComponent.h"
 #include "Cosmetics/ITCharacterAnimComponent.h"
@@ -97,6 +98,19 @@ void AITCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	if (IsValid(HeroComponent))
 	{
 		HeroComponent->SetupPlayerInputComponent(PlayerInputComponent);
+	}
+
+	// 컨트롤러에 접근가능한 시점
+	AITBattlePlayerController* ITPlayerController = GetController<AITBattlePlayerController>();
+	AITPlayerState* ITPlayerState = GetITPlayerState();
+	if (IsValid(ITPlayerController) && IsValid(ITPlayerState) && IsValid(PawnData))
+	{
+		FText PlayerName = FText::FromString(ITPlayerState->GetPlayerName());
+		UTexture2D* PlayerIcon = PawnData->Thumbnail;
+		UTexture2D* ActiveSkillIcon = PawnData->ActiveSkillIcon;
+		UTexture2D* UltimateSkillIcon = nullptr;
+
+		ITPlayerController->SetHUDUsingPawnData(PlayerName, PlayerIcon, ActiveSkillIcon, UltimateSkillIcon);
 	}
 }
 

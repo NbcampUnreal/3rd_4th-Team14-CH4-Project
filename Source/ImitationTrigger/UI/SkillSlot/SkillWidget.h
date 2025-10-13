@@ -49,4 +49,6 @@ private:
 
 	void UpdateCoolDownText();
 	
+
+	float OnTickStartTime = 0.0f;
 };

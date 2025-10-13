@@ -55,6 +55,9 @@ public:
 
 	void OnUpdateAreaInfo(int32 CurrentRoundNumber, int32 AreaTime, float Distance, bool bIsWait);
 
+	UFUNCTION(BlueprintCallable, Client, Reliable)
+	void ClientRPC_OnUseActiveSkill(float Cooldown);
+
 	// 결과창 표시 (클라이언트 RPC)
 	UFUNCTION(Client, Reliable)
 	void ClientShowResult(const FString& WinnerName, int32 TotalPlayers);

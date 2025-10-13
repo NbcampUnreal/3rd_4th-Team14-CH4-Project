@@ -2,7 +2,7 @@
 
 
 #include "UI/SkillSlot/SkillWidget.h"
-
+#include "Kismet/GameplayStatics.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 
@@ -23,6 +23,7 @@ void USkillWidget::OnSkill(float CoolDown)
 {
 	if (CoolDownBlock)
 	{
+		OnTickStartTime = UGameplayStatics::GetTimeSeconds(this);
 		CurrentCoolDownTime = CoolDown;
 
 		UpdateCoolDownText();
@@ -58,7 +59,11 @@ void USkillWidget::NativeConstruct()
 
 void USkillWidget::CoolDownTimerTick()
 {
-	CurrentCoolDownTime -= 0.1f;
+	float CurrentTime = UGameplayStatics::GetTimeSeconds(this);
+	float DeltaTime = CurrentTime - OnTickStartTime;
+	
+	CurrentCoolDownTime -= DeltaTime;
+	OnTickStartTime = UGameplayStatics::GetTimeSeconds(this);
 
 	if (CurrentCoolDownTime <= 0.0f)
 	{

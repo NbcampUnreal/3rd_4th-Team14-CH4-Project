@@ -319,6 +319,17 @@ void AITBattlePlayerController::UpdateShield()
 	}
 }
 
+void AITBattlePlayerController::ClientRPC_OnUseActiveSkill_Implementation(float Cooldown)
+{
+	if (IsLocalController())
+	{
+		if (IsValid(HUDWidget))
+		{
+			HUDWidget->OnSkill(Cooldown);
+		}
+	}
+}
+
 void AITBattlePlayerController::OnAmmoChanged(const FOnAttributeChangeData& Data)
 {
 	UpdateAmmo();
@@ -350,7 +361,7 @@ void AITBattlePlayerController::UpdateAmmo()
 			UITWeaponManagerComponent* WeaponManagerComponent = ITPlayerState->GetITWeaponManagerComponent();
 			if (!WeaponManagerComponent || !WeaponManagerComponent->GetCurrentWeapon())
 			{
-				HUDWidget->HasWeapon(false);
+				HUDWidget->HasNoWeapon();
 				return;
 			}
 
@@ -363,12 +374,10 @@ void AITBattlePlayerController::UpdateAmmo()
 			if (CurrentWeapon->ItemDefinition->AmmoType == EAmmoType::NormalAmmo)
 			{
 				HUDWidget->UpdateRifleAmmo(CurrentAmmo, NormalAmmo);
-				HUDWidget->HasWeapon(true);
 			}
 			else if (CurrentWeapon->ItemDefinition->AmmoType == EAmmoType::SpecialAmmo)
 			{
 				HUDWidget->UpdateSniperAmmo(CurrentAmmo, SpecialAmmo);
-				HUDWidget->HasWeapon(true);
 			}
 		}
 	}
@@ -420,7 +429,7 @@ void AITBattlePlayerController::ServerRPC_ReturnToLobby_Implementation()
 
 void AITBattlePlayerController::ClientShowResult_Implementation(const FString& WinnerName, int32 TotalPlayers)
 {
-	if (!IsLocalController()) 
+	if (!IsLocalController())
 	{
 		return;
 	}
@@ -527,21 +536,7 @@ void AITBattlePlayerController::OnCurrentHelmetUpdate(int32 CurrentHelmetTier)
 {
 	if (IsValid(HUDWidget))
 	{
-		if (CurrentHelmetTier == 1)
-		{
-			HUDWidget->SetEquipmentIconHelmet();
-			// SetCommonItem();
-		}
-		else if (CurrentHelmetTier == 2)
-		{
-			HUDWidget->SetEquipmentIconHelmet();
-			// SetRareItem();
-		}
-		else if (CurrentHelmetTier == 3)
-		{
-			HUDWidget->SetEquipmentIconHelmet();
-			// SetEpicItem();
-		}
+		HUDWidget->SetEquipmentIconHelmet(CurrentHelmetTier);
 	}
 }
 
@@ -549,20 +544,6 @@ void AITBattlePlayerController::OnCurrentArmorUpdate(int32 CurrentArmorTier)
 {
 	if (IsValid(HUDWidget))
 	{
-		if (CurrentArmorTier == 1)
-		{
-			HUDWidget->SetEquipmentIconArmor();
-			// SetCommonItem();
-		}
-		else if (CurrentArmorTier == 2)
-		{
-			HUDWidget->SetEquipmentIconArmor();
-			// SetRareItem();
-		}
-		else if (CurrentArmorTier == 3)
-		{
-			HUDWidget->SetEquipmentIconArmor();
-			// SetEpicItem();
-		}
+		HUDWidget->SetEquipmentIconArmor(CurrentArmorTier);
 	}
 }

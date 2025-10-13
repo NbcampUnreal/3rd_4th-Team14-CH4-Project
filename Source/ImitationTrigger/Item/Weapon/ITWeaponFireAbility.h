@@ -32,13 +32,19 @@ protected:
 	virtual void Fire(const FVector& StartLocation, const FVector& FireDirection);
 
 	UFUNCTION(BlueprintCallable, Category = "IT|Ability")
-	void ApplyWeaponDamage(AActor* TargetActor);
+	void ApplyWeaponDamage(AActor* TargetActor, bool bIsHeadshot);
 
 	UFUNCTION(BlueprintCallable, Category = "IT|Ability")
 	UITItemDefinition_Weapon* GetWeaponDefinition() const;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "IT|Effect")
-	TSubclassOf<UGameplayEffect> DamageEffect;
+	TSubclassOf<UGameplayEffect> NormalDamageEffect;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "IT|Effect")
+	TSubclassOf<UGameplayEffect> HeadshotDamageEffect;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "IT|Effect")
+	float HeadshotDamageMultiplier = 2.0f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "IT|Anim")
 	TObjectPtr<UAnimMontage> ReboundAnimMontage;

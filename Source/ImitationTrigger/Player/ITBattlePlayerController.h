@@ -128,6 +128,8 @@ private:
 
 	UFUNCTION()
 	void OnCurrentArmorUpdate(int32 CurrentArmorTier);
+
+	bool bISFirstWeapon = true;
 };
 
 template<class UClass, typename FuncType>

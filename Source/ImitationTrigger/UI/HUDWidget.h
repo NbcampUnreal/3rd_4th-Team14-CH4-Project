@@ -67,9 +67,6 @@ public:
 	void AddNotifyText(FText KillPlayer, FText DiePlayer);
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
-	void SetEquipmentIconBag();
-
-	UFUNCTION(BlueprintCallable, Category = "UI")
 	void SetEquipmentIconArmor();
 	
 	UFUNCTION(BlueprintCallable, Category = "UI")
@@ -137,9 +134,6 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	UScrollBox* KillNotifyBox;
-
-	UPROPERTY(meta = (BindWidget))
-	UEquipmentIconWidget* EquipmentIcon_Bag;
 
 	UPROPERTY(meta = (BindWidget))
 	UEquipmentIconWidget* EquipmentIcon_Armor;

@@ -280,11 +280,6 @@ void UHUDWidget::AddNotifyText(FText KillPlayer, FText DiePlayer)
 	
 }
 
-void UHUDWidget::SetEquipmentIconBag()
-{
-	EquipmentIcon_Bag->SetCommonItem();
-}
-
 void UHUDWidget::SetEquipmentIconArmor()
 {
 	EquipmentIcon_Armor->SetEpicItem();

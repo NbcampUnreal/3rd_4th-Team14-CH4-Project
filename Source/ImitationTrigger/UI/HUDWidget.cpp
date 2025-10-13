@@ -188,6 +188,14 @@ void UHUDWidget::UpdatePlayerKillCount(int32 PlayerKillCount)
 	}
 }
 
+void UHUDWidget::SetSkillIcon(UTexture2D* SkillIcon)
+{
+	if (SkillSlotWidget)
+	{
+		SkillSlotWidget->SetSkillImage(SkillIcon);
+	}
+}
+
 void UHUDWidget::UpdateUltimateGauge(float UltimateGauge)
 {
 	if (UltimateGauge >= 100)

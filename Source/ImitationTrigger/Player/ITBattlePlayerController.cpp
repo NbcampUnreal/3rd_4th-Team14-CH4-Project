@@ -366,6 +366,8 @@ void AITBattlePlayerController::ClientShowResult_Implementation(const FString& W
 		ResultWidget->SetWinnerName(WinnerName);
 		ResultWidget->AddToViewport(100); // 최상위 레이어에 표시
 
+		FlushPressedKeys();
+
 		// 입력 모드를 UI로 변경
 		FInputModeUIOnly InputMode;
 		InputMode.SetWidgetToFocus(ResultWidget->TakeWidget());

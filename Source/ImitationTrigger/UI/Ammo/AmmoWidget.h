@@ -25,7 +25,7 @@ public:
 	void SetShotgunAmmo(int32 CurrentAmmo, int32 MaxAmmo);
 	UFUNCTION(BlueprintCallable)
 	void SetSniperAmmo(int32 CurrentAmmo, int32 MaxAmmo);
-
+	UFUNCTION(BlueprintCallable)
 	void HasWeapon(bool bHasWeapon);
 
 

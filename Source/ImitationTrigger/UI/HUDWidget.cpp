@@ -7,7 +7,6 @@
 #include "Components/Border.h"
 #include "Components/Image.h"
 #include "Components/ScrollBox.h"
-#include "Components/VerticalBox.h"
 #include "EquipmentIcon/EquipmentIconWidget.h"
 #include "GameFramework/Character.h"
 #include "KillLog/KillLogWidget.h"
@@ -19,6 +18,8 @@
 #include "WeaponSlot/WeaponSlotNumberWidget.h"
 #include "WeaponSlot/WeaponSlotWidget.h"
 #include "Area/AreaWidget.h"
+#include "ItemSlot/ItemSlotWidget.h"
+#include "PlayerKillCount/PlayerKillCount.h"
 
 void UHUDWidget::NativeConstruct()
 {
@@ -167,6 +168,22 @@ void UHUDWidget::OnUpdateAreaInfo(int32 CurrentRoundNumber, int32 AreaTime, floa
 	}
 }
 
+void UHUDWidget::UpdateRemainingPlayer(int32 RemainingPlayerCount)
+{
+	if (PlayerKillCountWidget)
+	{
+		PlayerKillCountWidget->UpdateRemainingPlayer(RemainingPlayerCount);
+	}
+}
+
+void UHUDWidget::UpdatePlayerKillCount(int32 PlayerKillCount)
+{
+	if (PlayerKillCountWidget)
+	{
+		PlayerKillCountWidget->UpdatePlayerKillCount(PlayerKillCount);
+	}
+}
+
 void UHUDWidget::UpdateUltimateGauge(float UltimateGauge)
 {
 	if (UltimateGauge >= 100)
@@ -261,11 +278,6 @@ void UHUDWidget::AddNotifyText(FText KillPlayer, FText DiePlayer)
 		KillNotifyBox->ScrollToEnd();
 	}
 	
-}
-
-void UHUDWidget::SetEquipmentIconBag()
-{
-	EquipmentIcon_Bag->SetCommonItem();
 }
 
 void UHUDWidget::SetEquipmentIconArmor()

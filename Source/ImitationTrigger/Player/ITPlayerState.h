@@ -57,7 +57,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "ITPlayerState")
 	bool IsAlive() const { return bIsAlive; }
 
-	UPROPERTY(Replicated)
+	UPROPERTY(BlueprintReadOnly, Replicated)
 	bool bIsAlive;
 
 protected:

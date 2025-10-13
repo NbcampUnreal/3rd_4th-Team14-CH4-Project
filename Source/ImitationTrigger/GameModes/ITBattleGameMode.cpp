@@ -3,6 +3,7 @@
 #include "Engine/Engine.h"
 #include "Player/ITPlayerState.h"
 #include "Player/ITBattlePlayerController.h"
+#include "Kismet/GameplayStatics.h"
 
 AITBattleGameMode::AITBattleGameMode()
 {
@@ -41,6 +42,7 @@ void AITBattleGameMode::PostLogin(APlayerController* NewPlayer)
 	if (AITPlayerState* PlayerState = Cast<AITPlayerState>(NewPlayer->PlayerState))
 	{
 		AlivePlayers.AddUnique(PlayerState);
+		PlayerState->SetStartTimeSeconds(UGameplayStatics::GetTimeSeconds(this));
 		UE_LOG(LogTemp, Log, TEXT("Player joined and added to alive list: %s"), *PlayerState->GetPlayerName());
 	}
 
@@ -60,6 +62,9 @@ void AITBattleGameMode::OnPlayerDeath(AITPlayerState* DeadPlayer)
 
 	// 생존자 배열에서 제거
 	AlivePlayers.Remove(DeadPlayer);
+
+	DeadPlayer->SetEndTimeSeconds(UGameplayStatics::GetTimeSeconds(this));
+	DeadPlayer->SetRank(AlivePlayers.Num() + 1);
 
 	UE_LOG(LogTemp, Warning, TEXT("Alive players: %d"), AlivePlayers.Num());
 
@@ -91,6 +96,9 @@ void AITBattleGameMode::EndGame(AITPlayerState* Winner)
 	if (Winner)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Game Over! Winner: %s"), *Winner->GetPlayerName());
+
+		Winner->SetRank(1);
+		Winner->SetEndTimeSeconds(UGameplayStatics::GetTimeSeconds(this));
 	}
 	else
 	{
@@ -127,12 +135,25 @@ void AITBattleGameMode::EndGame(AITPlayerState* Winner)
 
 void AITBattleGameMode::ShowResultToAllPlayers(AITPlayerState* Winner)
 {
+	// RPC와 Replication 동기화
+	for (APlayerController* PC : MatchPlayers)
+	{
+		if (AITBattlePlayerController* BattlePC = Cast<AITBattlePlayerController>(PC))
+		{
+			if (AITPlayerState* PS = BattlePC->GetITPlayerState())
+			{
+				PS->ForceNetUpdate();
+			}
+		}
+	}
+
 	for (APlayerController* PC : MatchPlayers)
 	{
 		if (AITBattlePlayerController* BattlePC = Cast<AITBattlePlayerController>(PC))
 		{
 			FString WinnerName = Winner ? Winner->GetPlayerName() : TEXT("No Winner");
-			BattlePC->ClientShowResult(WinnerName);
+			int32 TotalPlayerCount = MatchPlayers.Num();
+			BattlePC->ClientShowResult(WinnerName, TotalPlayerCount);
 		}
 	}
 }

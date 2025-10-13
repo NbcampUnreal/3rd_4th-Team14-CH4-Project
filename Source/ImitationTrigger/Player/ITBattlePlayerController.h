@@ -56,7 +56,7 @@ public:
 
 	// 결과창 표시 (클라이언트 RPC)
 	UFUNCTION(Client, Reliable)
-	void ClientShowResult(const FString& WinnerName);
+	void ClientShowResult(const FString& WinnerName, int32 TotalPlayers);
 
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_ReturnToLobby(); //에디터 테스트 용 로비 돌아가기

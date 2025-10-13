@@ -2,6 +2,7 @@
 #include "Player/ITPlayerState.h"
 #include "AbilitySystem/ITAbilitySystemComponent.h"
 #include "AbilitySystem/Attributes/ITHealthSet.h"
+#include "AbilitySystem/Attributes/ITCombatSet.h"
 #include "System/ITLogChannel.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/HUDWidget.h"
@@ -348,7 +349,7 @@ void AITBattlePlayerController::ServerRPC_ReturnToLobby_Implementation()
 #endif
 }
 
-void AITBattlePlayerController::ClientShowResult_Implementation(const FString& WinnerName)
+void AITBattlePlayerController::ClientShowResult_Implementation(const FString& WinnerName, int32 TotalPlayers)
 {
 	if (!IsLocalController()) 
 	{
@@ -363,6 +364,34 @@ void AITBattlePlayerController::ClientShowResult_Implementation(const FString& W
 
 	if (ResultWidget)
 	{
+		AITPlayerState* ITPlayerState = GetITPlayerState();
+		if (IsValid(ITPlayerState))
+		{
+			int32 MyRank = ITPlayerState->GetRank();
+			UTexture2D* CharacterImage = nullptr;
+			FText PlayerName = FText::FromString(ITPlayerState->GetPlayerName());
+			int32 SurvivalTime = (int32)(ITPlayerState->GetSurviveTimeSeconds());
+			int32 KillCount = 0;
+			float Damage = 0.0f;
+
+			UITAbilitySystemComponent* ASC = ITPlayerState->GetITAbilitySystemComponent();
+			if (IsValid(ASC))
+			{
+				KillCount = (int32)ASC->GetNumericAttribute(UITCombatSet::GetKillCountAttribute());
+				Damage = ASC->GetNumericAttribute(UITCombatSet::GetDamageDealtAttribute());
+			}
+
+			const UITPawnData* PawnData = ITPlayerState->GetPawnData();
+			if (IsValid(PawnData))
+			{
+				CharacterImage = PawnData->Thumbnail;
+			}
+
+			ResultWidget->SetResult(TotalPlayers, MyRank, CharacterImage, PlayerName, SurvivalTime, KillCount, Damage);
+		}
+
+		
+
 		ResultWidget->SetWinnerName(WinnerName);
 		ResultWidget->AddToViewport(100); // 최상위 레이어에 표시
 

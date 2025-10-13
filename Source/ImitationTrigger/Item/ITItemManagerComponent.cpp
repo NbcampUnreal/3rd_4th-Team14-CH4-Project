@@ -43,6 +43,16 @@ bool UITItemManagerComponent::TryAddItem(UITItemDefinition* ItemDefinition)
 	return false;
 }
 
+void UITItemManagerComponent::OnRep_CurrentHelmetChanged()
+{
+	OnCurrentHelmetChanged.Broadcast(CurrentHelmetTier);
+}
+
+void UITItemManagerComponent::OnRep_CurrentArmorChanged()
+{
+	OnCurrentArmorChanged.Broadcast(CurrentArmorTier);
+}
+
 bool UITItemManagerComponent::PutOnEquipment(UITItemDefinition* ItemDefinition)
 {
 	const UITItemFragment_Equipment* EquipmentFragment

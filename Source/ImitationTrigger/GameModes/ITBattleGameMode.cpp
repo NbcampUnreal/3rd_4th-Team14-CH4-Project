@@ -18,6 +18,20 @@ void AITBattleGameMode::BeginPlay()
 	UE_LOG(LogTemp, Log, TEXT("Match up. Session=%s Expect=%d"), *CurrentSessionID, ExpectedPlayerCount);
 }
 
+void AITBattleGameMode::EndPlay(EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	if (ShutdownTimerHandle.IsValid())
+	{
+		GetWorldTimerManager().ClearTimer(ShutdownTimerHandle);
+	}
+	if (ShowResultTimerHandle.IsValid())
+	{
+		GetWorldTimerManager().ClearTimer(ShowResultTimerHandle);
+	}
+}
+
 void AITBattleGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
@@ -85,10 +99,22 @@ void AITBattleGameMode::EndGame(AITPlayerState* Winner)
 
 	EndMatch();
 
-	// 모든 플레이어에게 결과창 표시
-	ShowResultToAllPlayers(Winner);
+	// 슬로우 모션을 건 다음, 잠시 대기하고, 그 후에 결과창을 표시한다.
+	if (GetWorldSettings())
+	{
+		GetWorldSettings()->SetTimeDilation(0.1f);
+	}
+	GetWorldTimerManager().SetTimer(ShowResultTimerHandle, [this, Winner]()
+		{
+			if (GetWorldSettings())
+			{
+				GetWorldSettings()->SetTimeDilation(1.0f);
+			}
+			// 모든 플레이어에게 결과창 표시
+			ShowResultToAllPlayers(Winner);
+		}, 1.0f, false);
 
-	FTimerHandle ShutdownTimerHandle;
+
 	GetWorld()->GetTimerManager().SetTimer(ShutdownTimerHandle, [this]()
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Match ended - Server shutting down"));

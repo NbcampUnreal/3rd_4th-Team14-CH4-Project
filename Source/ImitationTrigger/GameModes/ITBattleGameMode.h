@@ -16,6 +16,7 @@ public:
 	AITBattleGameMode();
 
 	virtual void BeginPlay() override;
+	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 	virtual void RestartPlayer(AController* NewPlayer) override;
 
@@ -56,4 +57,7 @@ protected:
 	void ExtractSessionInfoFromURL(); // ThirdPersonMap?SessionID=...&MatchPlayers=...
 	void StartMatchWhenReady();
 
+private:
+	FTimerHandle ShowResultTimerHandle;
+	FTimerHandle ShutdownTimerHandle;
 };

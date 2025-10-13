@@ -19,6 +19,9 @@ public:
 	UFUNCTION(BlueprintCallable,Category = "UI")
 	void SetWeaponImage(UTexture2D* NewImage);
 
+	UFUNCTION(BlueprintCallable,Category = "UI")
+	void HasWeapon(bool bHasWeapon);
+
 protected:
 	UPROPERTY(meta = (BindWidget))
 	UImage* WeaponImage;

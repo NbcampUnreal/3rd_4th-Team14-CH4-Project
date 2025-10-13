@@ -184,14 +184,6 @@ void UHUDWidget::UpdatePlayerKillCount(int32 PlayerKillCount)
 	}
 }
 
-void UHUDWidget::UpdateItemAmount(int32 ItemAmount)
-{
-	if (ItemSlotWidget)
-	{
-		ItemSlotWidget->UpdateItemAmount(ItemAmount);
-	}
-}
-
 void UHUDWidget::UpdateUltimateGauge(float UltimateGauge)
 {
 	if (UltimateGauge >= 100)

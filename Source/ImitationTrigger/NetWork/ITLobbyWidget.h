@@ -6,6 +6,7 @@
 
 class UButton;
 class UTextBlock;
+class UEditableTextBox;
 
 UCLASS()
 class IMITATIONTRIGGER_API UITLobbyWidget : public UUserWidget
@@ -39,6 +40,9 @@ protected:
 
 	UPROPERTY(meta = (BindWidget), BlueprintReadWrite)
 	UButton* Character2Button;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UEditableTextBox> NicknameEdit;
 
 	UFUNCTION()
 	void OnStartClicked();

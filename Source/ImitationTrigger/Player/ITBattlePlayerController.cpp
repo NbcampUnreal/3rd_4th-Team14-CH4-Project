@@ -18,6 +18,7 @@
 #include "GameModes/ITBattleGameMode.h"
 #include "UI/Result/ResultWidget.h"
 #include "Blueprint/UserWidget.h"
+#include "GameFramework/PlayerState.h"
 #include "Net/UnrealNetwork.h"
 
 AITBattlePlayerController::AITBattlePlayerController()
@@ -32,6 +33,15 @@ void AITBattlePlayerController::BeginPlay()
 	if (GetNetMode() == NM_Standalone)
 	{
 		InitWidgets();
+	}
+
+	if (IsLocalController())
+	{
+		if (UITGameInstance* GI = Cast<UITGameInstance>(GetGameInstance()))
+		{
+			FString Nickname = GI->GetPlayerNickname();
+			ServerRPC_SetPlayerNickname(Nickname);
+		}
 	}
 }
 
@@ -299,6 +309,15 @@ void AITBattlePlayerController::OnUpdateAreaInfo(int32 CurrentRoundNumber, int32
 	if (IsValid(HUDWidget))
 	{
 		HUDWidget->OnUpdateAreaInfo(CurrentRoundNumber, AreaTime, Distance, bIsWait);
+	}
+}
+
+void AITBattlePlayerController::ServerRPC_SetPlayerNickname_Implementation(const FString& Nickname)
+{
+	if (APlayerState* PS = GetPlayerState<APlayerState>())
+	{
+		PS->SetPlayerName(Nickname);
+		UE_LOG(LogTemp, Log, TEXT("Player name set to: %s"), *Nickname);
 	}
 }
 

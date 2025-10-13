@@ -22,5 +22,14 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Character")
 	int32 GetSelectedCharacterIndex() const { return SelectedCharacterIndex; }
+
+	UPROPERTY(BlueprintReadWrite, Category = "Player")
+	FString PlayerNickname = TEXT("Player");
+
+	UFUNCTION(BlueprintCallable, Category = "Player")
+	void SetPlayerNickname(const FString& Nickname);
+
+	UFUNCTION(BlueprintCallable, Category = "Player")
+	FString GetPlayerNickname() const { return PlayerNickname; }
 	
 };

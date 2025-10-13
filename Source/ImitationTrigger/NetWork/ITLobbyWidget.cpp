@@ -2,6 +2,7 @@
 #include "Network/ITTitlePlayerController.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
+#include "Components/EditableTextBox.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "ITGameInstance.h"
@@ -65,6 +66,11 @@ void UITLobbyWidget::OnStartClicked()
 		}
 		else
 		{
+			if(UITGameInstance* GI = Cast<UITGameInstance>(GetGameInstance()))
+			{
+				FString Nickname = NicknameEdit->GetText().ToString();
+				GI->SetPlayerNickname(Nickname);
+			}
 			// 매칭 시작
 			UE_LOG(LogTemp, Warning, TEXT("Starting matchmaking"));
 			PC->ServerRPC_JoinMatchmakingQueue();

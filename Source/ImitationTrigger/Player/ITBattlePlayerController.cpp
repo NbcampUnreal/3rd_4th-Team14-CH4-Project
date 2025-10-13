@@ -487,8 +487,13 @@ void AITBattlePlayerController::OnMainWeaponUpdate(UITItemInstance* ItemInstance
 		{
 			if (IsValid(HUDWidget))
 			{
-				HUDWidget->UpdateWeaponSlotOne(WeaponDefinition->ItemIcon);
 				HUDWidget->SetWeaponOneInfo(WeaponDefinition->ItemName);
+
+				if (bISFirstWeapon)
+				{
+					HUDWidget->UpdateWeaponSlotOne(ItemInstance->ItemDefinition->ItemIcon);
+					bISFirstWeapon = false;
+				}
 			}
 		}
 	}
@@ -512,7 +517,6 @@ void AITBattlePlayerController::OnSubWeaponUpdate(UITItemInstance* ItemInstance)
 		{
 			if (IsValid(HUDWidget))
 			{
-				HUDWidget->UpdateWeaponSlotTwo(WeaponDefinition->ItemIcon);
 				HUDWidget->SetWeaponTwoInfo(WeaponDefinition->ItemName);
 			}
 		}
@@ -551,10 +555,12 @@ void AITBattlePlayerController::OnCurrentWeaponUpdate(ECurrentWeaponSlot Current
 		if (CurrentWeaponType == ECurrentWeaponSlot::MainWeapon)
 		{
 			OnMainWeaponUpdate(CurrentWeapon);
+			HUDWidget->UpdateWeaponSlotOne(CurrentWeapon->ItemDefinition->ItemIcon);
 		}
 		else if (CurrentWeaponType == ECurrentWeaponSlot::SubWeapon)
 		{
 			OnSubWeaponUpdate(CurrentWeapon);
+			HUDWidget->UpdateWeaponSlotTwo(CurrentWeapon->ItemDefinition->ItemIcon);
 		}
 	}
 	UpdateAmmo();

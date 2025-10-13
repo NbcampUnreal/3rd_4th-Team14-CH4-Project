@@ -176,14 +176,10 @@ void AITPlayerState::OnHealthChanged(const FOnAttributeChangeData& Data)
 				{
 					bIsAlive = false;
 
-					if (HasAuthority())
+					if (AITBattleGameMode* GameMode = Cast<AITBattleGameMode>(GetWorld()->GetAuthGameMode()))
 					{
-						if (AITBattleGameMode* GameMode = Cast<AITBattleGameMode>(GetWorld()->GetAuthGameMode()))
-						{
-							GameMode->OnPlayerDeath(this);
-						}
+						GameMode->OnPlayerDeath(this);
 					}
-
 					ITCharacter->MulticastRPC_OnDead();
 				}
 			}

@@ -16,7 +16,7 @@ UITItemDefinition::UITItemDefinition()
 	}
 }
 
-UITItemFragment* UITItemDefinition::FindFragmentByClass(const TSubclassOf<UITItemFragment> FragmentClass) const
+UITItemFragment* UITItemDefinition::K2_FindFragmentByClass(const TSubclassOf<UITItemFragment> FragmentClass) const
 {
 	UITItemFragment* FoundFragment = nullptr;
 

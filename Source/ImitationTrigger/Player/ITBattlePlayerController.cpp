@@ -88,10 +88,9 @@ void AITBattlePlayerController::OnRep_PlayerState()
 
 	// 클라이언트에 PlayerState가 준비 되어야 HUD를 초기화할 수 있다.
 	InitWidgets();
-	FInputModeGameOnly Mode; 
-	SetInputMode(Mode); 
+	FInputModeGameOnly Mode;
+	SetInputMode(Mode);
 	bShowMouseCursor = false;
-	
 }
 
 void AITBattlePlayerController::SetPawn(APawn* InPawn)
@@ -162,7 +161,9 @@ void AITBattlePlayerController::ClientRPC_AddNotify_Implementation(const FText& 
 	}
 }
 
-void AITBattlePlayerController::ClientRPC_AddKillLog_Implementation(UTexture2D* KillCharacter, const FText& KillName, UTexture2D* DieCharacter, const FText& DieName, UTexture2D* KillWeapon)
+void AITBattlePlayerController::ClientRPC_AddKillLog_Implementation(UTexture2D* KillCharacter, const FText& KillName,
+                                                                    UTexture2D* DieCharacter, const FText& DieName,
+                                                                    UTexture2D* KillWeapon)
 {
 	if (IsValid(HUDWidget))
 	{
@@ -237,13 +238,19 @@ void AITBattlePlayerController::InitHUD()
 		{
 			if (IsValid(HUDWidget))
 			{
-				BindAttributeChangeDelegate(ITASC, UITHealthSet::GetHealthAttribute(), this, &ThisClass::OnHealthChanged);
-				BindAttributeChangeDelegate(ITASC, UITHealthSet::GetMaxHealthAttribute(), this, &ThisClass::OnMaxHealthChanged);
-				BindAttributeChangeDelegate(ITASC, UITHealthSet::GetShieldAttribute(), this, &ThisClass::OnShieldChanged);
-				BindAttributeChangeDelegate(ITASC, UITHealthSet::GetMaxShieldAttribute(), this, &ThisClass::OnMaxShieldChanged);
+				BindAttributeChangeDelegate(ITASC, UITHealthSet::GetHealthAttribute(), this,
+				                            &ThisClass::OnHealthChanged);
+				BindAttributeChangeDelegate(ITASC, UITHealthSet::GetMaxHealthAttribute(), this,
+				                            &ThisClass::OnMaxHealthChanged);
+				BindAttributeChangeDelegate(ITASC, UITHealthSet::GetShieldAttribute(), this,
+				                            &ThisClass::OnShieldChanged);
+				BindAttributeChangeDelegate(ITASC, UITHealthSet::GetMaxShieldAttribute(), this,
+				                            &ThisClass::OnMaxShieldChanged);
 				BindAttributeChangeDelegate(ITASC, UITAmmoSet::GetAmmoAttribute(), this, &ThisClass::OnAmmoChanged);
-				BindAttributeChangeDelegate(ITASC, UITAmmoSet::GetNormalAmmoAttribute(), this, &ThisClass::OnNormalAmmoChanged);
-				BindAttributeChangeDelegate(ITASC, UITAmmoSet::GetSpecialAmmoAttribute(), this, &ThisClass::OnSpecialAmmoChanged);
+				BindAttributeChangeDelegate(ITASC, UITAmmoSet::GetNormalAmmoAttribute(), this,
+				                            &ThisClass::OnNormalAmmoChanged);
+				BindAttributeChangeDelegate(ITASC, UITAmmoSet::GetSpecialAmmoAttribute(), this,
+				                            &ThisClass::OnSpecialAmmoChanged);
 			}
 		}
 		UpdateHealth();
@@ -350,12 +357,12 @@ void AITBattlePlayerController::UpdateAmmo()
 			UITWeaponManagerComponent* WeaponManagerComponent = ITPlayerState->GetITWeaponManagerComponent();
 			if (!WeaponManagerComponent || !WeaponManagerComponent->GetCurrentWeapon())
 			{
-				HUDWidget->HasWeapon(false);
+				HUDWidget->HasNoWeapon();
 				return;
 			}
 
 			UITItemInstance* CurrentWeapon = WeaponManagerComponent->GetCurrentWeapon();
-			
+
 			const float CurrentAmmo = ITASC->GetNumericAttribute(UITAmmoSet::GetAmmoAttribute());
 			const float NormalAmmo = ITASC->GetNumericAttribute(UITAmmoSet::GetNormalAmmoAttribute());
 			const float SpecialAmmo = ITASC->GetNumericAttribute(UITAmmoSet::GetSpecialAmmoAttribute());
@@ -363,12 +370,10 @@ void AITBattlePlayerController::UpdateAmmo()
 			if (CurrentWeapon->ItemDefinition->AmmoType == EAmmoType::NormalAmmo)
 			{
 				HUDWidget->UpdateRifleAmmo(CurrentAmmo, NormalAmmo);
-				HUDWidget->HasWeapon(true);
 			}
 			else if (CurrentWeapon->ItemDefinition->AmmoType == EAmmoType::SpecialAmmo)
 			{
 				HUDWidget->UpdateSniperAmmo(CurrentAmmo, SpecialAmmo);
-				HUDWidget->HasWeapon(true);
 			}
 		}
 	}
@@ -420,7 +425,7 @@ void AITBattlePlayerController::ServerRPC_ReturnToLobby_Implementation()
 
 void AITBattlePlayerController::ClientShowResult_Implementation(const FString& WinnerName, int32 TotalPlayers)
 {
-	if (!IsLocalController()) 
+	if (!IsLocalController())
 	{
 		return;
 	}
@@ -459,7 +464,6 @@ void AITBattlePlayerController::ClientShowResult_Implementation(const FString& W
 			ResultWidget->SetResult(TotalPlayers, MyRank, CharacterImage, PlayerName, SurvivalTime, KillCount, Damage);
 		}
 
-		
 
 		ResultWidget->SetWinnerName(WinnerName);
 		ResultWidget->AddToViewport(100); // 최상위 레이어에 표시
@@ -483,15 +487,25 @@ void AITBattlePlayerController::OnMainWeaponUpdate(UITItemInstance* ItemInstance
 		{
 			if (IsValid(HUDWidget))
 			{
-				HUDWidget->UpdateWeaponSlotOne(WeaponDefinition->ItemIcon);
 				HUDWidget->SetWeaponOneInfo(WeaponDefinition->ItemName);
+
+				if (bISFirstWeapon)
+				{
+					HUDWidget->UpdateWeaponSlotOne(ItemInstance->ItemDefinition->ItemIcon);
+					bISFirstWeapon = false;
+				}
 			}
 		}
 	}
 	else
 	{
-		// nullptr이면, 이름 및 아이콘 제거
+		if (IsValid(HUDWidget))
+		{
+			HUDWidget->HasNoWeapon();
+			HUDWidget->SetWeaponOneInfo(FText());
+		}
 	}
+	UpdateAmmo();
 }
 
 void AITBattlePlayerController::OnSubWeaponUpdate(UITItemInstance* ItemInstance)
@@ -503,23 +517,52 @@ void AITBattlePlayerController::OnSubWeaponUpdate(UITItemInstance* ItemInstance)
 		{
 			if (IsValid(HUDWidget))
 			{
-				HUDWidget->UpdateWeaponSlotTwo(WeaponDefinition->ItemIcon);
 				HUDWidget->SetWeaponTwoInfo(WeaponDefinition->ItemName);
 			}
 		}
 	}
 	else
 	{
-		// nullptr이면, 이름 및 아이콘 제거
+		if (IsValid(HUDWidget))
+		{
+			HUDWidget->HasNoWeapon();
+			HUDWidget->SetWeaponTwoInfo(FText());
+		}
 	}
+	UpdateAmmo();
 }
 
 void AITBattlePlayerController::OnCurrentWeaponUpdate(ECurrentWeaponSlot CurrentWeaponType)
 {
-	/* 0 None 맨손 = 하이라이트 제거
-	* 1 MainWeapon = 메인 웨폰 하이라이트 추가
-	* 2 SubWeapon = 서브 웨폰 하이라이트 추가
-	*/
+	if (HUDWidget)
+	{
+		AITPlayerState* ITPlayerState = GetITPlayerState();
+		if (!ITPlayerState)
+		{
+			return;
+		}
+
+		UITWeaponManagerComponent* WeaponManagerComponent = ITPlayerState->GetITWeaponManagerComponent();
+		if (!WeaponManagerComponent || !WeaponManagerComponent->GetCurrentWeapon())
+		{
+			HUDWidget->HasNoWeapon();
+			HUDWidget->UpdateWeaponSlotHand();
+			return;
+		}
+
+		UITItemInstance* CurrentWeapon = WeaponManagerComponent->GetCurrentWeapon();
+
+		if (CurrentWeaponType == ECurrentWeaponSlot::MainWeapon)
+		{
+			OnMainWeaponUpdate(CurrentWeapon);
+			HUDWidget->UpdateWeaponSlotOne(CurrentWeapon->ItemDefinition->ItemIcon);
+		}
+		else if (CurrentWeaponType == ECurrentWeaponSlot::SubWeapon)
+		{
+			OnSubWeaponUpdate(CurrentWeapon);
+			HUDWidget->UpdateWeaponSlotTwo(CurrentWeapon->ItemDefinition->ItemIcon);
+		}
+	}
 	UpdateAmmo();
 }
 
@@ -527,21 +570,7 @@ void AITBattlePlayerController::OnCurrentHelmetUpdate(int32 CurrentHelmetTier)
 {
 	if (IsValid(HUDWidget))
 	{
-		if (CurrentHelmetTier == 1)
-		{
-			HUDWidget->SetEquipmentIconHelmet();
-			// SetCommonItem();
-		}
-		else if (CurrentHelmetTier == 2)
-		{
-			HUDWidget->SetEquipmentIconHelmet();
-			// SetRareItem();
-		}
-		else if (CurrentHelmetTier == 3)
-		{
-			HUDWidget->SetEquipmentIconHelmet();
-			// SetEpicItem();
-		}
+		HUDWidget->SetEquipmentIconHelmet(CurrentHelmetTier);
 	}
 }
 
@@ -549,20 +578,6 @@ void AITBattlePlayerController::OnCurrentArmorUpdate(int32 CurrentArmorTier)
 {
 	if (IsValid(HUDWidget))
 	{
-		if (CurrentArmorTier == 1)
-		{
-			HUDWidget->SetEquipmentIconArmor();
-			// SetCommonItem();
-		}
-		else if (CurrentArmorTier == 2)
-		{
-			HUDWidget->SetEquipmentIconArmor();
-			// SetRareItem();
-		}
-		else if (CurrentArmorTier == 3)
-		{
-			HUDWidget->SetEquipmentIconArmor();
-			// SetEpicItem();
-		}
+		HUDWidget->SetEquipmentIconArmor(CurrentArmorTier);
 	}
 }

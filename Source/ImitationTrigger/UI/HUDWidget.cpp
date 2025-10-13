@@ -236,6 +236,12 @@ void UHUDWidget::UpdateWeaponSlotTwo(UTexture2D* WeaponImage)
 	WeaponSlotNumber2->SetRenderOpacity(1.0f);
 }
 
+void UHUDWidget::UpdateWeaponSlotHand()
+{
+	WeaponSlotNumber1->SetRenderOpacity(0.6f);
+	WeaponSlotNumber2->SetRenderOpacity(0.6f);
+}
+
 void UHUDWidget::SetWeaponOneInfo(FText WeaponName)
 {
 	WeaponSlotNumber1->SetWeaponText(WeaponName);

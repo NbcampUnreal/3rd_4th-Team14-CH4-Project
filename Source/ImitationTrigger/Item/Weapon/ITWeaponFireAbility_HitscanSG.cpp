@@ -67,8 +67,14 @@ void UITWeaponFireAbility_HitscanSG::Fire(const FVector& TraceStart, const FVect
 					ASC->ExecuteGameplayCue(ITItemGameplayTags::GameplayCue_Weapon_Hit_Others, CueParams);
 				}
 			}
-			
-			ApplyWeaponDamage(HitResult.GetActor());
+
+			bool bIsHeadshot = false;
+			if (HitResult.BoneName == FName("Head") || HitResult.BoneName == FName("J_Bip_C_Head"))
+			{
+				bIsHeadshot = true;
+			}
+
+			ApplyWeaponDamage(HitResult.GetActor(), bIsHeadshot);
 		}
 	}
 }

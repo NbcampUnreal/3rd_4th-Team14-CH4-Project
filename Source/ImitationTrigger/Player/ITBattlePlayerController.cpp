@@ -3,6 +3,7 @@
 #include "AbilitySystem/ITAbilitySystemComponent.h"
 #include "AbilitySystem/Attributes/ITAmmoSet.h"
 #include "AbilitySystem/Attributes/ITHealthSet.h"
+#include "AbilitySystem/Attributes/ITCombatSet.h"
 #include "System/ITLogChannel.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/HUDWidget.h"
@@ -17,6 +18,10 @@
 #include "Character/ITPawnData.h"
 #include "Character/ITPawnDataList.h"
 #include "GameModes/ITBattleGameMode.h"
+#include "UI/Result/ResultWidget.h"
+#include "Blueprint/UserWidget.h"
+#include "GameFramework/PlayerState.h"
+#include "Net/UnrealNetwork.h"
 #include "Item/ITItemManagerComponent.h"
 
 AITBattlePlayerController::AITBattlePlayerController()
@@ -32,6 +37,15 @@ void AITBattlePlayerController::BeginPlay()
 	{
 		InitWidgets();
 	}
+
+	if (IsLocalController())
+	{
+		if (UITGameInstance* GI = Cast<UITGameInstance>(GetGameInstance()))
+		{
+			FString Nickname = GI->GetPlayerNickname();
+			ServerRPC_SetPlayerNickname(Nickname);
+		}
+	}
 }
 
 void AITBattlePlayerController::EndPlay(EEndPlayReason::Type EndPlayReason)
@@ -42,6 +56,8 @@ void AITBattlePlayerController::EndPlay(EEndPlayReason::Type EndPlayReason)
 	{
 		ReleaseWidgets();
 	}
+
+	SelectedCharacterIndex = -1;
 }
 
 void AITBattlePlayerController::PostNetInit()
@@ -363,6 +379,98 @@ void AITBattlePlayerController::OnUpdateAreaInfo(int32 CurrentRoundNumber, int32
 	if (IsValid(HUDWidget))
 	{
 		HUDWidget->OnUpdateAreaInfo(CurrentRoundNumber, AreaTime, Distance, bIsWait);
+	}
+}
+
+void AITBattlePlayerController::ServerRPC_SetPlayerNickname_Implementation(const FString& Nickname)
+{
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+	if (APlayerState* PS = GetPlayerState<APlayerState>())
+	{
+		PS->SetPlayerName(Nickname);
+		UE_LOG(LogTemp, Log, TEXT("Player name set to: %s"), *Nickname);
+	}
+}
+
+void AITBattlePlayerController::ServerRPC_ReturnToLobby_Implementation()
+{
+	// 서버에서만 실행됨
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+#if WITH_EDITOR
+	UE_LOG(LogTemp, Warning, TEXT("Server: Returning all players to lobby"));
+
+	if (UWorld* World = GetWorld())
+	{
+		const FString LobbyMapName = TEXT("IT_TestEntry");
+		World->ServerTravel(LobbyMapName); // 모든 클라이언트가 함께 이동
+	}
+#else
+	UE_LOG(LogTemp, Warning, TEXT("Server: PackagedBuild - client should use ClientTravel"));
+	// 패키징 환경에서는 클라이언트가 각자 ClientTravel 사용
+#endif
+}
+
+void AITBattlePlayerController::ClientShowResult_Implementation(const FString& WinnerName, int32 TotalPlayers)
+{
+	if (!IsLocalController()) 
+	{
+		return;
+	}
+
+	// 결과창 생성 및 표시
+	if (ResultWidgetClass && !ResultWidget)
+	{
+		ResultWidget = CreateWidget<UResultWidget>(this, ResultWidgetClass);
+	}
+
+	if (ResultWidget)
+	{
+		AITPlayerState* ITPlayerState = GetITPlayerState();
+		if (IsValid(ITPlayerState))
+		{
+			int32 MyRank = ITPlayerState->GetRank();
+			UTexture2D* CharacterImage = nullptr;
+			FText PlayerName = FText::FromString(ITPlayerState->GetPlayerName());
+			int32 SurvivalTime = (int32)(ITPlayerState->GetSurviveTimeSeconds());
+			int32 KillCount = 0;
+			float Damage = 0.0f;
+
+			UITAbilitySystemComponent* ASC = ITPlayerState->GetITAbilitySystemComponent();
+			if (IsValid(ASC))
+			{
+				KillCount = (int32)ASC->GetNumericAttribute(UITCombatSet::GetKillCountAttribute());
+				Damage = ASC->GetNumericAttribute(UITCombatSet::GetDamageDealtAttribute());
+			}
+
+			const UITPawnData* PawnData = ITPlayerState->GetPawnData();
+			if (IsValid(PawnData))
+			{
+				CharacterImage = PawnData->Thumbnail;
+			}
+
+			ResultWidget->SetResult(TotalPlayers, MyRank, CharacterImage, PlayerName, SurvivalTime, KillCount, Damage);
+		}
+
+		
+
+		ResultWidget->SetWinnerName(WinnerName);
+		ResultWidget->AddToViewport(100); // 최상위 레이어에 표시
+
+		FlushPressedKeys();
+
+		// 입력 모드를 UI로 변경
+		FInputModeUIOnly InputMode;
+		InputMode.SetWidgetToFocus(ResultWidget->TakeWidget());
+		SetInputMode(InputMode);
+		bShowMouseCursor = true;
 	}
 }
 

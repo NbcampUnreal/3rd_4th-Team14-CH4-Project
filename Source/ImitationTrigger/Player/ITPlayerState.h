@@ -50,7 +50,18 @@ public:
 
 	const UITPawnData* GetPawnData() const;
 
-	UPROPERTY(Replicated)
+	void SetStartTimeSeconds(float InStartTimeSeconds);
+	void SetEndTimeSeconds(float InEndTimeSeconds);
+	float GetSurviveTimeSeconds() const;
+
+	void SetRank(int32 InRank) { Rank = InRank; }
+	int32 GetRank() const { return Rank; }
+
+	// 생존 여부 확인
+	UFUNCTION(BlueprintCallable, Category = "ITPlayerState")
+	bool IsAlive() const { return bIsAlive; }
+
+	UPROPERTY(BlueprintReadOnly, Replicated)
 	bool bIsAlive;
 
 protected:
@@ -64,6 +75,15 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<const UITCombatSet> CombatSet;
+
+	UPROPERTY(Replicated)
+	int32 Rank;
+
+	UPROPERTY(Replicated)
+	float StartTimeSeconds;
+
+	UPROPERTY(Replicated)
+	float EndTimeSeconds;
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "ITPlayerState|AbilitySystemComponent")

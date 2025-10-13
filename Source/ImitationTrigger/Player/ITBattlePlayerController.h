@@ -11,6 +11,7 @@ class UHUDWidget;
 class UUserWidget;
 class UAbilitySystemComponent;
 class UITItemInstance;
+class UResultWidget;
 
 UCLASS()
 class IMITATIONTRIGGER_API AITBattlePlayerController : public AITPlayerController
@@ -54,6 +55,16 @@ public:
 
 	void OnUpdateAreaInfo(int32 CurrentRoundNumber, int32 AreaTime, float Distance, bool bIsWait);
 
+	// 결과창 표시 (클라이언트 RPC)
+	UFUNCTION(Client, Reliable)
+	void ClientShowResult(const FString& WinnerName, int32 TotalPlayers);
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_ReturnToLobby(); //에디터 테스트 용 로비 돌아가기
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_SetPlayerNickname(const FString& Nickname);
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
 	TSubclassOf<UHUDWidget> HUDWidgetClass;
@@ -66,6 +77,13 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UUserWidget> MapWidget;
+
+	// 결과창 위젯 클래스
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
+	TSubclassOf<UResultWidget> ResultWidgetClass;
+
+	UPROPERTY()
+	TObjectPtr<UResultWidget> ResultWidget;
 
 	UPROPERTY()
 	int32 SelectedCharacterIndex = -1;

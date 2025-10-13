@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "HUDWidget.generated.h"
 
+class UItemSlotWidget;
+class UPlayerKillCount;
 class USkillWidget;
 class UAmmoWidget;
 class UBorder;
@@ -65,9 +67,6 @@ public:
 	void AddNotifyText(FText KillPlayer, FText DiePlayer);
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
-	void SetEquipmentIconBag();
-
-	UFUNCTION(BlueprintCallable, Category = "UI")
 	void SetEquipmentIconArmor();
 	
 	UFUNCTION(BlueprintCallable, Category = "UI")
@@ -103,6 +102,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void OnUpdateAreaInfo(int32 CurrentRoundNumber, int32 AreaTime, float Distance, bool bIsWait);
 
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void UpdateRemainingPlayer(int32 RemainingPlayerCount);
+
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void UpdatePlayerKillCount(int32 PlayerKillCount);
+	
 protected:
 	
 	virtual void NativeConstruct() override;
@@ -115,15 +120,6 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	UPlayerBarWidget* LocalPlayerBar;
 	
-	// UPROPERTY(meta = (BindWidget))
-	// UPlayerBarWidget* TeamPlayer1Bar;
-	//
-	// UPROPERTY(meta = (BindWidget))
-	// UPlayerBarWidget* TeamPlayer2Bar;
-	//
-	// UPROPERTY(meta = (BindWidget))
-	// UPlayerBarWidget* TeamPlayer3Bar;
-	//
 	UPROPERTY(meta = (BindWidget))
 	UWeaponSlotWidget* WeaponSlot;
 	
@@ -138,9 +134,6 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	UScrollBox* KillNotifyBox;
-
-	UPROPERTY(meta = (BindWidget))
-	UEquipmentIconWidget* EquipmentIcon_Bag;
 
 	UPROPERTY(meta = (BindWidget))
 	UEquipmentIconWidget* EquipmentIcon_Armor;
@@ -177,6 +170,10 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	UAreaWidget* AreaWidget;
+
+	UPROPERTY(meta = (BindWidget))
+	UPlayerKillCount* PlayerKillCountWidget;
+
 
 private:
 

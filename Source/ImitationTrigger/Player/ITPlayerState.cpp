@@ -11,6 +11,7 @@
 #include "AbilitySystem/ITAbilitySystemComponent.h"
 #include "Engine/ActorChannel.h"
 #include "Item/ITItemInstance.h"
+#include "GameModes/ITBattleGameMode.h"
 #include "Item/ITItemManagerComponent.h"
 #include "Net/UnrealNetwork.h"
 
@@ -39,6 +40,10 @@ AITPlayerState::AITPlayerState(const FObjectInitializer& ObjectInitializer)
 
 	// PlayerState와 Pawn(Chracter)가 모두 준비되었을 때 호출되는 Delegate
 	OnPawnSet.AddDynamic(this, &ThisClass::OnReadyPawnData);
+
+	Rank = -1;
+	StartTimeSeconds = 0.0f;
+	EndTimeSeconds = 0.0f;
 }
 
 void AITPlayerState::BeginPlay()
@@ -69,6 +74,9 @@ void AITPlayerState::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>&
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ThisClass, bIsAlive);
+	DOREPLIFETIME(ThisClass, Rank);
+	DOREPLIFETIME(ThisClass, StartTimeSeconds);
+	DOREPLIFETIME(ThisClass, EndTimeSeconds);
 }
 
 AITPlayerController* AITPlayerState::GetITPlayerController() const
@@ -93,6 +101,21 @@ const UITPawnData* AITPlayerState::GetPawnData() const
 		return GetITCharacter()->GetPawnData();
 	}
 	return nullptr;
+}
+
+void AITPlayerState::SetStartTimeSeconds(float InStartTimeSeconds)
+{
+	StartTimeSeconds = InStartTimeSeconds;
+}
+
+void AITPlayerState::SetEndTimeSeconds(float InEndTimeSeconds)
+{
+	EndTimeSeconds = InEndTimeSeconds;
+}
+
+float AITPlayerState::GetSurviveTimeSeconds() const
+{
+	return FMath::Max(0.0f, (EndTimeSeconds - StartTimeSeconds));
 }
 
 bool AITPlayerState::ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch,
@@ -178,6 +201,11 @@ void AITPlayerState::OnHealthChanged(const FOnAttributeChangeData& Data)
 				if (IsValid(ITCharacter))
 				{
 					bIsAlive = false;
+
+					if (AITBattleGameMode* GameMode = Cast<AITBattleGameMode>(GetWorld()->GetAuthGameMode()))
+					{
+						GameMode->OnPlayerDeath(this);
+					}
 					ITCharacter->MulticastRPC_OnDead();
 				}
 			}

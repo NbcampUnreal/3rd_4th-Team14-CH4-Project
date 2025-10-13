@@ -18,6 +18,7 @@ void UAmmoWidget::SetRifleAmmo(int32 CurrentAmmo, int32 MaxAmmo)
 	{
 		AmmoImage->SetBrushFromTexture(RifleAmmoImage);
 	}
+	HasWeapon(true);
 }
 
 void UAmmoWidget::SetShotgunAmmo(int32 CurrentAmmo, int32 MaxAmmo)
@@ -31,6 +32,7 @@ void UAmmoWidget::SetShotgunAmmo(int32 CurrentAmmo, int32 MaxAmmo)
 	{
 		AmmoImage->SetBrushFromTexture(ShotgunAmmoImage);
 	}
+	HasWeapon(true);
 }
 
 void UAmmoWidget::SetSniperAmmo(int32 CurrentAmmo, int32 MaxAmmo)
@@ -44,6 +46,7 @@ void UAmmoWidget::SetSniperAmmo(int32 CurrentAmmo, int32 MaxAmmo)
 	{
 		AmmoImage->SetBrushFromTexture(SniperAmmoImage);
 	}
+	HasWeapon(true);
 }
 
 void UAmmoWidget::HasWeapon(bool bHasWeapon)
@@ -59,7 +62,7 @@ void UAmmoWidget::HasWeapon(bool bHasWeapon)
 		}
 		if (AmmoImage)
 		{
-			SetVisibility(ESlateVisibility::Collapsed);
+			AmmoImage->SetVisibility(ESlateVisibility::Collapsed);
 		}
 	}
 	else
@@ -70,7 +73,7 @@ void UAmmoWidget::HasWeapon(bool bHasWeapon)
 		}
 		if (AmmoImage)
 		{
-			SetVisibility(ESlateVisibility::Visible);
+			AmmoImage->SetVisibility(ESlateVisibility::Visible);
 		}
 	}
 }

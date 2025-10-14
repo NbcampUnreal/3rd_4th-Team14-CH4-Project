@@ -109,7 +109,7 @@ void AITCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		FText PlayerName = FText::FromString(ITPlayerState->GetPlayerName());
 		UTexture2D* PlayerIcon = PawnData->Thumbnail;
 		UTexture2D* ActiveSkillIcon = PawnData->ActiveSkillIcon;
-		UTexture2D* UltimateSkillIcon = nullptr;
+		UTexture2D* UltimateSkillIcon = PawnData->UltimateIcon;
 
 		ITPlayerController->SetHUDUsingPawnData(PlayerName, PlayerIcon, ActiveSkillIcon, UltimateSkillIcon);
 	}

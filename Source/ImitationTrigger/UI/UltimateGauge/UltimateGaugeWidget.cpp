@@ -53,6 +53,11 @@ void UUltimateGaugeWidget::OnUltimateGaugeCharged()
 		UltimateText->SetVisibility(ESlateVisibility::Collapsed);
 	}
 
+	if (IconImage)
+	{
+		IconImage->SetVisibility(ESlateVisibility::Visible);
+	}
+
 	if (UltimateImage)
 	{
 		if (UltimateDynamicMaterial)
@@ -67,11 +72,26 @@ void UUltimateGaugeWidget::OnUltimateGaugeCharged()
 	}
 }
 
+void UUltimateGaugeWidget::SetIconImage(UTexture2D* Icon)
+{
+	if (IconImage)
+	{
+		FSlateBrush Brush = IconImage->GetBrush();
+		Brush.SetResourceObject(Icon);
+		IconImage->SetBrush(Brush);
+	}
+}
+
 void UUltimateGaugeWidget::ResetUltimate()
 {
 	if (UltimateText)
 	{
 		UltimateText->SetVisibility(ESlateVisibility::Visible);
+	}
+
+	if (IconImage)
+	{
+		IconImage->SetVisibility(ESlateVisibility::Hidden);
 	}
 
 	if (UltimateImage)

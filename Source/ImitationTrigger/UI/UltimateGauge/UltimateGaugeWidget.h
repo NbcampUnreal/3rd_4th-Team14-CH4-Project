@@ -26,12 +26,18 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void ResetUltimate();
+
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void SetIconImage(UTexture2D* Icon);
 	
 protected:
 	virtual void NativeConstruct() override;
 
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* UltimateText;
+
+	UPROPERTY(meta = (BindWidget))
+	UImage* IconImage;
 
 	UPROPERTY(meta = (BindWidget))
 	UImage* UltimateImage;

@@ -60,6 +60,9 @@ public:
 	UFUNCTION(BlueprintCallable, Client, Reliable)
 	void ClientRPC_OnUseActiveSkill(float Cooldown);
 
+	UFUNCTION(BlueprintCallable, Client, Reliable)
+	void ClientRPC_OnUseUltimate();
+
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_RequestAlivePlayerCount();
 

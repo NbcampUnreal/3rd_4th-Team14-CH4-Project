@@ -38,6 +38,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void ResetUltimateGauge();
+
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void SetUltimateIcon(UTexture2D* Icon);
 	
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void SetLocalPlayerBar(FText PlayerName, UTexture2D* PlayerIcon);

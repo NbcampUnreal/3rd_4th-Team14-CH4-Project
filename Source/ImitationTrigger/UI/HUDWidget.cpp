@@ -25,6 +25,7 @@ void UHUDWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	ResetUltimateGauge();
 	UpdateUltimateGauge(0);
 	PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(),0);
 	
@@ -204,6 +205,7 @@ void UHUDWidget::UpdateUltimateGauge(float UltimateGauge)
 	}
 	else
 	{
+		UltimateGaugeWidget->ResetUltimate();
 		UltimateGaugeWidget->UpdateUltimateGauge(UltimateGauge);
 	}
 }
@@ -211,6 +213,14 @@ void UHUDWidget::UpdateUltimateGauge(float UltimateGauge)
 void UHUDWidget::ResetUltimateGauge()
 {
 	UltimateGaugeWidget->ResetUltimate();
+}
+
+void UHUDWidget::SetUltimateIcon(UTexture2D* Icon)
+{
+	if (UltimateGaugeWidget)
+	{
+		UltimateGaugeWidget->SetIconImage(Icon);
+	}
 }
 
 void UHUDWidget::SetLocalPlayerBar(FText PlayerName, UTexture2D* PlayerIcon)

@@ -443,6 +443,14 @@ void AITBattlePlayerController::OnUpdateAreaInfo(int32 CurrentRoundNumber, int32
 	}
 }
 
+void AITBattlePlayerController::ClientRPC_OnUseUltimate_Implementation()
+{
+	if (IsValid(HUDWidget))
+	{
+		HUDWidget->ResetUltimateGauge();
+	}
+}
+
 void AITBattlePlayerController::ServerRPC_RequestAlivePlayerCount_Implementation()
 {
 	if (HasAuthority() && GetWorld())
@@ -470,6 +478,7 @@ void AITBattlePlayerController::SetHUDUsingPawnData(const FText& PlayerName, UTe
 	{
 		HUDWidget->SetLocalPlayerBar(PlayerName, PlayerIcon);
 		HUDWidget->SetActiveSkillIcon(ActiveSkillIcon);
+		HUDWidget->SetUltimateIcon(UltimateSkillIcon);
 	}
 }
 

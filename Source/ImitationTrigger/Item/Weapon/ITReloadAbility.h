@@ -43,4 +43,11 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "IT|Reload")
 	TObjectPtr<UAnimMontage> ReloadMontage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "IT|Reload")
+	TObjectPtr<USoundBase> ReloadSound;
+
+private:
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> ReloadAudioComponent;
 };

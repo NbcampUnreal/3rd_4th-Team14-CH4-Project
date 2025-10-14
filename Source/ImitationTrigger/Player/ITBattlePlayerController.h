@@ -130,6 +130,9 @@ private:
 	void OnKillCountChanged(const FOnAttributeChangeData& Data);
 	void UpdateKillCount();
 
+	void OnUltimateGaugeChanged(const FOnAttributeChangeData& Data);
+	void UpdateUltimateGauge();
+
 	UFUNCTION()
 	void OnMainWeaponUpdate(UITItemInstance* ItemInstance);
 

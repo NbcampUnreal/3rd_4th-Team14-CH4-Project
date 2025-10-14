@@ -255,6 +255,8 @@ void AITBattlePlayerController::InitHUD()
 				                            &ThisClass::OnSpecialAmmoChanged);
 				BindAttributeChangeDelegate(ITASC, UITCombatSet::GetKillCountAttribute(), this,
 				                            &ThisClass::OnKillCountChanged);
+				BindAttributeChangeDelegate(ITASC, UITCombatSet::GetUltimateGaugeAttribute(), this,
+				                            &ThisClass::OnUltimateGaugeChanged);
 			}
 		}
 		UpdateHealth();
@@ -262,6 +264,7 @@ void AITBattlePlayerController::InitHUD()
 		UpdateAmmo();
 		UpdateKillCount();
 		ServerRPC_RequestAlivePlayerCount();
+		UpdateUltimateGauge();
 
 		AITPlayerState* ITPlayerState = GetITPlayerState();
 		if (IsValid(ITPlayerState))
@@ -410,6 +413,24 @@ void AITBattlePlayerController::UpdateKillCount()
 		if (IsValid(HUDWidget))
 		{
 			HUDWidget->UpdatePlayerKillCount(KillCount);
+		}
+	}
+}
+
+void AITBattlePlayerController::OnUltimateGaugeChanged(const FOnAttributeChangeData& Data)
+{
+	UpdateUltimateGauge();
+}
+
+void AITBattlePlayerController::UpdateUltimateGauge()
+{
+	UITAbilitySystemComponent* ITASC = GetITAbilitySystemComponent();
+	if (IsValid(ITASC))
+	{
+		float Gauge = ITASC->GetNumericAttribute(UITCombatSet::GetUltimateGaugeAttribute());
+		if (IsValid(HUDWidget))
+		{
+			HUDWidget->UpdateUltimateGauge(Gauge);
 		}
 	}
 }

@@ -56,9 +56,41 @@ void AITBattleGameMode::RestartPlayer(AController* NewPlayer)
 	Super::RestartPlayer(NewPlayer);
 }
 
+void AITBattleGameMode::Logout(AController* Exiting)
+{
+	if (APlayerController* ExitingPC = Cast<APlayerController>(Exiting))
+	{
+		// MatchPlayers에서 제거
+		MatchPlayers.Remove(ExitingPC);
+
+		// AlivePlayers에서도 제거
+		if (AITPlayerState* ExitingPS = Cast<AITPlayerState>(ExitingPC->PlayerState))
+		{
+			AlivePlayers.Remove(ExitingPS);
+			UpdateAlivePlayerCountToAllPlayers();
+
+			ExitingPS->SetEndTimeSeconds(UGameplayStatics::GetTimeSeconds(this));
+			ExitingPS->SetRank(AlivePlayers.Num() + 1);
+			UE_LOG(LogTemp, Warning, TEXT("Player disconnected: %s (Alive: %d)"),
+				*ExitingPS->GetPlayerName(), AlivePlayers.Num());
+		}
+
+		// 게임이 진행 중이면 승자 확인
+		if (!bGameEnded && HasMatchStarted())
+		{
+			CheckForWinner();
+		}
+	}
+
+	Super::Logout(Exiting);
+}
+
 void AITBattleGameMode::OnPlayerDeath(AITPlayerState* DeadPlayer)
 {
-	if (!DeadPlayer || bGameEnded) return;
+	if (!DeadPlayer || bGameEnded)
+	{
+		return;
+	}
 
 	UE_LOG(LogTemp, Warning, TEXT("Player died: %s"), *DeadPlayer->GetPlayerName());
 
@@ -77,7 +109,10 @@ void AITBattleGameMode::OnPlayerDeath(AITPlayerState* DeadPlayer)
 
 void AITBattleGameMode::CheckForWinner()
 {
-	if (bGameEnded) return;
+	if (bGameEnded)
+	{
+		return;
+	}
 
 	// 생존자가 1명 이하일 때 게임 종료
 	if (AlivePlayers.Num() <= 1)

@@ -98,6 +98,16 @@ void AITBattlePlayerController::SetPawn(APawn* InPawn)
 	Super::SetPawn(InPawn);
 }
 
+void AITBattlePlayerController::ToSpectatorMode(FTransform Transform)
+{
+	FActorSpawnParameters SpawnParam;
+	APawn* NewPawn = GetWorld()->SpawnActor<APawn>(SpectatorPawnClass, Transform, SpawnParam);
+
+	check(NewPawn);
+
+	Possess(NewPawn);
+}
+
 void AITBattlePlayerController::ToggleMapWidget()
 {
 	if (IsValid(MapWidget))

@@ -199,7 +199,9 @@ void AITCharacter::MulticastRPC_OnDead_Implementation()
 
 					if (IsValid(MeshComponent))
 					{
+						MeshComponent->SetPhysicsLinearVelocity(FVector::ZeroVector);
 						MeshComponent->SetSimulatePhysics(true);
+						MeshComponent->SetAllBodiesPhysicsBlendWeight(1.0f);
 						MeshComponent->SetCollisionProfileName(FName(TEXT("Ragdoll")));
 						MeshComponent->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
 						MeshComponent->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);

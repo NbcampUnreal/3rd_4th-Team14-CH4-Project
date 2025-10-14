@@ -89,6 +89,7 @@ void UITWeaponFireAbility::Fire(const FVector& StartLocation, const FVector& Fir
 	}
 }
 
+// TODO 여기서부터
 void UITWeaponFireAbility::ApplyWeaponDamage(AActor* TargetActor, bool bIsHeadshot)
 {
 	if (!TargetActor || !NormalDamageEffect || !HeadshotDamageEffect || !Cast<AITCharacter>(TargetActor))

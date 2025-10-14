@@ -13,6 +13,7 @@ public:
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
+	virtual void PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const override;
 
 	ATTRIBUTE_ACCESSORS(UITCombatSet, DamageDealt);
 	ATTRIBUTE_ACCESSORS(UITCombatSet, KillCount);

@@ -41,3 +41,13 @@ void UITCombatSet::PreAttributeChange(const FGameplayAttribute& Attribute, float
 		NewValue = FMath::Clamp(NewValue, 0.f, 100.0f);
 	}
 }
+
+void UITCombatSet::PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const
+{
+	Super::PreAttributeBaseChange(Attribute, NewValue);
+
+	if (Attribute == GetUltimateGaugeAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue, 0.f, 100.0f);
+	}
+}

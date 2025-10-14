@@ -60,6 +60,27 @@ void UITHealthSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackDat
 	AActor* Instigator = EffectContext.GetOriginalInstigator();
 	AActor* Causer = EffectContext.GetEffectCauser();
 
+	// 궁극기, 불사장치 코드
+	AActor* TargetActor = Data.Target.GetOwnerActor();
+	if (IsValid(TargetActor))
+	{
+		AITPlayerState* TargetPlayerState = Cast<AITPlayerState>(TargetActor);
+		if (IsValid(TargetPlayerState))
+		{
+			UAbilitySystemComponent* ASC = TargetPlayerState->GetAbilitySystemComponent();
+			if (IsValid(ASC))
+			{
+				FGameplayTag NoDeadTag = UGameplayTagsManager::Get().RequestGameplayTag(FName(TEXT("Ability.Ultimate.NoDead")), false);
+				if (ASC->HasMatchingGameplayTag(NoDeadTag))
+				{
+					SetHealth(1.0f);
+					SetGainDamage(0.0f);
+					SetGainHeadshotDamage(0.0f);
+				}
+			}
+		}
+	}
+
 	float RealDealtAmount = 0.0f;
 
 	if (Data.EvaluatedData.Attribute == GetGainDamageAttribute())
@@ -104,8 +125,6 @@ void UITHealthSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackDat
 				AccumulateKillCount(AttackerASC);
 				GainUltimateGaugeOnKill(AttackerASC);
 				AITBattlePlayerController* AttackerController = Cast<AITBattlePlayerController>(AttackerPlayerState->GetOwningController());
-
-				AActor* TargetActor = Data.Target.GetOwnerActor();
 				if (IsValid(TargetActor))
 				{
 					AITPlayerState* TargetPlayerState = Cast<AITPlayerState>(TargetActor);

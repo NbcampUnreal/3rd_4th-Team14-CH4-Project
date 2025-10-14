@@ -11,6 +11,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "EnhancedInputSubsystems.h"
 #include "ITPawnDataList.h"
 
 AITCharacter::AITCharacter()
@@ -169,13 +170,26 @@ void AITCharacter::MulticastRPC_OnDead_Implementation()
 		{
 			MovementComponent->DisableMovement();
 		}
+
+		AITBattlePlayerController* PC = Cast<AITBattlePlayerController>(GetController());
+		if (IsValid(PC))
+		{
+			//DisableInput(PC);
+			PC->ToSpectatorMode(GetActorTransform());
+		}
 	}
 	else
 	{
 		APlayerController* PC = Cast<APlayerController>(GetController());
 		if (IsValid(PC))
 		{
-			DisableInput(PC);
+			ULocalPlayer* LocalPlayer = PC->GetLocalPlayer();
+			check(LocalPlayer);
+
+			UEnhancedInputLocalPlayerSubsystem* Subsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+			check(Subsystem);
+
+			Subsystem->ClearAllMappings();
 		}
 
 		USkeletalMeshComponent* RootMeshComponent = GetMesh();

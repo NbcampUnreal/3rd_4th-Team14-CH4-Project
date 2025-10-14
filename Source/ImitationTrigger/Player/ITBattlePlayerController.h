@@ -26,6 +26,8 @@ public:
 	virtual void OnRep_PlayerState() override;
 	virtual void SetPawn(APawn* InPawn) override;
 
+	void ToSpectatorMode(FTransform Transform);
+
 	UFUNCTION(BlueprintCallable)
 	void ToggleMapWidget();
 
@@ -77,6 +79,9 @@ public:
 	void SetHUDUsingPawnData(const FText& PlayerName, UTexture2D* PlayerIcon, UTexture2D* ActiveSkillIcon, UTexture2D* UltimateSkillIcon);
 
 protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
+	TSubclassOf<APawn> SpectatorPawnClass;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
 	TSubclassOf<UHUDWidget> HUDWidgetClass;
 

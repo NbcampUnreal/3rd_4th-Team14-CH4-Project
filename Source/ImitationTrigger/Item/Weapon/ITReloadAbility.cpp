@@ -8,8 +8,11 @@
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "AbilitySystem/ITAbilitySystemComponent.h"
 #include "AbilitySystem/Attributes/ITAmmoSet.h"
+#include "Character/ITCharacter.h"
+#include "Components/AudioComponent.h"
 #include "Item/ITItemGameplayTags.h"
 #include "Item/ITItemInstance.h"
+#include "Kismet/GameplayStatics.h"
 #include "Player/ITPlayerState.h"
 
 UITReloadAbility::UITReloadAbility()
@@ -98,6 +101,22 @@ void UITReloadAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		return;
 	}
 
+	if (ActorInfo->IsLocallyControlled() && ReloadSound)
+	{
+		if (ReloadAudioComponent)
+		{
+			ReloadAudioComponent->Stop();
+		}
+
+		if (AActor* AvatarActor = GetAvatarActorFromActorInfo())
+		{
+			if (AITCharacter* ITCharacter = Cast<AITCharacter>(AvatarActor))
+			{
+				ReloadAudioComponent = UGameplayStatics::SpawnSoundAttached(ReloadSound, ITCharacter->GetMesh());
+			}
+		}
+	}
+
 	UAbilityTask_PlayMontageAndWait* ReloadMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
 		this, NAME_None, ReloadMontage, 1.0f, NAME_None, false);
 
@@ -120,6 +139,15 @@ void UITReloadAbility::EndAbility(const FGameplayAbilitySpecHandle Handle,
                                   bool bReplicateEndAbility,
                                   bool bWasCancelled)
 {
+	if (ActorInfo->IsLocallyControlled() && ReloadSound)
+	{
+		if (ReloadAudioComponent && ReloadAudioComponent->IsActive())
+		{
+			ReloadAudioComponent->Stop();
+			ReloadAudioComponent = nullptr;
+		}
+	}
+
 	MontageStop();
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }

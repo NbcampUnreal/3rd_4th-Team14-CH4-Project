@@ -120,6 +120,14 @@ void UHUDWidget::PlayKillMarkerAnimation()
 	}
 }
 
+void UHUDWidget::PlayDamageAnimation()
+{
+	if (DamageAnimation)
+	{
+		PlayAnimation(DamageAnimation);
+	}
+}
+
 void UHUDWidget::UpdateRifleAmmo(int32 CurrentAmmo, int32 MaxAmmo)
 {
 	if (AmmoWidget)

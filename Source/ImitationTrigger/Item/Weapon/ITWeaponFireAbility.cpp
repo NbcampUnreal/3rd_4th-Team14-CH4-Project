@@ -200,8 +200,8 @@ void UITWeaponFireAbility::PlayClientHUDAnimationOnHit(AActor* Attacker, AActor*
 	AITCharacter* ITTarget = Cast<AITCharacter>(Target);
 	if (IsValid(ITAttacker) && IsValid(ITTarget))
 	{
-		AITBattlePlayerController* PlayerController = ITAttacker->GetController<AITBattlePlayerController>();
-		if (IsValid(PlayerController))
+		AITBattlePlayerController* AttackerController = ITAttacker->GetController<AITBattlePlayerController>();
+		if (IsValid(AttackerController))
 		{
 			UAbilitySystemComponent* TargetASC = ITTarget->GetAbilitySystemComponent();
 			if (IsValid(TargetASC))
@@ -209,13 +209,19 @@ void UITWeaponFireAbility::PlayClientHUDAnimationOnHit(AActor* Attacker, AActor*
 				float RemainTargetHealth = TargetASC->GetNumericAttribute(UITHealthSet::GetHealthAttribute());
 				if (RemainTargetHealth > 0)
 				{
-					PlayerController->ClientRPC_PlayHitMarkerAnimation();
+					AttackerController->ClientRPC_PlayHitMarkerAnimation();
 				}
 				else
 				{
-					PlayerController->ClientRPC_PlayKillMarkerAnimation();
+					AttackerController->ClientRPC_PlayKillMarkerAnimation();
 				}
 			}
+		}
+
+		AITBattlePlayerController* TargetController = ITTarget->GetController<AITBattlePlayerController>();
+		if (IsValid(TargetController))
+		{
+			TargetController->ClientRPC_PlayDamageAnimation();
 		}
 	}
 }

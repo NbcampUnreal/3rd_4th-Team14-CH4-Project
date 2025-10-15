@@ -47,6 +47,9 @@ public:
 	void ClientRPC_PlayKillMarkerAnimation();
 
 	UFUNCTION(Client, Unreliable)
+	void ClientRPC_PlayDamageAnimation();
+
+	UFUNCTION(Client, Unreliable)
 	void ClientRPC_OnFireAnimation();
 
 	UFUNCTION(Client, Reliable)

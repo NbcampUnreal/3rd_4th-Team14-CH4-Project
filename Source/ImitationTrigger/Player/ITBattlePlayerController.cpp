@@ -197,6 +197,15 @@ void AITBattlePlayerController::ClientRPC_PlayKillMarkerAnimation_Implementation
 	}
 }
 
+void AITBattlePlayerController::ClientRPC_PlayDamageAnimation_Implementation()
+{
+	if (IsValid(HUDWidget))
+	{
+		HUDWidget->PlayDamageAnimation();
+	}
+}
+
+
 void AITBattlePlayerController::InitWidgets()
 {
 	CreatePlayerWidgets();

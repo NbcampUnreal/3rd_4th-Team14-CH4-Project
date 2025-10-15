@@ -85,6 +85,9 @@ protected:
 	UPROPERTY(Replicated)
 	float EndTimeSeconds;
 
+	UPROPERTY(Replicated)
+	const UITPawnData* CachedPawnData;
+
 private:
 	UPROPERTY(VisibleAnywhere, Category = "ITPlayerState|AbilitySystemComponent")
 	TObjectPtr<UITAbilitySystemComponent> AbilitySystemComponent;

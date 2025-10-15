@@ -12,6 +12,7 @@
 #include "Engine/ActorChannel.h"
 #include "Item/ITItemInstance.h"
 #include "GameModes/ITBattleGameMode.h"
+#include "UObject/ObjectPtr.h"
 #include "Item/ITItemManagerComponent.h"
 #include "Net/UnrealNetwork.h"
 
@@ -44,6 +45,8 @@ AITPlayerState::AITPlayerState(const FObjectInitializer& ObjectInitializer)
 	Rank = -1;
 	StartTimeSeconds = 0.0f;
 	EndTimeSeconds = 0.0f;
+
+	CachedPawnData = nullptr;
 }
 
 void AITPlayerState::BeginPlay()
@@ -77,6 +80,7 @@ void AITPlayerState::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>&
 	DOREPLIFETIME(ThisClass, Rank);
 	DOREPLIFETIME(ThisClass, StartTimeSeconds);
 	DOREPLIFETIME(ThisClass, EndTimeSeconds);
+	DOREPLIFETIME(ThisClass, CachedPawnData);
 }
 
 AITPlayerController* AITPlayerState::GetITPlayerController() const
@@ -96,11 +100,18 @@ UAbilitySystemComponent* AITPlayerState::GetAbilitySystemComponent() const
 
 const UITPawnData* AITPlayerState::GetPawnData() const
 {
-	if (IsValid(GetITCharacter()))
+	if (IsValid(CachedPawnData))
 	{
-		return GetITCharacter()->GetPawnData();
+		return CachedPawnData;
 	}
-	return nullptr;
+	else
+	{
+		if (IsValid(GetITCharacter()))
+		{
+			return GetITCharacter()->GetPawnData();
+		}
+		return nullptr;
+	}
 }
 
 void AITPlayerState::SetStartTimeSeconds(float InStartTimeSeconds)
@@ -146,6 +157,8 @@ void AITPlayerState::OnReadyPawnData(APlayerState* Player, APawn* NewPawn, APawn
 	AITCharacter* ITCharacter = GetITCharacter();
 	if (IsValid(ITCharacter) && IsValid(ITCharacter->GetPawnData()))
 	{
+		CachedPawnData = ITCharacter->GetPawnData();
+
 		InitAbilitySystemComponent();
 
 		ITCharacter->SetBodyMeshes();

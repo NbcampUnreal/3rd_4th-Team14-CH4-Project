@@ -264,6 +264,8 @@ void AITBattlePlayerController::InitHUD()
 				                            &ThisClass::OnSpecialAmmoChanged);
 				BindAttributeChangeDelegate(ITASC, UITCombatSet::GetKillCountAttribute(), this,
 				                            &ThisClass::OnKillCountChanged);
+				BindAttributeChangeDelegate(ITASC, UITCombatSet::GetUltimateGaugeAttribute(), this,
+				                            &ThisClass::OnUltimateGaugeChanged);
 			}
 		}
 		UpdateHealth();
@@ -271,6 +273,7 @@ void AITBattlePlayerController::InitHUD()
 		UpdateAmmo();
 		UpdateKillCount();
 		ServerRPC_RequestAlivePlayerCount();
+		UpdateUltimateGauge();
 
 		AITPlayerState* ITPlayerState = GetITPlayerState();
 		if (IsValid(ITPlayerState))
@@ -423,11 +426,37 @@ void AITBattlePlayerController::UpdateKillCount()
 	}
 }
 
+void AITBattlePlayerController::OnUltimateGaugeChanged(const FOnAttributeChangeData& Data)
+{
+	UpdateUltimateGauge();
+}
+
+void AITBattlePlayerController::UpdateUltimateGauge()
+{
+	UITAbilitySystemComponent* ITASC = GetITAbilitySystemComponent();
+	if (IsValid(ITASC))
+	{
+		float Gauge = ITASC->GetNumericAttribute(UITCombatSet::GetUltimateGaugeAttribute());
+		if (IsValid(HUDWidget))
+		{
+			HUDWidget->UpdateUltimateGauge(Gauge);
+		}
+	}
+}
+
 void AITBattlePlayerController::OnUpdateAreaInfo(int32 CurrentRoundNumber, int32 AreaTime, float Distance, bool bIsWait)
 {
 	if (IsValid(HUDWidget))
 	{
 		HUDWidget->OnUpdateAreaInfo(CurrentRoundNumber, AreaTime, Distance, bIsWait);
+	}
+}
+
+void AITBattlePlayerController::ClientRPC_OnUseUltimate_Implementation()
+{
+	if (IsValid(HUDWidget))
+	{
+		HUDWidget->ResetUltimateGauge();
 	}
 }
 
@@ -458,6 +487,7 @@ void AITBattlePlayerController::SetHUDUsingPawnData(const FText& PlayerName, UTe
 	{
 		HUDWidget->SetLocalPlayerBar(PlayerName, PlayerIcon);
 		HUDWidget->SetActiveSkillIcon(ActiveSkillIcon);
+		HUDWidget->SetUltimateIcon(UltimateSkillIcon);
 	}
 }
 

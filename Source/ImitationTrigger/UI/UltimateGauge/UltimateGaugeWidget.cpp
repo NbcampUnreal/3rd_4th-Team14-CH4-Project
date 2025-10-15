@@ -28,12 +28,13 @@ UMaterialInstanceDynamic* UUltimateGaugeWidget::GetImageDynamicMaterial(UImage* 
 void UUltimateGaugeWidget::UpdateUltimateGauge(float UltimateGauge)
 {
 	float UltimateValue = FMath::Clamp(UltimateGauge, 0.0f, 100.0f);
+	int32 IntValue = (int32)UltimateValue;
 
 	if (UltimateText)
 	{
 		FText GaugeText = FText::Format(
 			FText::FromString("{0}%"),
-			FText::AsNumber(UltimateValue)
+			FText::AsNumber(IntValue)
 			);
 		UltimateText->SetText(GaugeText);
 	}
@@ -52,6 +53,11 @@ void UUltimateGaugeWidget::OnUltimateGaugeCharged()
 		UltimateText->SetVisibility(ESlateVisibility::Collapsed);
 	}
 
+	if (IconImage)
+	{
+		IconImage->SetVisibility(ESlateVisibility::Visible);
+	}
+
 	if (UltimateImage)
 	{
 		if (UltimateDynamicMaterial)
@@ -66,11 +72,26 @@ void UUltimateGaugeWidget::OnUltimateGaugeCharged()
 	}
 }
 
+void UUltimateGaugeWidget::SetIconImage(UTexture2D* Icon)
+{
+	if (IconImage)
+	{
+		FSlateBrush Brush = IconImage->GetBrush();
+		Brush.SetResourceObject(Icon);
+		IconImage->SetBrush(Brush);
+	}
+}
+
 void UUltimateGaugeWidget::ResetUltimate()
 {
 	if (UltimateText)
 	{
 		UltimateText->SetVisibility(ESlateVisibility::Visible);
+	}
+
+	if (IconImage)
+	{
+		IconImage->SetVisibility(ESlateVisibility::Hidden);
 	}
 
 	if (UltimateImage)

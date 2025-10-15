@@ -63,6 +63,9 @@ public:
 	UFUNCTION(BlueprintCallable, Client, Reliable)
 	void ClientRPC_OnUseActiveSkill(float Cooldown);
 
+	UFUNCTION(BlueprintCallable, Client, Reliable)
+	void ClientRPC_OnUseUltimate();
+
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_RequestAlivePlayerCount();
 
@@ -132,6 +135,9 @@ private:
 
 	void OnKillCountChanged(const FOnAttributeChangeData& Data);
 	void UpdateKillCount();
+
+	void OnUltimateGaugeChanged(const FOnAttributeChangeData& Data);
+	void UpdateUltimateGauge();
 
 	UFUNCTION()
 	void OnMainWeaponUpdate(UITItemInstance* ItemInstance);

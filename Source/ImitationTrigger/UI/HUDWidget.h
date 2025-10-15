@@ -88,6 +88,9 @@ public:
 	void PlayKillMarkerAnimation();
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
+	void PlayDamageAnimation();
+
+	UFUNCTION(BlueprintCallable, Category = "UI")
 	void UpdateRifleAmmo(int32 CurrentAmmo, int32 MaxAmmo);
 	
 	UFUNCTION(BlueprintCallable, Category = "UI")
@@ -167,6 +170,9 @@ protected:
 
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	UWidgetAnimation* KillMarkerAnimation;
+
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* DamageAnimation;
 
 	UPROPERTY(meta = (BindWidget))
 	UAmmoWidget* AmmoWidget;

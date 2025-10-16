@@ -5,7 +5,7 @@
 
 <img width="2838" height="1596" alt="헤더" src="https://github.com/user-attachments/assets/0009f4b5-120e-4ea7-ac41-4e6c71e0968c" />
 
- **"능력과 전장에 흩어진 아이템을 사용하여, 서서히 좁혀오는 전장 속에서 살아남는 최후의 1인이 되어 승리를 쟁취하세요!"**
+ **"스킬과 전장에 흩어진 아이템을 사용하여, 서서히 좁혀오는 전장 속에서 살아남는 최후의 1인이 되어 승리를 쟁취하세요!"**
 
 - 멀티플레이 기반의 게임 개발 프로젝트
 - "**Fate Trigger** (Saroasis Studio)" 모작
@@ -15,8 +15,8 @@
 
 | **이름** | **역할** |
 | :------: | :------ |
-| **정찬혁** | `**팀장**, 서버` 로비 및 매칭 서버, 게임별 전용(데디케이티드) 서버 개발, 게임 모드 및 규칙 구현, 네트워크 관련 담당 |
-| **최대근** | `**부팀장**, 리드` PawnData를 사용한 모듈형 프레임워크 개발, 레벨 디자인, PR 리뷰, 코드 병합 |
+| **정찬혁** | `팀장, 서버` 로비 및 매칭 서버, 게임별 전용(데디케이티드) 서버 개발, 게임 모드 및 규칙 구현, 네트워크 관련 담당 |
+| **최대근** | `부팀장, 리드` PawnData를 사용한 모듈형 프레임워크 개발, 레벨 디자인, PR 리뷰, 코드 병합 |
 | **김기인** | `캐릭터, 셰이더` 카툰 랜더링(쉘 쉐이딩), 캐릭터 리타기팅, ALS 기반 애니메이션 제작, 무기 애님몽타주 제작 |
 | **이정재** | `기획, UI` 게임 기획, HUD 및 게임 시작 화면 및 로비 UI 제작 |
 | **장재근** | `아이템` 모듈형 아이템 프레임워크 개발, 드랍 아이템 구현, 총기/방어구 제작 및 로직 구현 |
@@ -173,30 +173,36 @@ Config
 
 ## 4. 인게임 소개
 
-### 캐릭터와 스킬, 장비
+### 🔸캐릭터 스킬 및 장비
 <img width="1964" height="851" alt="스크린샷 2025-10-15 221425" src="https://github.com/user-attachments/assets/435d36a8-a4e4-4504-8dd4-6f6c2a8b07c8" />
-<br>
+<br><br>
 
-### HUD 및 조작법
+### 🔸HUD 및 조작법
 <img width="1973" height="869" alt="스크린샷 2025-10-15 221403" src="https://github.com/user-attachments/assets/417753e5-4f50-48c1-9252-bbae43a7c448" />
-<br>
+<br><br>
 
-### 맵 소개
+### 🔸Maps, UI
 
-- **L_Title** : 메인 타이틀
+**▼ L_Title** : 메인 타이틀 화면
 <img width="1795" height="859" alt="스크린샷 2025-10-15 222551" src="https://github.com/user-attachments/assets/35fbbee9-eb3a-40e2-937c-38ef4d35be6e" />
 <img width="1828" height="889" alt="스크린샷 2025-10-15 222559" src="https://github.com/user-attachments/assets/b0d04a47-9c02-4995-9005-a1672836125f" />
-
-- **L_Entry** : 캐릭터 선택 및 게임 매칭
-<img width="1877" height="927" alt="스크린샷 2025-10-15 222638" src="https://github.com/user-attachments/assets/186d230e-3dd2-409c-847b-2fa91c0af467" />
-
-- **L_TransitionMap** : 레벨 전환 시 로딩 UI 출력
-<img width="1104" height="616" alt="스크린샷 2025-10-15 223807" src="https://github.com/user-attachments/assets/72bda9e4-8d34-481f-8ef3-6665c2c3e311" />
-
-- **L_BattleMap** : 인게임 레벨
-
-
 <br>
+
+**▼ L_Entry** : 캐릭터 선택 및 게임 매칭 로비
+<img width="1877" height="927" alt="스크린샷 2025-10-15 222638" src="https://github.com/user-attachments/assets/186d230e-3dd2-409c-847b-2fa91c0af467" />
+<br>
+
+**▼ L_TransitionMap** : 레벨 전환 로딩 창
+<img width="1104" height="616" alt="스크린샷 2025-10-15 223807" src="https://github.com/user-attachments/assets/72bda9e4-8d34-481f-8ef3-6665c2c3e311" />
+<br>
+
+**▼ L_BattleMap** : 인게임 레벨
+<img width="1569" height="775" alt="스크린샷 2025-10-16 090109" src="https://github.com/user-attachments/assets/b9f728a0-394b-47fb-ae2d-14717068bd88" />
+<img width="1777" height="806" alt="스크린샷 2025-10-16 090217" src="https://github.com/user-attachments/assets/c7622dbf-451a-441a-996c-a5f642979fbc" />
+<img width="1526" height="711" alt="스크린샷 2025-10-16 090247" src="https://github.com/user-attachments/assets/9f5f2f4d-b243-4f06-b86d-e04de6b93182" />
+<img width="1875" height="919" alt="스크린샷 2025-10-15 222924" src="https://github.com/user-attachments/assets/9a562c2c-a5e3-4cdd-8518-4510ad458cdc" />
+
+<br><br>
 
 ## 5. 플레이 영상
 https://www.youtube.com/watch?v=SBkoYiFFHDg
